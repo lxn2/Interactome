@@ -1,0 +1,46 @@
+
+<!--Top Header holds the page title and logo -->
+<div id="header"> 
+  <div id="topBanner" class="page-header">
+    <h1 id="logoHeader">Sage Bionetworks Interactome <small> Prototype </small><h1>
+    </div>
+
+  </div>
+  <!-- userSearchPannel holds the search bar and filter --> 
+  <div id="userSearchPanel">
+    <div id="jumbotronBanner" class="jumbotron">
+      <!--searchBar code --> 
+      <div class="searchForm" ng-controller="mainController">
+        <input id="searchBar" type="text" placeholder="Search i.e. author, title, keywords" ng-model="newSearchHistory"/>
+        <!--searchButton --> 
+        <button id="searchButton" type="button" class="btn btn-primary" >Search</button>
+        <!-- bookmarksDropDown holds the user bookmark history, operates as a dropDown --> 
+        <div id="bookmarksDropDown" class="btn-group dropdown">
+          <button type="button" class="btn dropdown-toggle btn-primary" data-toggle="dropdown" onclick="testAWS()" href="#">
+            Saved Papers <span class="caret"></span>
+          </button>
+          <ul id="dropDownMenu" class="dropdown-menu">
+            <li><a href="#searching">Folder 1</a></li>
+            <li><a href="#">Folder 2</a></li>
+            <li><a href="#">Folder 3</a></li>
+            <li><a href="#">Folder 4</a></li>
+          </ul>
+
+        </div>
+      </div>
+
+    </div>
+    <div id="recAndSearchTable" >
+  
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+           <th>Title</th>
+
+            <th> Author</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  </div>
+</div>
