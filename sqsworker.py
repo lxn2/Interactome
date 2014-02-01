@@ -50,15 +50,13 @@ class ASyncMessage(threading.Thread):
 def main():
 	QUEUE_NAME = "Interactome-1"
 	REGION = "us-west-2"
-	ACCESS_KEY = 'AKIAJULVYOWLDWYEL45Q'
-	SECRET_KEY = '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'
 	# Max messages is used to casue the Queue object to throw a full exception.
 	# The value will probably need to be tweaked depending on the systems using sqsworker.
 	MAX_MESSAGES = 50
 	messageQueue = Queue.Queue(MAX_MESSAGES)
 
 	# Setup polling connection
-	conn = boto.sqs.connect_to_region(REGION, aws_access_key_id = ACCESS_KEY, aws_secret_access_key = SECRET_KEY)
+	conn = boto.sqs.connect_to_region(REGION)
 	sqsQueue = conn.get_queue(QUEUE_NAME)
 	if (sqsQueue == None):
 		logging.error("failed to connect to polling queue")
@@ -66,7 +64,7 @@ def main():
 	logging.info("Polling connection made.")
 
 	# It's important that every thread has its own connection
-	deletingConection = boto.sqs.connect_to_region(REGION, aws_access_key_id = ACCESS_KEY, aws_secret_access_key = SECRET_KEY)
+	deletingConection = boto.sqs.connect_to_region(REGION)
 	delSQSQueue = deletingConection.get_queue(QUEUE_NAME)
 	messageProcThread = ASyncMessage(messageQueue, delSQSQueue, deletingConection)
 	messageProcThread.setDaemon(True) #Daemons die abruptly if mainthread ends
