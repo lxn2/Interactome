@@ -12,13 +12,12 @@ import sys
 import csv
 import json 
 import argparse
+import time
 from boto.s3.key import Key
 from boto.dynamodb2.table import Table
 from boto import s3
 from boto import dynamodb2
 
-# Constants
-REGION = 'us-west-2'
 SEQUENCER_TABLE_NAME = 'Sequencer'
 USER_TABLE_NAME = 'User'
 PAPER_TABLE_NAME = 'Paper'
@@ -37,6 +36,7 @@ ACCESS_KEY_EXCEL_FIELD = 'Access Key Id'
     This does not check if the keys have enough authority to add to these resources (this may be a good addition in the future).
 '''
 def connectToAWS(authCSVFileName):
+    REGION = 'us-west-2'
     # These resources are used throughout the application.
     global s3Conn
     global dynamoConn
@@ -59,7 +59,7 @@ def connectToAWS(authCSVFileName):
         usersTable = Table(USER_TABLE_NAME, connection=dynamoConn)
         papersTable = Table(PAPER_TABLE_NAME, connection=dynamoConn)
     except Exception, e:
-        print e
+        print(e)
         sys.exit(1)
 
 '''
@@ -77,8 +77,8 @@ def getSequence():
                                     return_consumed_capacity=None, 
                                     return_item_collection_metrics=None)
     except Exception, e:
-        print e
-    return sequencerItem
+        print(e)
+    return sequenceItem
 
 '''
     Parses the csv file and adds the users found within to the users table. 
@@ -94,29 +94,31 @@ def addUsers(csvFileName):
     for row in authorData:
         seqStart = time.clock()
         sequencerItem = getSequence()
-        sequenceEnd += seqStart - time.clock()
+        sequenceEnd += time.clock() - seqStart
         if (sequencerItem == None):
-            print "error with sequencerItem. Pres Num of item: " + row[PRESENTATION_NUM_EXCEL_FIELD]
+            print("error with sequencerItem. Pres Num of item: " , row[PRESENTATION_NUM_EXCEL_FIELD])
             continue
         id = "User" + sequencerItem['Attributes']['Sequence']['N']
         row[PRESENTATION_NUM_EXCEL_FIELD] = int(row[PRESENTATION_NUM_EXCEL_FIELD])
         attributesList = ['Id'] + row.keys()
         valuesList = [id] + row.values()
         newItem = dict(map(None, attributesList, valuesList))
-        del newItem['']
+        # Delete blank header
+        if '' in newItem:
+            del newItem['']
         try:
             start = time.clock()
             usersTable.put_item(data=newItem)
-            endTime += start - time.clock()
+            endTime += time.clock() - start
         except Exception, e:
-            print e
-    print "users table took: " + endTime
-    print "sequence table took: " + sequenceEnd
+            print(e)
+    print("users table took: ", endTime)
+    print("sequence table took: ", sequenceEnd)
     # close csv file
     csvFile.close()
 
 '''
-    Parses the csv file for abstracts. It will query to find if the author is already a user. If not, they will be added to users table.
+    Parses the csv file for abstracts. It will query to find if the author is already a user. If so, puts the user id with the abstract
     The abstract will be dumped into S3 in json format. The URL will be stored in the papers table.
 '''
 def addAbstracts(csvFileName):
@@ -136,9 +138,9 @@ def addAbstracts(csvFileName):
         rowJSON = json.dumps(row, skipkeys=False, ensure_ascii=False, sort_keys=True)
         seqStart = time.clock()
         sequencerItem = getSequence()
-        sequenceEnd += seqStart - time.clock()
+        sequenceEnd += time.clock() - seqStart
         if (sequencerItem == None):
-            print "error with sequencerItem. Pres Num of item: " + row[PRESENTATION_NUM_EXCEL_FIELD]
+            print("error with sequencerItem. Pres Num of item: ", row[PRESENTATION_NUM_EXCEL_FIELD])
             continue
         s3Start = time.clock()
         abstractKey.key = 'Abstract' + sequencerItem['Attributes']['Sequence']['N'] + '.json'
@@ -146,7 +148,7 @@ def addAbstracts(csvFileName):
         abstractKey.set_contents_from_string(rowJSON)
         abstractKey.make_public()
         abstractUrlLink = abstractKey.generate_url(0, query_auth=False, force_http=True)
-        s3End += s3Start - time.clock()
+        s3End += time.clock() - s3Start
         # save attribute values to insert in dynamo Paper table
         presentationNumber = row[PRESENTATION_NUM_EXCEL_FIELD]
         firstName = row[FIRSTNAME_EXCEL_FIELD]
@@ -159,24 +161,26 @@ def addAbstracts(csvFileName):
         userId = ''
         if len(listUserQueryResults) == 1:
             userId = str(listUserQueryResults[0]['Id'])
-        queryEnd += startQuery - time.clock()
+        queryEnd += time.clock() - startQuery
         # Insert new dynamo Paper item
         sequencerItem = getSequence()
         dynamoPaperId = 'Paper' + sequencerItem['Attributes']['Sequence']['N']
         attributesList = ['Id', 'Link', 'PresentationNumber', 'UserId']
         valuesList = [dynamoPaperId, abstractUrlLink, int(presentationNumber), userId]
         newItem = dict(map(None, attributesList, valuesList))
-        del newItem['']
+        # Delete blank header
+        if '' in newItem:
+            del newItem['']
         try:
             start = time.clock()
             papersTable.put_item(data=newItem)
-            endTime += start - time.clock()
+            endTime += time.clock() - start
         except Exception, e:
-            print e
-    print "papers table took: " + endTime
-    print "query table took: " + queryEnd
-    print "sequence table took: " + sequenceEnd
-    print "s3 dump took: " + s3End
+            print(e)
+    print("papers table took: ", endTime)
+    print("query table took: ", queryEnd)
+    print("sequence table took: ", sequenceEnd)
+    print("s3 dump took: ",s3End)
     # close csv file
     csvFile.close()
 
@@ -195,17 +199,17 @@ def main(argv=sys.argv):
 
     if hasattr(options, 'usersPath'):
         startUsers = time.clock()
-        print "adding users"
+        print("adding users")
         addUsers(options.usersPath)
-        endUsers = startUsers - time.clock()
-        print "total time for adding users: " + endUsers
+        endUsers = time.clock() - startUsers
+        print("total time for adding users: ", endUsers)
     
     if hasattr(options, 'abstractsPath'):
         startAbstracts = time.clock()
         print "------ adding abstracts ------"
         addAbstracts(options.abstractsPath)
-        endAbstracts = startAbstracts - time.clock()
-        print "total time for adding abstracts: " + endAbstracts
+        endAbstracts = time.clock() - startAbstracts
+        print("total time for adding abstracts: ", endAbstracts)
         
 
 if __name__ == "__main__":
