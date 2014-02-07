@@ -2,8 +2,8 @@
     @Author: Ly Nguyen & Nathan Lucyk
     @Date: 2.4.2014
 
-    This script is used to upload abstracts and users to our AWS resources. Currently this script does not work with non-ASCII encodings.
-    Certain encodings like utf-8 and unicode may still work.
+    This script is used to upload the abstracts in json format to s3, and users and abstract links to dynamodb. Currently this script does not work with non-ASCII encodings.
+    However, certain encodings like utf-8 and unicode may still work.
 
 
     This script is unreliable and should be refactored and improved. The script does not work for non-english words (no accents allowed!), 
@@ -16,7 +16,8 @@
     Future extensions:
         Get multiple encodings to work to allow more data to be added. 
         Get rid of globals. 
-        
+        Having a whitelist of attributes we do accept into dynamo / s3. 
+        Way to automagically convert fieldnames into acceptable (uniform from whitelist) formats (E.G., CONTACTEMAIL -> email)
 
 '''
 
@@ -25,7 +26,6 @@ import logging
 import csv
 import json 
 import argparse
-import time
 from boto.s3.key import Key
 from boto.dynamodb2.table import Table
 from boto import s3
@@ -104,15 +104,11 @@ def addUsers(csvFileName):
     # set up csv read
     csvFile = open(csvFileName, 'rU')
     authorData = csv.DictReader(csvFile)
-    endTime = 0.0
-    sequenceEnd = 0.0
     rowIndex = 1
     # read each csv row to insert into dynamo Paper table
     for row in authorData:
         rowIndex += 1 # Starts at 2 to mimic csv, used for logging
-        seqStart = time.clock()
         sequencerItem = getSequence()
-        sequenceEnd += time.clock() - seqStart
         if (sequencerItem == None):
             lostIndexFile.write(str(rowIndex) + "\n")
             logging.error("Unabled to sequence item. Index not added: " + str(rowIndex))
@@ -126,14 +122,10 @@ def addUsers(csvFileName):
         if '' in newItem:
             del newItem['']
         try:
-            start = time.clock()
             usersTable.put_item(data=newItem)
-            endTime += time.clock() - start
         except Exception, e:
             lostIndexFile.write(str(rowIndex) + "\n")
             logging.error("Unabled to add to usersTable. Index not added: " + str(rowIndex))
-    print("users table took: ", endTime)
-    print("sequence table took: ", sequenceEnd)
     # close csv file
     csvFile.close()
     lostIndexFile.close() # Temporary
@@ -151,10 +143,6 @@ def addAbstracts(csvFileName):
     csvFile = open(csvFileName, 'rU') 
     reader = csv.DictReader(csvFile) 
     abstractKey = Key(abstractsBucket)
-    endTime = 0.0
-    sequenceEnd = 0.0
-    queryEnd = 0.0
-    s3End = 0.0
     rowIndex = 1
     # read each csv row
     for row in reader:
@@ -163,33 +151,27 @@ def addAbstracts(csvFileName):
         try:
             # convert rows into json format, upload to s3
             rowJSON = json.dumps(row, skipkeys=False, ensure_ascii=False, sort_keys=True)
-            seqStart = time.clock()
             sequencerItem = getSequence()
-            sequenceEnd += time.clock() - seqStart
             if (sequencerItem == None):
                 lostIndexFile.write(str(rowIndex) + "\n")
                 logging.error("Unabled to sequence item. Index not added: " + str(rowIndex))
                 continue
-            s3Start = time.clock()
             abstractKey.key = 'Abstract' + sequencerItem['Attributes']['Sequence']['N'] + '.json'
             abstractKey.set_metadata("Content-Type", 'application/json')
             abstractKey.set_contents_from_string(rowJSON)
             abstractKey.make_public()
             abstractUrlLink = abstractKey.generate_url(0, query_auth=False, force_http=True)
-            s3End += time.clock() - s3Start
             # save attribute values to insert in dynamo Paper table
             presentationNumber = row[PRESENTATION_NUM_EXCEL_FIELD]
             firstName = row[FIRSTNAME_EXCEL_FIELD]
             lastName = row[LASTNAME_EXCEL_FIELD]
 
             # query User table for the presenter to link new Paper item to it
-            startQuery = time.clock()
             userQueryResults = usersTable.query(FirstName__eq=firstName, LastName__eq=lastName, index='FirstName-LastName-index')
             listUserQueryResults = list(userQueryResults)
             userId = ''
             if len(listUserQueryResults) == 1:
                 userId = str(listUserQueryResults[0]['Id'])
-            queryEnd += time.clock() - startQuery
             # Insert new dynamo Paper item
             sequencerItem = getSequence()
             dynamoPaperId = 'Paper' + sequencerItem['Attributes']['Sequence']['N']
@@ -200,19 +182,13 @@ def addAbstracts(csvFileName):
             if '' in newItem:
                 del newItem['']
             try:
-                start = time.clock()
                 papersTable.put_item(data=newItem)
-                endTime += time.clock() - start
             except Exception, e:
                 lostIndexFile.write(str(rowIndex) + "\n")
                 logging.error("Unabled to add to papers table. Index not added: " + str(rowIndex))
         except Exception, e:
             lostIndexFile.write(str(rowIndex) + "\n")
             logging.error("Unabled to make into json. Index not added: " + str(rowIndex))
-    print("papers table took: ", endTime)
-    print("query table took: ", queryEnd)
-    print("sequence table took: ", sequenceEnd)
-    print("s3 dump took: ",s3End)
     # close csv file
     csvFile.close()
     lostIndexFile.close() # Temporary
@@ -231,18 +207,10 @@ def main(argv=sys.argv):
     connectToAWS(options.usersAuth)
 
     if hasattr(options, 'usersPath'):
-        startUsers = time.clock()
-        print("adding users")
         addUsers(options.usersPath)
-        endUsers = time.clock() - startUsers
-        print("total time for adding users: ", endUsers)
     
     if hasattr(options, 'abstractsPath'):
-        startAbstracts = time.clock()
-        print "------ adding abstracts ------"
         addAbstracts(options.abstractsPath)
-        endAbstracts = time.clock() - startAbstracts
-        print("total time for adding abstracts: ", endAbstracts)
         
 
 if __name__ == "__main__":
