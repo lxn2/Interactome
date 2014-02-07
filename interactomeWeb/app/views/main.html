@@ -1,16 +1,18 @@
-
-<div class="container" >
-<!--Top Header holds the page title and logo -->
-<div id="header">
-    <div id="topBanner" class="page-header">
+<!-- <p>This is the mainPage view.</p> -->
+<div class="container">
+    <!--Top Header holds the page title, logo, and google+ signin -->
+    <div id="header">
+    <!-- Google+ signin button --> 
+        <div google-signin client-id='CLIENT_ID' after-signin="signedIn(oauth)"></div>
+        <pre>{{ user | json }}</pre>
         <h1 id="logoHeader">Sage Bionetworks Interactome
             <small>Prototype</small>
             <h1>
-      </div>
+    </div>
 </div>
 <!-- userSearchPannel holds the search bar and filter -->
 <div id="userSearchPanel">
-<div id="jumbotronBanner" class="jumbotron">
+    <div id="jumbotronBanner" class="jumbotron">
         <!--searchBar code -->
         <div class="searchForm" ng-controller="mainController">
             <input id="searchBar" type="text" placeholder="Search i.e. author, title, keywords" ng-model="newSearchHistory" />
@@ -18,7 +20,7 @@
             <button id="searchButton" type="button" class="btn btn-primary">Search</button>
             <!-- bookmarksDropDown holds the user bookmark history, operates as a dropDown -->
             <div id="bookmarksDropDown" class="btn-group dropdown">
-                <button type="button" class="btn dropdown-toggle btn-primary" data-toggle="dropdown" onclick="testAWS()" href="#">
+                <button type="button" class="btn dropdown-toggle btn-primary" data-toggle="dropdown" href="#">
                     Saved Papers
                     <span class="caret"></span>
                 </button>
@@ -40,25 +42,10 @@
             <thead>
                 <tr>
                     <th>Title</th>
-                     <th>Author</th>
+                    <th>Author</th>
                 </tr>
             </thead>
         </table>
     </div>
 </div>
-
-<div>
-
-<google-signin></google-signin>
 </div>
-
-
-
-
-<div>
-<!-- #include virtual="googlesignin.shtml" -->
-<link rel="import" href="views/googlesignin.shtml"> 
-<google-signin></google-signin>
-</div>
-
- 
