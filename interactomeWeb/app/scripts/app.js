@@ -9,13 +9,14 @@ angular.module('interactomeApp', [
     //'bootstrap.js'
 ])
 
+// Sets our AWS arn on config through Awsservice
 .config(function(AwsserviceProvider) {
     AwsserviceProvider
         .setArn(
             'arn:aws:iam::005837367462:role/newRole');
 })
 
-
+// Sets up main route to main.html when page is first loaded. 
 .config(function($routeProvider) {
     $routeProvider
         .when('/', {
@@ -27,11 +28,10 @@ angular.module('interactomeApp', [
         });
 });
 
-
 window.onLoadCallback = function() {
     // When the document is ready
     angular.element(document).ready(function() {
-        // Bootstrap the oauth2 library
+        // Bootstrap the oauth2 library, a google thing for keeping track of authentication. 
         gapi.client.load('oauth2', 'v2', function() {
             // Finally, bootstrap our angular app
             angular.bootstrap(document, ['interactomeApp']);
