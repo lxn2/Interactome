@@ -213,3 +213,19 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+
+
+#################
+## Yo/Bower/Grunt
+#################
+node_modules
+dist
+.tmp
+.sass-cache
+app/bower_components
+
+################
+## Sublime
+################
+*.sublime-project
+*.sublime-workspace
