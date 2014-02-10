@@ -4,7 +4,7 @@ angular.module('interactomeApp.Awsservice', [])
 
 
 // creating service type provider. Provider used to configure service before app runs. 
-.provider('Awsservice', function() {
+.provider('AwsService', function() {
     var self = this;
     AWS.config.region = 'us-west-2';
     self.arn = null;
