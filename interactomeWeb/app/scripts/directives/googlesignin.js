@@ -41,8 +41,11 @@ angular.module('interactomeApp')
                     var oauth = arguments[0];
                     directiveScope.afterSignin({
                         oauth: oauth
+
                     });
+
                     window[callbackId] = null;
+
                 };
 
                 // Set standard google signin button settings

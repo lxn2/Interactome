@@ -17,7 +17,9 @@ angular.module('interactomeApp.Userservice', [])
             if (u && !u.error) {
                 //service._user = u;
                 AwsService.setToken(u.id_token);
+
                 return service.currentUser();
+
             } else {
                 // If google authentication has error the promise is defered and rejected, 
                 // think of this as throwing an error in Javascript. 
@@ -26,16 +28,14 @@ angular.module('interactomeApp.Userservice', [])
                 return d.promise;
             }
         },
-        // currentUser not needed yet, for keeping track of user likes and stuff. 
-
-        /*
         currentUser: function() {
             var d = $q.defer();
             d.resolve(service._user);
             return d.promise;
 
         }
-    */
+
+
     };
     return service;
 });

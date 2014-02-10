@@ -9,6 +9,7 @@ angular.module('interactomeApp')
             UserService.setCurrentUser(oauth)
                 .then(function(user) {
                     $scope.user = user;
+                    console.log(oauth);
                 });
         }
     });
