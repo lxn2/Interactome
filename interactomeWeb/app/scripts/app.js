@@ -10,11 +10,12 @@ angular.module('interactomeApp', [
 ])
 
 // Sets our AWS arn on config through Awsservice
-.config(function(AwsserviceProvider) {
-    AwsserviceProvider
+.config(function(AwsServiceProvider) {
+    AwsServiceProvider
         .setArn(
             'arn:aws:iam::005837367462:role/newRole');
 })
+
 
 // Sets up main route to main.html when page is first loaded. 
 .config(function($routeProvider) {
@@ -27,6 +28,8 @@ angular.module('interactomeApp', [
             redirectTo: '/'
         });
 });
+
+
 
 window.onLoadCallback = function() {
     // When the document is ready

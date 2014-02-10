@@ -35,14 +35,17 @@ angular.module('interactomeApp')
                 // we can redirect user to our afterSignin function, which is taken care of in main.js controller. 
                 // This allows extensibility, so if a user signs in we can easily reroute the user to a new page "afterSignin"
                 // and clear authentication proccess. 
-                var callbackId = "_googleSigninCallback",
-                    directiveScope = scope;
+                var callbackId = '_googleSigninCallback';
+                var directiveScope = scope;
                 window[callbackId] = function() {
                     var oauth = arguments[0];
                     directiveScope.afterSignin({
                         oauth: oauth
+
                     });
+
                     window[callbackId] = null;
+
                 };
 
                 // Set standard google signin button settings
