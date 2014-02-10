@@ -11,10 +11,4 @@ angular.module('interactomeApp')
                     $scope.user = user;
                 });
         }
-        // Came with bower build, dont know WTF? 
-        $scope.awesomeThings = [
-            'HTML5 Boilerplate',
-            'AngularJS',
-            'Karma'
-        ];
     });
