@@ -29,7 +29,7 @@ angular.module('interactomeApp', [
         });
 });
 
-/*
+
 
 window.onLoadCallback = function() {
     // When the document is ready
@@ -41,4 +41,3 @@ window.onLoadCallback = function() {
         });
     });
 }
-*/

@@ -1,17 +1,10 @@
 <div class="container">
     <!--Top Header holds the page title, logo, and google+ signin -->
     <div id="header">
-
-        <!-- Google+ signin button -->
-      <div ng-show="!user" class="row">
- +            <div google-signin client-id='796741862543' after-signin="signedIn(oauth)" ></div>
- +        </div>
-
     <!-- Google+ signin button --> 
         <div ng-show="!user" class="row">
             <div google-signin client-id='796741862543' after-signin="signedIn(oauth)" ></div>
         </div>
-
         <h1 id="logoHeader">Sage Bionetworks Interactome
             <small>Prototype</small>
         </h1>
@@ -56,28 +49,3 @@
     </div>
 </div>
 </div>
-
-
-<div id="status"></div>
-<ul id="objects"></ul>
-
-<script type="text/javascript">
-var bucket = new AWS.S3({
-    params: {
-        Bucket: 'sagebionetworks-interactome-abstracts'
-    }
-});
-bucket.listObjects(function(err, data) {
-    if (err) {
-        document.getElementById('status').innerHTML =
-            'Could not load objects from S3';
-    } else {
-        document.getElementById('status').innerHTML =
-            'Loaded ' + data.Contents.length + ' items from S3';
-        for (var i = 0; i < data.Contents.length; i++) {
-            document.getElementById('objects').innerHTML +=
-                '<li>' + data.Contents[i].Key + '</li>';
-        }
-    }
-});
-</script>
