@@ -1,6 +1,7 @@
 'use strict';
 // Google+ signin Directive of type attribute. 
-// Note: must be signed out of your google account for button to work and log you in again. 
+// Note: must be signed out of your google account for button to work and log you in again.
+// This code was sampled from http://www.ng-newsletter.com/posts/aws-js-sdk.html (see it for more info)
 angular.module('interactomeApp')
     .directive('googleSignin', function() {
         return {

@@ -2,19 +2,19 @@
     <!--Top Header holds the page title, logo, and google+ signin -->
     <div id="header">
     <!-- Google+ signin button --> 
-        <div google-signin client-id='796741862543' after-signin="signedIn(oauth)"></div>
-        <pre>{{ user | json }}</pre>
-        
+        <div ng-show="!user" class="row">
+            <div google-signin client-id='796741862543' after-signin="signedIn(oauth)" ></div>
+        </div>
         <h1 id="logoHeader">Sage Bionetworks Interactome
             <small>Prototype</small>
-            <h1>
+        </h1>
     </div>
 </div>
 <!-- userSearchPannel holds the search bar and filter -->
 <div id="userSearchPanel">
     <div id="jumbotronBanner" class="jumbotron">
         <!--searchBar code -->
-        <div class="searchForm" ng-controller="mainController">
+        <div class="searchForm" ng-controller="MainCtrl">
             <input id="searchBar" type="text" placeholder="Search i.e. author, title, keywords" ng-model="newSearchHistory" />
             <!--searchButton -->
             <button id="searchButton" type="button" class="btn btn-primary">Search</button>
