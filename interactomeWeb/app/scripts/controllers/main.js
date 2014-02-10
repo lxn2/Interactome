@@ -12,4 +12,5 @@ angular.module('interactomeApp')
                     console.log(oauth);
                 });
         }
+
     });

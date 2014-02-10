@@ -13,6 +13,7 @@ angular.module('interactomeApp.Userservice', [])
 .factory('UserService', function($q, $http, AwsService) {
     var service = {
         _user: null,
+        Bucket: 'sagebionetworks-interactome-abstracts',
         setCurrentUser: function(u) {
             if (u && !u.error) {
                 //service._user = u;
@@ -34,6 +35,7 @@ angular.module('interactomeApp.Userservice', [])
             return d.promise;
 
         }
+
 
 
     };

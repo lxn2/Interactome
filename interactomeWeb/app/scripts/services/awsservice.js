@@ -19,16 +19,6 @@ angular.module('interactomeApp.Awsservice', [])
 
 
     self.$get = function($q, $cacheFactory) {
-        // cacheFactory service enables us to create an object/data if we need it and recycle
-        // or reuse and object/data if already needed in past. Improved latency 
-
-        /*
-        var s3Cache = $cacheFactory('s3Cache');
-        var dynamoCache = $cacheFactory('dynamo');
-        var snsCache = $cacheFactory('sns');
-        var sqsCache = $cacheFactory('sqs');
-        */
-
         var credentialsDefer = $q.defer();
         var credentialsPromise = credentialsDefer.promise;
         return {
@@ -42,20 +32,14 @@ angular.module('interactomeApp.Awsservice', [])
                     RoleSessionName: 'sage-app'
 
                 }
-                /*
-                // For google singin the providerId is just null anyways. 
-                if (providerId) {
-                    config['ProviderId'] = providerId;
-                }
-                */
+
                 self.config = config;
                 AWS.config.credentials =
                     new AWS.WebIdentityCredentials(config);
                 credentialsDefer
                     .resolve(AWS.config.credentials);
 
-
-                // Simply list 10 abstracts json files on page to show connection to S3
+                // Simply list 10 abstracts json files on page to show connection to S3, will place in proper angular architecture later
                 var bucket = new AWS.S3({
                     params: {
                         Bucket: 'sagebionetworks-interactome-abstracts'
@@ -73,11 +57,12 @@ angular.module('interactomeApp.Awsservice', [])
                             document.getElementById('objects').innerHTML +=
                                 '<li>' + data.Contents[i].Key + '</li>';
                         }
+
                     }
                 });
 
-            } // end of setToken func 
 
+            }, // end of setToken func 
 
         } // end of return 
     }
