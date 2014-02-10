@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('interactomeApp')
-    .controller('MainCtrl', function($scope) {
+    .controller('MainCtrl', function($scope, UserService) {
 
         // This function sets the user authentication from googleSignin directive. 
         $scope.signedIn = function(oauth) {
