@@ -16,6 +16,7 @@ angular.module('interactomeApp', [
             'arn:aws:iam::005837367462:role/newRole');
 })
 
+
 // Sets up main route to main.html when page is first loaded. 
 .config(function($routeProvider) {
     $routeProvider
@@ -28,6 +29,8 @@ angular.module('interactomeApp', [
         });
 });
 
+/*
+
 window.onLoadCallback = function() {
     // When the document is ready
     angular.element(document).ready(function() {
@@ -38,3 +41,4 @@ window.onLoadCallback = function() {
         });
     });
 }
+*/

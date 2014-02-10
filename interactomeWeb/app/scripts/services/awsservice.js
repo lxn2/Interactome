@@ -2,17 +2,32 @@
 
 angular.module('interactomeApp.Awsservice', [])
 
+
+// creating service type provider. Provider used to configure service before app runs. 
 .provider('Awsservice', function() {
     var self = this;
+    AWS.config.region = 'us-west-2';
     self.arn = null;
 
     self.setArn = function(arn) {
         if (arn) self.arn = arn;
     }
 
-    self.$get = function($q) {
-        var credentialsDefer = $q.defer(),
-            credentialsPromise = credentialsDefer.promise;
+    self.setRegion = function(region) {
+        if (region) AWS.config.region = region;
+    }
+
+    self.$get = function($q, $cacheFactory) {
+        // cacheFactory service enables us to create an object/data if we need it and recycle
+        // or reuse and object/data if already needed in past. Improved latency 
+
+        var s3Cache = $cacheFactory('s3Cache');
+        var dynamoCache = $cacheFactory('dynamo');
+        var snsCache = $cacheFactory('sns');
+        var sqsCache = $cacheFactory('sqs');
+
+        var credentialsDefer = $q.defer();
+        var credentialsPromise = credentialsDefer.promise;
 
         return {
             credentials: function() {
@@ -33,6 +48,7 @@ angular.module('interactomeApp.Awsservice', [])
                 credentialsDefer
                     .resolve(AWS.config.credentials);
             }
+
         }
     }
 });

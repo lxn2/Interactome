@@ -10,12 +10,13 @@ angular.module('interactomeApp.Userservice', [])
 // Used a servie type: factory instead of a pure service, because how I understand it
 // factories allow more controlled access: can decide what to return instead of returning the entire service itself.
 // Not too much of a difference really, still learning....
-.factory('UserService', function($q, $http) {
+.factory('Userservice', function($q, $http, Awsservice) {
     var service = {
         _user: null,
         setCurrentUser: function(u) {
             if (u && !u.error) {
-                service._user = u;
+                //service._user = u;
+                AWSService.setToken(u.id_token);
                 return service.currentUser();
             } else {
                 // If google authentication has error the promise is defered and rejected, 
@@ -25,11 +26,16 @@ angular.module('interactomeApp.Userservice', [])
                 return d.promise;
             }
         },
+        // currentUser not needed yet, for keeping track of user likes and stuff. 
+
+        /*
         currentUser: function() {
             var d = $q.defer();
             d.resolve(service._user);
             return d.promise;
+
         }
+    */
     };
     return service;
 });
