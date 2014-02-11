@@ -18,6 +18,9 @@ function recMod()
 		if(err)
 			console.log(err);
 		else{
+
+			// Check to make sure the Paper Ids of incoming are different from output
+			// There's probably a better way to do this
 			for(var i = 0; i < limit; i++){
 				var j = 0;
 				while(data.Items[i].Id.S != testPapers[j] && j < testPapers.size)
