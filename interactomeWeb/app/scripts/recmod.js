@@ -2,31 +2,32 @@
 // Recommendation Module
 
 // Description: This is the template for a potential Recommendation module. 
-// Simply takes in 5 abstracts and spits out a random 20. 
+// Simply takes in 5 abstracts and spits out 20 abstract IDs
 
-
+// Sample array used to test rec response
 var testPapers = ['Paper45086', 'Paper47394', 'Paper45430', 'Paper41361', 'Paper46948'];
-
-
 
 function recMod()
 {
-	AWS.config.update({
-        accessKeyId: 'AKIAIDUN4LXNRGYQWQ4Q', 
-        secretAccessKey: '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', 
-        region: 'us-west-2'
-    });
-
-	var recAbstracts = ['']
+	var limit = 20;
 
 	var userTable = new AWS.DynamoDB({params: {TableName: "Paper"}});
-	var key = "Paper45086";
 
-	userTable.getItem({Key: {Id: {S: key}}}, function(err, data){
+	// Scan table using limit as a parameter
+	userTable.scan({Limit: limit}, function(err, data){
 		if(err)
 			console.log(err);
-		else
-			console.log("Random paper info: " + data.Item);
-
-	});
+		else{
+			for(var i = 0; i < limit; i++){
+				var j = 0;
+				while(data.Items[i].Id.S != testPapers[j] && j < testPapers.size)
+					j++;
+				if(data.Items[i].Id.S != testPapers[j]){
+            		document.getElementById('abstracts').innerHTML +=
+        				"<li>" + data.Items[i].Id.S + "</li>";
+        			}
+        		}
+        	}
+        });
 }
+
