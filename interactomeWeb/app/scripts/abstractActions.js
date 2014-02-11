@@ -17,11 +17,3 @@ function abstractsReq()
 		});
 	}
 }
-
-function abstractLiked() 
-{
-	var sns = new AWS.SNS({params: {TopicArn: 'arn:aws:sns:us-west-2:005837367462:abstracts_liked'}});
-	sns.publish({Message: 'THE MESSAGE TO PUBLISH'}, function (err, data) {
-		if (!err) console.log('Message published');
-	});
-}

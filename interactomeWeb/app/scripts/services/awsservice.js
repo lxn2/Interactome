@@ -55,17 +55,7 @@ angular.module('interactomeApp.Awsservice', [])
                             'Loaded ' + data.Contents.length + ' items from S3';
                         for (var i = 0; i < 10; i++) {
                             var abstractID = data.Contents[i].Key;
-                            $http.get("https://s3-us-west-2.amazonaws.com/sagebionetworks-interactome-abstracts/" + abstractID).then(function(result, abstractID) {
-                                document.getElementById('objects').innerHTML +=
-                                    '<li class="list-group-item">' +
-                                    '<button type="button" class="btn btn-default btn-xs" onclick="abstractLiked()"><span class="glyphicon glyphicon-thumbs-up"></span></button>' +
-                                    '<h4 class="list-group-item-heading">' + result.data.AbstractTitle + '</h4>' +
-                                    '<input type="checkbox" class="pull-right abstractChck" value="i">' +
-                                    '<p class="list-group-item-text">' + "Author: " + (result.data.FirstName[0] + ". " + result.data.LastName) + '</p>'
-                                    + '</li>';
-                                    console.log(abstractID);
-                            })
-                            
+                            //document.getElementById('objects').innerHTML += '<div abstract-list-group-item abstract-id="Abstract37061.json"> </div>';
                         }
 
                     }
