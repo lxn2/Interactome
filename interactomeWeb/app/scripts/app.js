@@ -40,4 +40,4 @@ window.onLoadCallback = function() {
             angular.bootstrap(document, ['interactomeApp']);
         });
     });
-}
+};

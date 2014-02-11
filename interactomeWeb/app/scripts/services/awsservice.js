@@ -18,7 +18,7 @@ angular.module('interactomeApp.Awsservice', [])
     }
 
 
-    self.$get = function($q, $cacheFactory) {
+    self.$get = function($q, $cacheFactory, $http) {
         var credentialsDefer = $q.defer();
         var credentialsPromise = credentialsDefer.promise;
         return {
@@ -54,8 +54,16 @@ angular.module('interactomeApp.Awsservice', [])
                         document.getElementById('status').innerHTML =
                             'Loaded ' + data.Contents.length + ' items from S3';
                         for (var i = 0; i < 10; i++) {
-                            document.getElementById('objects').innerHTML +=
-                                '<li>' + data.Contents[i].Key + '</li>';
+                            $http.get("https://s3-us-west-2.amazonaws.com/sagebionetworks-interactome-abstracts/" + data.Contents[i].Key).then(function(result) {
+                                document.getElementById('objects').innerHTML +=
+                                    '<li class="list-group-item">' +
+                                    '<button type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-thumbs-up"></span></button>' +
+                                    '<h4 class="list-group-item-heading">' + result.data.AbstractTitle + '</h4>' +
+                                    '<input type="checkbox" class="pull-right abstractChck">' +
+                                    '<p class="list-group-item-text">' + "Author: " + (result.data.FirstName[0] + ". " + result.data.LastName) + '</p>'
+                                    + '</li>';
+                            })
+                            
                         }
 
                     }
@@ -67,8 +75,3 @@ angular.module('interactomeApp.Awsservice', [])
         } // end of return 
     }
 });
-/* Yo build came with this, commented it out. 
-.service('Awsservice', function Awsservice() {
-    // AngularJS will instantiate a singleton by calling "new" on this function
-});
-*/
