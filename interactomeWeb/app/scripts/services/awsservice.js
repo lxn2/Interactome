@@ -18,7 +18,7 @@ angular.module('interactomeApp.Awsservice', [])
     }
 
 
-    self.$get = function($q, $cacheFactory) {
+    self.$get = function($q, $cacheFactory, $http) {
         var credentialsDefer = $q.defer();
         var credentialsPromise = credentialsDefer.promise;
         return {
@@ -54,8 +54,8 @@ angular.module('interactomeApp.Awsservice', [])
                         document.getElementById('status').innerHTML =
                             'Loaded ' + data.Contents.length + ' items from S3';
                         for (var i = 0; i < 10; i++) {
-                            document.getElementById('objects').innerHTML +=
-                                '<li>' + data.Contents[i].Key + '</li>';
+                            var abstractID = data.Contents[i].Key;
+                            //document.getElementById('objects').innerHTML += '<div abstract-list-group-item abstract-id="Abstract37061.json"> </div>';
                         }
 
                     }
@@ -67,8 +67,3 @@ angular.module('interactomeApp.Awsservice', [])
         } // end of return 
     }
 });
-/* Yo build came with this, commented it out. 
-.service('Awsservice', function Awsservice() {
-    // AngularJS will instantiate a singleton by calling "new" on this function
-});
-*/
