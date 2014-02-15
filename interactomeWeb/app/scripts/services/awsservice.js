@@ -1,10 +1,10 @@
 'use strict';
 
-angular.module('interactomeApp.Awsservice', [])
+var app = angular.module('interactomeApp.Awsservice', []);
 
 
 // creating service type provider. Provider used to configure service before app runs. 
-.provider('AwsService', function() {
+app.provider('AwsService', function() {
     var self = this;
     AWS.config.region = 'us-west-2';
     self.arn = null;
@@ -39,6 +39,8 @@ angular.module('interactomeApp.Awsservice', [])
                 credentialsDefer
                     .resolve(AWS.config.credentials);
 
+
+                /*
                 // Simply list 10 abstracts json files on page to show connection to S3, will place in proper angular architecture later
                 var bucket = new AWS.S3({
                     params: {
@@ -60,13 +62,36 @@ angular.module('interactomeApp.Awsservice', [])
 
                     }
                 });
-
-
-            }, // end of setToken func 
+*/
+            } // end of setToken func 
 
         } // end of return 
+
     }
 });
+
+
+app.service('SearchService', function() {
+
+    this.showResults = function() {
+        var dynamodb = new AWS.DynamoDB();
+        dynamodb.describeTable(params, function(err, data) {
+            if (err) {
+                console.display(err);
+                return err; // an error occurred
+            } else {
+                console.display(data);
+                return data; // successful response
+            }
+        });
+
+    };
+
+});
+
+
+
+
 /* Yo build came with this, commented it out. 
 .service('Awsservice', function Awsservice() {
     // AngularJS will instantiate a singleton by calling "new" on this function

@@ -41,13 +41,3 @@ angular.module('interactomeApp.Userservice', [])
     };
     return service;
 });
-
-//Yo build came with this, commented it out.
-
-/*
-    .service('Userservice', function Userservice() {
-        // AngularJS will instantiate a singleton by calling "new" on this function
-
-        return service;
-    });
-*/

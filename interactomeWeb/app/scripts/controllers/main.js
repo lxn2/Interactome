@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('interactomeApp')
-    .controller('MainCtrl', function($scope, UserService, AwsService) {
+    .controller('MainCtrl', function($scope, UserService, AwsService, SearchService) {
 
         // This function sets the user authentication from googleSignin directive. 
         $scope.signedIn = function(oauth) {
@@ -12,5 +12,12 @@ angular.module('interactomeApp')
                     console.log(oauth);
                 });
         }
+        $scope.searchAuthorClick = function() {
+
+            $scope.showSearch = true;
+            $scope.dbStatus = SearchService.showResults();
+
+        }
+
 
     });
