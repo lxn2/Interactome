@@ -74,20 +74,14 @@ app.provider('AwsService', function() {
 app.service('SearchService', function() {
 
     this.showResults = function() {
-        var dynamodb = new AWS.DynamoDB();
-        dynamodb.describeTable(params, function(err, data) {
-            if (err) {
-                console.display(err);
-                return err; // an error occurred
-            } else {
-                console.display(data);
-                return data; // successful response
-            }
+        var db = new AWS.DynamoDB();
+        db.listTables(function(err, data) {
+            console.log(data.TableNames);
+            return data.TableNames;
         });
-
     };
-
 });
+
 
 
 

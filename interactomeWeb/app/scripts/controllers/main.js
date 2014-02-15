@@ -18,6 +18,4 @@ angular.module('interactomeApp')
             $scope.dbStatus = SearchService.showResults();
 
         }
-
-
     });
