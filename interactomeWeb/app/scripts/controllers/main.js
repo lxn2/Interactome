@@ -9,13 +9,13 @@ angular.module('interactomeApp')
             UserService.setCurrentUser(oauth)
                 .then(function(user) {
                     $scope.user = user;
-                    console.log(oauth);
                 });
         }
         $scope.searchAuthorClick = function() {
 
             $scope.showSearch = true;
             $scope.dbStatus = SearchService.showResults();
+            console.log($scope.dbStatus);
 
         }
     });

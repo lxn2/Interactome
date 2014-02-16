@@ -16,7 +16,7 @@ angular.module('interactomeApp.Userservice', [])
         Bucket: 'sagebionetworks-interactome-abstracts',
         setCurrentUser: function(u) {
             if (u && !u.error) {
-                //service._user = u;
+                service._user = u;
                 AwsService.setToken(u.id_token);
 
                 return service.currentUser();

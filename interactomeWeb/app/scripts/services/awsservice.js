@@ -74,12 +74,32 @@ app.provider('AwsService', function() {
 app.service('SearchService', function() {
 
     this.showResults = function() {
-        var db = new AWS.DynamoDB();
-        db.listTables(function(err, data) {
-            console.log(data.TableNames);
-            return data.TableNames;
+
+        var limit = 10;
+        var userTable = new AWS.DynamoDB({
+            params: {
+                TableName: "User"
+            }
         });
-    };
+
+        userTable.scan({
+            Limit: limit
+        }, function(err, data) {
+            if (err)
+                console.log(err);
+            else {
+
+                for (var i = 0; i < limit; i++) {
+                    console.log(data.Items[i].LastName.S);
+                    return data.Items[i].LastName.S;
+
+
+                }
+
+            }
+        });
+
+    }
 });
 
 
