@@ -19,21 +19,32 @@ angular.module('interactomeApp')
       		};
 
           $scope.likeClick = function() {
-            console.log("liked " + $scope.abstractId);
-            AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_liked', $scope.abstractId);
+            if($scope.likeStatus != true) { // will be undefined on first click which is ok
+              $scope.likeMsg = " Liked abstract recommendation";
+              AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_liked', $scope.abstractId);
+              $scope.likeStatus = true; // true == liked
+            }
           };
 
           $scope.dislikeClick = function() {
-            console.log("disliked " + $scope.abstractId);
-            AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_disliked', $scope.abstractId);
+            if($scope.likeStatus != false) { // will be undefined on first click which is ok
+              $scope.likeMsg = " Disliked abstract recommendation";
+              AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_disliked', $scope.abstractId);
+              $scope.likeStatus = false; // false == disliked
+            }
           };
 
     	}],
     	template: '<li class="list-group-item">' +
                   '<div class="btn-group" data-toggle="buttons">' +
-        					 '<button type="radio" class="btn btn-xs btn-primary" ng-click="likeClick()"><span class="glyphicon glyphicon-thumbs-up"></span></button>' +
-                   '<button type="radio" class="btn btn-xs btn-primary" ng-click="dislikeClick()"><span class="glyphicon glyphicon-thumbs-down"></span></button>' +
+                    '<label class="btn btn-primary" ng-click="likeClick()">' +
+                      '<input type="radio" name="likeBtn" > <span class="glyphicon glyphicon-thumbs-up"></span>' +
+                    '</label>' +
+                    '<label class="btn btn-primary" ng-click="dislikeClick()">' +
+                      '<input type="radio" name="likeBtn" > <span class="glyphicon glyphicon-thumbs-down"></span>' +
+                    '</label>' +
                   '</div>' +
+                  '<p>{{likeMsg}}</p>' +
         	        '<h4 class="list-group-item-heading"> {{s3Data.AbstractTitle}} </h4>' +
             	    '<input type="checkbox" class="pull-right abstractChck" value="{{abstractId}}">' +
                 	'<p class="list-group-item-text"> Author: {{s3Data.FirstName[0] + ". " + s3Data.LastName}} </p>' +
