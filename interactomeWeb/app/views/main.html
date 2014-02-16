@@ -53,6 +53,7 @@
     <!-- filled in by AwsService --> 
         <div id="status" ></div>
         <ul id="objects" class="list-group">
+            <!-- this uses the mainctrl (it's attached to the route) -->
             <div ng-repeat="abstractId in abstractTargets">
                 <abstract-list-group-item abstract-id={{abstractId.id}}> </abstract-list-group-item>
             </div>

@@ -3,7 +3,7 @@
 angular.module('interactomeApp')
     .controller('MainCtrl', function($scope, UserService, AwsService) {
         //$scope.AwsService = AwsService;
-        $scope.abstractTargets = AwsService.abstractURLIds;
+        $scope.abstractTargets = [];
         //$scope.user = null;
         // This function sets the user authentication from googleSignin directive. 
         $scope.signedIn = function(oauth) {
@@ -14,15 +14,16 @@ angular.module('interactomeApp')
                 });
         }
 
-        $scope.$watch('user', function (newVal, oldVal, scope) {
-            console.log("happened");
-            if(newVal && newVal !== oldVal) {
-                 AwsService.getS3Targets().then(function(targets) {
-                    scope.abstractTargets = tagets;
-                    console.log("inside the fuck: " + scope.abstractTargets)
-                });
-                console.log("wtf: " + scope.abstractTargets)
-            }
-      });
+        AwsService.subscribeToS3(function (targets) {
+            $scope.$apply(function () {
+                console.log("tarrrrg" + targets);
+                angular.forEach(targets, function(target){
+                    $scope.abstractTargets.push(target);
+                })
+                
+            });
+        });
+
+
 
     });

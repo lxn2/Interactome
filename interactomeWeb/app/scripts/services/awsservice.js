@@ -22,6 +22,7 @@ angular.module('interactomeApp.Awsservice', [])
     self.$get = function($q, $cacheFactory, $http) {
         var credentialsDefer = $q.defer();
         var credentialsPromise = credentialsDefer.promise;
+        var _s3Subscribers = [];
         return {
             credentials: function() {
                 return credentialsPromise;
@@ -43,7 +44,12 @@ angular.module('interactomeApp.Awsservice', [])
                 credentialsDefer
                     .resolve(AWS.config.credentials);
 
+                this.getS3Targets();
+
             }, // end of setToken func 
+            subscribeToS3: function (cb) {
+                _s3Subscribers.push(cb);
+            },
 
             getS3Targets: function() {
                 // Simply list 10 abstracts json files on page to show connection to S3, will place in proper angular architecture later
@@ -63,11 +69,16 @@ angular.module('interactomeApp.Awsservice', [])
                             var newArray = [];
                         for (var i = 0; i < 10; i++) {
                             newArray.push({id:data.Contents[i].Key});
+                            console.log("id: " + data.Contents[i].Key);
+                            console.log("newarrr: " + newArray[i].id);
                         }
                         self.abstractURLIds.length = 0;
-                        self.abstractURLIds.push(self.abstractURLIds, newArray);
-                        console.log("before return: " + self.abstractURLIds);
-                        return self.abstractURLIds;
+                        self.abstractURLIds.push.apply(self.abstractURLIds, newArray);
+                        console.log("first: " + self.abstractURLIds[1].id);
+                        angular.forEach(_s3Subscribers, function (cb) {
+                            cb(self.abstractURLIds);
+                            console.log("cb: " + self.abstractURLIds);
+                        });
 
                     }
                 });
