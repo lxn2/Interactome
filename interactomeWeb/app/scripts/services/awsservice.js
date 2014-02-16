@@ -6,6 +6,7 @@ angular.module('interactomeApp.Awsservice', [])
 // creating service type provider. Provider used to configure service before app runs. 
 .provider('AwsService', function() {
     var self = this;
+    self.abstractURLIds = []
     AWS.config.region = 'us-west-2';
     self.arn = null;
 
@@ -25,6 +26,9 @@ angular.module('interactomeApp.Awsservice', [])
             credentials: function() {
                 return credentialsPromise;
             },
+
+            abstractURLIds: self.abstractURLIds,
+
             setToken: function(token) {
                 var config = {
                     RoleArn: self.arn,
@@ -39,6 +43,9 @@ angular.module('interactomeApp.Awsservice', [])
                 credentialsDefer
                     .resolve(AWS.config.credentials);
 
+            }, // end of setToken func 
+
+            getS3Targets: function() {
                 // Simply list 10 abstracts json files on page to show connection to S3, will place in proper angular architecture later
                 var bucket = new AWS.S3({
                     params: {
@@ -53,16 +60,20 @@ angular.module('interactomeApp.Awsservice', [])
                     } else {
                         document.getElementById('status').innerHTML =
                             'Loaded ' + data.Contents.length + ' items from S3';
+                            var newArray = [];
                         for (var i = 0; i < 10; i++) {
-                            var abstractID = data.Contents[i].Key;
-                            //document.getElementById('objects').innerHTML += '<div abstract-list-group-item abstract-id="Abstract37061.json"> </div>';
+                            newArray.push({id:data.Contents[i].Key});
                         }
+                        self.abstractURLIds.length = 0;
+                        self.abstractURLIds.push(self.abstractURLIds, newArray);
+                        console.log("before return: " + self.abstractURLIds);
+                        return self.abstractURLIds;
 
                     }
                 });
+            },
 
 
-            }, // end of setToken func 
 
         } // end of return 
     }
