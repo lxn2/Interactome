@@ -1,7 +1,7 @@
 'use strict';
-// Rough way of representing a single abstract.
-// The ng-click doesn't work if we use more than one of these. Will need to come up with a better way.
-// Might not even want to use a directive (service?).
+/**
+  Represents a single abstract. This uses a list-group-item as the tag.
+**/
 
 angular.module('interactomeApp')
   .directive('abstractListGroupItem', function () {
@@ -27,7 +27,7 @@ angular.module('interactomeApp')
             console.log("disliked " + $scope.abstractId);
             AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_disliked', $scope.abstractId);
           };
-          
+
     	}],
     	template: '<li class="list-group-item">' +
                   '<div class="btn-group" data-toggle="buttons">' +

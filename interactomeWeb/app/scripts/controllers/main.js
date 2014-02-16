@@ -4,9 +4,8 @@
 **/
 angular.module('interactomeApp')
     .controller('MainCtrl', function($scope,$rootScope, UserService, AwsService) {
-        //$scope.AwsService = AwsService;
         $scope.abstractTargets = [];
-        //$scope.user = null;
+        $scope.absRecd = null;
         // This function sets the user authentication from googleSignin directive. 
         $scope.signedIn = function(oauth) {
             // Google authentication passed into userService to hold onto and track user.
@@ -17,38 +16,33 @@ angular.module('interactomeApp')
         };
 
         // Determines what happens after one or more abstract is selected
-        $scope.abstractsReq = function()
+        $scope.abstractsRec = function()
         {
-            var chkId = ''
+            var abstractsChecked = ''
+            var absCount = 0;
             $("input:checked").each(function() {
-                chkId += $(this).val() + ",";
+                abstractsChecked += $(this).val() + ",";
+                $(this).click(); // uncheck it
+                absCount++;
             });
-            if (chkId != '') {
-                chkId =  chkId.slice(0,-1)// Remove last comma
-                console.log(chkId);
-                AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_req', chkId);
+            if (abstractsChecked != '') {
+                abstractsChecked =  abstractsChecked.slice(0,-1)// Remove last comma
+                AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_req', abstractsChecked);
+                $scope.absRecd = "Number of abstracts used to get recommendations: " + absCount; // this is just to show off functionality
             }
         };
 
-
-        // Refactor Warning: This will eventually be refactored to whatever the rec system does.
-        // AwsService.subscribeToS3(function (targets) {
-        //     $scope.$apply(function () {
-        //         $scope.abstractTargets.length = 0; //clears array
-        //         $scope.abstractTargets.push.apply($scope.abstractTargets, targets); // adding more than once requires an apply (not sure why)
-        //     });
-        // });
-
-        $rootScope.$on('s3Abstracts@AwsService', function() {
-            var targets = AwsService.test();
+        // Listen for broadcasts of s3 event
+        var cleanupS3 = $rootScope.$on(AwsService.s3Broadcast, function() {
+            var targets = AwsService.getLoadedS3Filenames();
             $scope.$apply(function () {
-                $scope.abstractTargets.length = 0; //clears array
+                $scope.abstractTargets.length = 0; //clears array without removing the array's refference (needed for binding)
                 $scope.abstractTargets.push.apply($scope.abstractTargets, targets); // adding more than once requires an apply (not sure why)
             });
         });
-        // Unsubscribe to S3 (from http://stackoverflow.com/questions/18856341/how-can-i-unregister-a-broadcast-event-to-rootscope-in-angularjs)
-        // $scope.$on("$destroy", function() {
-        //     $scope.cleanupSub();
-        // });
+        //Unsubscribe to S3 (from http://stackoverflow.com/questions/18856341/how-can-i-unregister-a-broadcast-event-to-rootscope-in-angularjs)
+        $scope.$on("$destroy", function() {
+            cleanupS3();
+        });
 
     });
