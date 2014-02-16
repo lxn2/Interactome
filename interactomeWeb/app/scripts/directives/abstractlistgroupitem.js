@@ -11,26 +11,23 @@ angular.module('interactomeApp')
       	scope: {
       		abstractId: '@'
       	},
-		    controller: ['$scope', '$http', function($scope, $http) {
+		    controller: ['$scope', '$http', 'AwsService', function($scope, $http, AwsService) {
       		$scope.getS3Data = function() {
       			$http.get(urlBase + $scope.abstractId).success(function(data){
       				$scope.s3Data = data;
       			})
       		};
+
           $scope.likeClick = function() {
             console.log("liked " + $scope.abstractId);
-            // var sns = new AWS.SNS({params: {TopicArn: 'arn:aws:sns:us-west-2:005837367462:abstracts_liked'}});
-            // sns.publish({Message: $scope.abstractId}, function (err, data) {
-            //   if (!err) console.log('Message published');
-            // });
-          }
+            AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_liked', $scope.abstractId);
+          };
+
           $scope.dislikeClick = function() {
             console.log("disliked " + $scope.abstractId);
-            // var sns = new AWS.SNS({params: {TopicArn: 'arn:aws:sns:us-west-2:005837367462:abstracts_disliked}});
-            // sns.publish({Message: $scope.abstractId}, function (err, data) {
-            //   if (!err) console.log('Message published');
-            // });
-          }
+            AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_disliked', $scope.abstractId);
+          };
+          
     	}],
     	template: '<li class="list-group-item">' +
                   '<div class="btn-group" data-toggle="buttons">' +
