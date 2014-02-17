@@ -3,7 +3,7 @@ angular.module('interactomeApp', [
     'ngCookies',
     'ngResource',
     'ngSanitize',
-    'interactomeApp.Awsservice',
+    'interactomeApp.AwsService',
     'interactomeApp.Userservice',
     'ngRoute'
     //'bootstrap.js'
@@ -40,4 +40,4 @@ window.onLoadCallback = function() {
             angular.bootstrap(document, ['interactomeApp']);
         });
     });
-}
+};

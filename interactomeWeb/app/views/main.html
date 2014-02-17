@@ -38,27 +38,30 @@
                 <button id="testrecMod" type="button" onclick="recMod()" class="btn btn-primary">Test recMod()</button>
             </div>
         </div>
-        <div id="recAndSearchTable">
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Author</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
     </div>
 
     <!-- filled in by AwsService --> 
-        <div id="status"></div>
-        <ul id="objects"></ul>
-
+        <div id="status" ></div>
+        <ul id="objects" class="list-group">
+            <!-- this uses the mainctrl (it's attached to the route) -->
+            <div ng-repeat="abstractId in abstractTargets">
+                <abstract-list-group-item abstract-id={{abstractId.id}}> </abstract-list-group-item>
+            </div>
+        </ul>
+        <button id="testSelection" type="button" ng-click="abstractsRec()" class="btn btn-primary">Get Recs</button>
+        {{absRecd}}
         <br></br>
         <ul id ="abstracts"><ul>
+
           
+          <!--
          <div ng-show="showSearch" ng-model="dbStatus"> 
           <h1> {{dbStatus}} </h1>
           </div>
+          -->
 
   </div>
+
+        
+</div>
+
