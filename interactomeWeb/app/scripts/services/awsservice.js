@@ -75,6 +75,7 @@ app.service('SearchService', function() {
 
     this.showResults = function() {
 
+        var authors = [];
         var limit = 10;
         var userTable = new AWS.DynamoDB({
             params: {
@@ -91,14 +92,13 @@ app.service('SearchService', function() {
 
                 for (var i = 0; i < limit; i++) {
                     console.log(data.Items[i].LastName.S);
-                    return data.Items[i].LastName.S;
-
-
+                    authors[i] = data.Items[i].LastName.S;
                 }
+
 
             }
         });
-
+        return authors;
     }
 });
 

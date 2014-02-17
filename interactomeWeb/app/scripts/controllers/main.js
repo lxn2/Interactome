@@ -11,11 +11,12 @@ angular.module('interactomeApp')
                     $scope.user = user;
                 });
         }
-        $scope.searchAuthorClick = function() {
+
+
+        // Maps search results from service to controller then to view
+        $scope.searchAuthorClick = function($location) {
 
             $scope.showSearch = true;
             $scope.dbStatus = SearchService.showResults();
-            console.log($scope.dbStatus);
-
         }
     });
