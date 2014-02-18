@@ -34,13 +34,13 @@ app.config(
 
 
             })
+        /*
             .otherwise({
                 redirectTo: 'views/main.html',
                 controller: 'MainCtrl'
             });
+*/
     });
-
-
 
 window.onLoadCallback = function() {
     // When the document is ready

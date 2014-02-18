@@ -143,14 +143,34 @@ app.provider('AwsService', function() {
 app.service('SearchService', function() {
 
     this.showResults = function(authorName) {
+        var db = new AWS.DynamoDB({
+            params: {
+                TableName: "User"
+            }
+        });
 
+        db.scan({
 
+        }, function(err, data) {
+            if (err) {
+                document.getElementById('status').innerHTML =
+                    'Could not work DynamoDB';
+                console.log(err);
+            } else {
+                document.getElementById('status').innerHTML =
+                    'Loaded ' + data.Contents.length + ' items from S3';
+                console.log(data.Items);
+                authorName = data.Items;
+            }
+        });
 
-        var db = new AWS.DynamoDB();
-
+        return authorName;
 
     }
+
+
 });
+
 
 
 
