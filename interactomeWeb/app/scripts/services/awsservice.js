@@ -142,32 +142,13 @@ app.provider('AwsService', function() {
 
 app.service('SearchService', function() {
 
-    this.showResults = function() {
-
-        var authors = [];
-        var limit = 10;
-        var userTable = new AWS.DynamoDB({
-            params: {
-                TableName: "User"
-            }
-        });
-
-        userTable.scan({
-            Limit: limit
-        }, function(err, data) {
-            if (err)
-                console.log(err);
-            else {
-
-                for (var i = 0; i < limit; i++) {
-                    console.log(data.Items[i].LastName.S);
-                    authors[i] = data.Items[i].LastName.S;
-                }
+    this.showResults = function(authorName) {
 
 
-            }
-        });
-        return authors;
+
+        var db = new AWS.DynamoDB();
+
+
     }
 });
 

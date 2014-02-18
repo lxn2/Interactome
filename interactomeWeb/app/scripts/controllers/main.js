@@ -6,7 +6,6 @@ var app = angular.module('interactomeApp')
 
 app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService, SearchService) {
 
-    $scope.showRecs = true;
     $scope.abstractTargets = [];
     $scope.absRecd = null;
     // This function sets the user authentication from googleSignin directive. 
@@ -49,11 +48,7 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
 
 app.controller('SearchCtrl', function($scope, $rootScope, UserService, AwsService, SearchService) {
 
-    // Maps search results from service to controller then to view
-    $scope.searchAuthorClick = function($location) {
-        $scope.showSearch = true;
-        $scope.dbStatus = SearchService.showResults();
-    }
-
+    var author = $scope.searchByAuthor;
+    $scope.dbStatus = SearchService.showResults(author);
 
 });

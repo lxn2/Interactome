@@ -1,50 +1,6 @@
-<div class="container">
-    <!--Top Header holds the page title, logo, and google+ signin -->
-    <div id="header">
-        <!-- Google+ signin button -->
-        <div ng-show="!user" class="row">
-            <div google-signin client-id='796741862543' after-signin="signedIn(oauth)"></div>
-        </div>
-        <h1 id="logoHeader">Sage Bionetworks Interactome
-            <small>Prototype</small>
-        </h1>
-    </div>
-    <!-- userSearchPannel holds the search bar and filter -->
-    <div id="userSearchPanel">
-        <div id="jumbotronBanner" class="jumbotron">
-            <!--searchBar code -->
-            <div class="searchForm">
-                <input id="searchBar" type="text" ng-model="searchByAuthor" placeholder="Search i.e. author, title, keywords"  />
-                <!--searchButton -->
-               <button id="searchButton" onclick=location.href="#searchView" type="submit" ng-click="searchAuthorClick()" class="btn btn-primary">Search</button>
-      
-                <!-- bookmarksDropDown holds the user bookmark history, operates as a dropDown -->
-                <div id="bookmarksDropDown" class="btn-group dropdown">
-                    <button type="button" class="btn dropdown-toggle btn-primary" data-toggle="dropdown" href="#">
-                        Saved Papers
-                        <span class="caret"></span>
-                    </button>
-                    <ul id="dropDownMenu" class="dropdown-menu">
-                        <li><a href="#">Folder 1</a>
-                        </li>
-                        <li><a href="#">Folder 2</a>
-                        </li>
-                        <li><a href="#">Folder 3</a>
-                        </li>
-                        <li><a href="#">Folder 4</a>
-                        </li>
-                    </ul>
-                </div>
-                <br></br>
-                <button id="testrecMod" type="button" onclick="recMod()" class="btn btn-primary">Test recMod()</button>
-            </div>
-        </div>
-    </div>
-
-    
-    <!-- filled in by AwsService --> 
+<!-- Show recomendations, filled in by AwsService --> 
 <div id="status" ></div>
-        <ul id="objects" class="list-group">
+ <ul id="objects" class="list-group">
             <!-- this uses the mainctrl (it's attached to the route) -->
             <div ng-repeat="abstractId in abstractTargets">
                 <abstract-list-group-item abstract-id={{abstractId.id}}> </abstract-list-group-item>
@@ -54,8 +10,9 @@
         {{absRecd}}
         <br></br>
         <ul id ="abstracts"><ul>
-</div>
 
-        
-</div>
+
+
+
+
 

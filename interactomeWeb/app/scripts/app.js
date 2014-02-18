@@ -1,39 +1,44 @@
 'use strict';
-angular.module('interactomeApp', [
+var app = angular.module('interactomeApp', [
+    'ngRoute',
     'ngCookies',
     'ngResource',
     'ngSanitize',
     'interactomeApp.AwsService',
-    'interactomeApp.Userservice',
-    'ngRoute'
+    'interactomeApp.Userservice'
+
     //'bootstrap.js'
 ])
 
 // Sets our AWS arn on config through Awsservice
-.config(function(AwsServiceProvider) {
+app.config(function(AwsServiceProvider) {
     AwsServiceProvider
         .setArn(
             'arn:aws:iam::005837367462:role/newRole');
 })
 
 
+
 // Sets up main route to main.html when page is first loaded. 
-.config(function($routeProvider) {
-    $routeProvider
+app.config(
+    function($routeProvider) {
+        $routeProvider
+
         .when('/', {
             templateUrl: 'views/main.html',
             controller: 'MainCtrl'
-        }).
-    when('/searchView', {
-        templateUrl: 'views/searchView.html',
-        controller: 'SearchCtrl'
+        })
+            .when('/searchView', {
+                templateUrl: 'views/searchView.html',
+                controller: 'SearchCtrl'
 
 
-    })
-        .otherwise({
-            redirectTo: '/'
-        });
-});
+            })
+            .otherwise({
+                redirectTo: 'views/main.html',
+                controller: 'MainCtrl'
+            });
+    });
 
 
 
