@@ -4,10 +4,9 @@
 **/
 angular.module('interactomeApp')
 
-.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService) {
+.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService, SearchService) {
     $scope.abstractTargets = [];
     $scope.absRecd = null;
-
     // This function sets the user authentication from googleSignin directive. 
     $scope.signedIn = function(oauth) {
         // Google authentication passed into userService to hold onto and track user.
@@ -16,7 +15,6 @@ angular.module('interactomeApp')
                 $scope.user = user;
             });
     };
-
     // Determines what happens after one or more abstract is selected
     $scope.abstractsRec = function() {
         var abstractsChecked = ''
@@ -32,7 +30,6 @@ angular.module('interactomeApp')
             $scope.absRecd = "Number of abstracts used to get recommendations: " + absCount; // this is just to show off functionality
         }
     };
-
     // Listen for broadcasts of s3 event
     var cleanupS3 = $rootScope.$on(AwsService.s3Broadcast, function() {
         var targets = AwsService.getLoadedS3Filenames();
@@ -45,11 +42,8 @@ angular.module('interactomeApp')
     $scope.$on("$destroy", function() {
         cleanupS3();
     });
-
-
     // Maps search results from service to controller then to view
     $scope.searchAuthorClick = function($location) {
-
         $scope.showSearch = true;
         $scope.dbStatus = SearchService.showResults();
     }
