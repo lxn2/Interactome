@@ -16,7 +16,8 @@
             <div class="searchForm">
                 <input id="searchBar" type="text" ng-model="searchByAuthor" placeholder="Search i.e. author, title, keywords"  />
                 <!--searchButton -->
-                <button id="searchButton" type="button" ng-click="searchAuthorClick()" class="btn btn-primary">Search</button>
+               <button id="searchButton" onclick=location.href="#searchView" type="submit" ng-click="searchAuthorClick()" class="btn btn-primary">Search</button>
+      
                 <!-- bookmarksDropDown holds the user bookmark history, operates as a dropDown -->
                 <div id="bookmarksDropDown" class="btn-group dropdown">
                     <button type="button" class="btn dropdown-toggle btn-primary" data-toggle="dropdown" href="#">
@@ -40,8 +41,9 @@
         </div>
     </div>
 
+    
     <!-- filled in by AwsService --> 
-        <div id="status" ></div>
+<div id="status" ></div>
         <ul id="objects" class="list-group">
             <!-- this uses the mainctrl (it's attached to the route) -->
             <div ng-repeat="abstractId in abstractTargets">
@@ -52,15 +54,7 @@
         {{absRecd}}
         <br></br>
         <ul id ="abstracts"><ul>
-
-          
-          <!--
-         <div ng-show="showSearch" ng-model="dbStatus"> 
-          <h1> {{dbStatus}} </h1>
-          </div>
-          -->
-
-  </div>
+</div>
 
         
 </div>

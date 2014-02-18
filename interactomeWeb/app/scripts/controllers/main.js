@@ -2,9 +2,11 @@
 /**
     This is the main controller of the application. This controller should have logic for the main (always running?) parts of the website.
 **/
-angular.module('interactomeApp')
+var app = angular.module('interactomeApp')
 
-.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService, SearchService) {
+app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService, SearchService) {
+
+    $scope.showRecs = true;
     $scope.abstractTargets = [];
     $scope.absRecd = null;
     // This function sets the user authentication from googleSignin directive. 
@@ -42,9 +44,16 @@ angular.module('interactomeApp')
     $scope.$on("$destroy", function() {
         cleanupS3();
     });
+
+});
+
+app.controller('SearchCtrl', function($scope, $rootScope, UserService, AwsService, SearchService) {
+
     // Maps search results from service to controller then to view
     $scope.searchAuthorClick = function($location) {
         $scope.showSearch = true;
         $scope.dbStatus = SearchService.showResults();
     }
+
+
 });

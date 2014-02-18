@@ -23,7 +23,13 @@ angular.module('interactomeApp', [
         .when('/', {
             templateUrl: 'views/main.html',
             controller: 'MainCtrl'
-        })
+        }).
+    when('/searchView', {
+        templateUrl: 'views/searchView.html',
+        controller: 'SearchCtrl'
+
+
+    })
         .otherwise({
             redirectTo: '/'
         });
