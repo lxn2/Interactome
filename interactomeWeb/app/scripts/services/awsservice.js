@@ -24,6 +24,7 @@ angular.module('interactomeApp.Awsservice', [])
     }
 
 
+
     self.$get = function($q, $cacheFactory, $http, $rootScope) {
         var _S3BROADCAST = 's3Abstracts@AwsService';
         var credentialsDefer = $q.defer();
@@ -115,6 +116,35 @@ angular.module('interactomeApp.Awsservice', [])
                 });
                 
             },
+
+            updateDynamoPref: function (absId) {
+                var interTable = new AWS.DynamoDB({params: {TableName: 'Interactions'}});
+
+                var likesArr = [];
+                var params = {
+                    AttributesToGet: [
+                    "Likes"],
+                    Key : { 
+                        "Id" : {
+                            "S" : "GeneralThread"
+                            },
+                        }
+                    };
+
+                interTable.getItem(params, function(err, data){
+                    if(err)
+                        console.log("Error: " + err);
+                    else{
+                        for(var i = 0; i < data.Item.Likes.SS.length; i++)
+                            likesArr.push(data.Item.Likes.SS[i]);
+                        console.log(likesArr);
+                        console.log(absId);
+                    }
+                });
+
+
+
+            }
 
 
         } // end of return 
