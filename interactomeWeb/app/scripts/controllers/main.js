@@ -20,15 +20,25 @@ angular.module('interactomeApp')
         {
             var abstractsChecked = ''
             var absCount = 0;
+            var abstracts = []
             $("input:checked").each(function() {
                 abstractsChecked += $(this).val() + ",";
                 $(this).click(); // uncheck it
                 absCount++;
+                abstracts.push($(this).val());
             });
             if (abstractsChecked != '') {
                 abstractsChecked =  abstractsChecked.slice(0,-1)// Remove last comma
-                AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_req', abstractsChecked);
+                //AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_req', abstractsChecked);
                 $scope.absRecd = "Number of abstracts used to get recommendations: " + absCount; // this is just to show off functionality
+                var recAbstracts = recMod(abstracts);
+                console.log(recAbstracts);
+                if (recAbstracts.length > 0) {
+                    console.log("not null");
+                    $scope.$apply(function () {
+                        $scope.abstractTargets.push.apply($scope.abstractTargets, recAbstracts);
+                    });
+                }
             }
         };
 

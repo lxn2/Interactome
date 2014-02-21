@@ -5,27 +5,33 @@
 // Simply takes in 5 abstracts and spits out 20 abstract IDs
 
 // Sample array used to test rec response
-var testPapers = ['Paper45086', 'Paper47394', 'Paper45430', 'Paper41361', 'Paper46948'];
+//var papers = ['Paper45086', 'Paper47394', 'Paper45430', 'Paper41361', 'Paper46948'];
 
-function recMod()
+function recMod(abstractList)
 {
-	var limit = 20;
+	var limit = 10 + abstractList.length; // min of papers needed to make sure no duplicates returned
+  console.log(abstractList);
+  papers = [];
+  for(var i = 0; i < abstractList.length; i++)
+    papers.push("Paper" + abstractList[i].match(/(\d+)/)[0]); // grabs digits out of the list
 
-	var userTable = new AWS.DynamoDB({params: {TableName: "Paper"}});
-	// Scan table using limit as a parameter
-  if(testPapers.length > 0) {
+	// Scan table for limit number of papers
+  if(papers.length > 0) {
+    console.log(papers);
+    var paperTable = new AWS.DynamoDB({params: {TableName: "Paper"}});
     var returnedPapers  = [];
-  	userTable.scan({Limit: limit}, function(err, data) {
+  	paperTable.scan({Limit: limit}, function(err, data) {
   		if(err)
   			console.log(err);
-  		else {
-
-  			// Check to make sure the Paper Ids of incoming are different from output
-  			// There's probably a better way to do this
+  		else { 
   			for(var i = 0; i < limit; i++) {
-          console.log(data.Items[i]);
+          var tempId = data.Items[i].Id.S;
+          if ( papers.indexOf(tempId) == -1 )// not in list sent in
+            returnedPapers.push(tempId)
         }
       }
-    });
+    }).then(function() { return returnedPapers; });
   }
+  console.log("blah");
+  return returnedPapers;
 }
