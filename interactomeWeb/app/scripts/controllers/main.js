@@ -6,7 +6,10 @@ angular.module('interactomeApp')
     .controller('MainCtrl', function($scope,$rootScope, UserService, AwsService) {
         $scope.abstractTargets = [];
         $scope.absRecd = null;
-        $scope.modalText = "first";
+        $scope.modalTitle = null;
+        $scope.modalFirstName = null;
+        $scope.modalLastName = null;
+        $scope.modalText = null;
         // This function sets the user authentication from googleSignin directive. 
         $scope.signedIn = function(oauth) {
             // Google authentication passed into userService to hold onto and track user.
@@ -34,10 +37,11 @@ angular.module('interactomeApp')
         };
 
         // Determines the content of the modal
-        $scope.updateModal = function() {
-
-            alert("script loaded");
-            $scope.modalText = "second";
+        $scope.updateModal = function(title,first,last,content) {
+            $scope.modalTitle = title;
+            $scope.modalFirstName = first;
+            $scope.modalLastName = last;
+            $scope.modalText = content;
         };
 
         // Listen for broadcasts of s3 event

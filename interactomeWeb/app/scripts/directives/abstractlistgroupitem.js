@@ -38,7 +38,8 @@ angular.module('interactomeApp')
             //$scope.updateModal();
             $.getScript("scripts/controllers/main.js", function(){
               var eleme = document.getElementById('myModals');
-              angular.element(eleme).scope().updateModal();
+              angular.element(eleme).scope().updateModal($scope.s3Data.AbstractTitle,$scope.s3Data.FirstName[0],
+                $scope.s3Data.LastName,$scope.s3Data.Abstract);
               angular.element(eleme).scope().$apply();
             });
 
