@@ -20,9 +20,11 @@ angular.module('interactomeApp')
 
           $scope.likeClick = function() {
             if($scope.likeStatus != true) { // will be undefined on first click which is ok
-              $scope.likeMsg = " Liked abstract recommendation";
+              $scope.likeMsg = " Liked abstract recommendation. ID = " + $scope.abstractId;
               AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_liked', $scope.abstractId);
               $scope.likeStatus = true; // true == liked
+              AwsService.updateDynamoPref($scope.abstractId, $scope.likeStatus);
+
             }
           };
 
@@ -31,6 +33,8 @@ angular.module('interactomeApp')
               $scope.likeMsg = " Disliked abstract recommendation";
               AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_disliked', $scope.abstractId);
               $scope.likeStatus = false; // false == disliked
+              AwsService.updateDynamoPref($scope.abstractId, $scope.likeStatus);
+
             }
           };
 

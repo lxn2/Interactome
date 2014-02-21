@@ -24,6 +24,7 @@ angular.module('interactomeApp.Awsservice', [])
     }
 
 
+
     self.$get = function($q, $cacheFactory, $http, $rootScope) {
         var _S3BROADCAST = 's3Abstracts@AwsService';
         var credentialsDefer = $q.defer();
@@ -115,6 +116,111 @@ angular.module('interactomeApp.Awsservice', [])
                 });
                 
             },
+
+            // Adds the abstractId into either the "Likes" or "Dislikes" attribute in "Interactions."
+            // Was unsure about naming conventions with get, set, post etc.
+            updateDynamoPref: function (absId, liked) {
+                var interTable = new AWS.DynamoDB({params: {TableName: 'Interactions'}});
+
+                if(liked){
+                    var params = {
+                        AttributesToGet: [
+                        'Dislikes'],
+                        Key : { 
+                            "Id" : {
+                                "S" : 'GeneralThread'
+                            }
+                        }
+                    };
+
+                    // Unfinished - once done this will check to see if the abstract exists in the dislikes
+                    // attribute, if so it will remove it. 
+                    interTable.getItem(params, function(err, data){
+                        if(err)
+                            console.log("Error: " + err);
+                        else{
+                            // Check if abstract in Dislikes then remove and place in likes
+                        }
+                    });
+
+                    // To store the absId
+                    var likesArr = [absId];
+
+                    var updateParams = {
+                        Key: { 
+                            "Id": {
+                                "S": 'GeneralThread'
+                            }
+                        },
+                        AttributeUpdates: {
+                            "Likes": {
+                                "Action": "ADD",
+                                "Value" : {
+                                    "SS": likesArr
+                                }
+                            }
+                        }
+                    }
+
+                    // Update our table to include the new abstract
+                    interTable.updateItem(updateParams, function(err, data){
+                        if(err)
+                            console.log("Error: " + err);
+                        else{
+                            console.log("Success!" + data)
+                        }
+                    });
+
+                }else{
+                    // almost identical to likes
+                    var params = {
+                        AttributesToGet: [
+                        'Likes'],
+                        Key : { 
+                            "Id" : {
+                                "S" : 'GeneralThread'
+                            }
+                        }
+                    };
+
+                    interTable.getItem(params, function(err, data){
+                        if(err)
+                            console.log("Error: " + err);
+                        else{
+                            // Check if abstract in Likes then remove and place in likes
+                        }
+                    });
+
+                    
+                    var dislikesArr = [absId];
+
+                    var updateParams = {
+                        Key: { 
+                            "Id": {
+                                "S": 'GeneralThread'
+                            }
+                        },
+                        AttributeUpdates: {
+                            "Dislikes": {
+                                "Action": "ADD",
+                                "Value" : {
+                                    "SS": dislikesArr
+                                }
+                            }
+                        }
+                    }
+
+                    // Update our table to include the new abstract
+                    interTable.updateItem(updateParams, function(err, data){
+                        if(err)
+                            console.log("Error: " + err);
+                        else{
+                            console.log("Success!" + data)
+                        }
+                    });
+                }
+
+            }
 
 
         } // end of return 
