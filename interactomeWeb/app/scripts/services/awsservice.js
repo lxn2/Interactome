@@ -117,32 +117,105 @@ angular.module('interactomeApp.Awsservice', [])
                 
             },
 
-            updateDynamoPref: function (absId) {
+            updateDynamoPref: function (absId, liked) {
                 var interTable = new AWS.DynamoDB({params: {TableName: 'Interactions'}});
 
-                var likesArr = [];
-                var params = {
-                    AttributesToGet: [
-                    "Likes"],
-                    Key : { 
-                        "Id" : {
-                            "S" : "GeneralThread"
-                            },
+                if(liked){
+                    var params = {
+                        AttributesToGet: [
+                        'Dislikes'],
+                        Key : { 
+                            "Id" : {
+                                "S" : 'GeneralThread'
+                            }
                         }
                     };
 
-                interTable.getItem(params, function(err, data){
-                    if(err)
-                        console.log("Error: " + err);
-                    else{
-                        for(var i = 0; i < data.Item.Likes.SS.length; i++)
-                            likesArr.push(data.Item.Likes.SS[i]);
-                        console.log(likesArr);
-                        console.log(absId);
+                    interTable.getItem(params, function(err, data){
+                        if(err)
+                            console.log("Error: " + err);
+                        else{
+                            // Check if abstract in Dislikes then remove and place in likes
+                        }
+                    });
+
+                    // To retrieve all strings held in the "Likes" attribute
+                    var likesArr = [];
+                    likesArr.push(absId);
+
+                    var updateParams = {
+                        Key: { 
+                            "Id": {
+                                "S": 'GeneralThread'
+                            }
+                        },
+                        AttributeUpdates: {
+                            "Likes": {
+                                "Action": "ADD",
+                                "Value" : {
+                                    "SS": likesArr
+                                }
+                            }
+                        }
                     }
-                });
 
+                    // Update our table to include the new abstract
+                    interTable.updateItem(updateParams, function(err, data){
+                        if(err)
+                            console.log("Error: " + err);
+                        else{
+                            console.log("Success!" + data)
+                        }
+                    });
 
+                }else{
+                    var params = {
+                        AttributesToGet: [
+                        'Likes'],
+                        Key : { 
+                            "Id" : {
+                                "S" : 'GeneralThread'
+                            }
+                        }
+                    };
+
+                    interTable.getItem(params, function(err, data){
+                        if(err)
+                            console.log("Error: " + err);
+                        else{
+                            // Check if abstract in Likes then remove and place in likes
+                        }
+                    });
+
+                    // To retrieve all strings held in the "Dislikes" attribute
+                    var dislikesArr = [];
+                    dislikesArr.push(absId);
+
+                    var updateParams = {
+                        Key: { 
+                            "Id": {
+                                "S": 'GeneralThread'
+                            }
+                        },
+                        AttributeUpdates: {
+                            "Dislikes": {
+                                "Action": "ADD",
+                                "Value" : {
+                                    "SS": dislikesArr
+                                }
+                            }
+                        }
+                    }
+
+                    // Update our table to include the new abstract
+                    interTable.updateItem(updateParams, function(err, data){
+                        if(err)
+                            console.log("Error: " + err);
+                        else{
+                            console.log("Success!" + data)
+                        }
+                    });
+                }
 
             }
 
