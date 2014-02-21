@@ -34,6 +34,18 @@ angular.module('interactomeApp')
             }
           };
 
+          $scope.viewAbstract = function() {
+            //$scope.updateModal();
+            $.getScript("scripts/controllers/main.js", function(){
+              var eleme = document.getElementById('myModals');
+              angular.element(eleme).scope().updateModal();
+              angular.element(eleme).scope().$apply();
+            });
+
+            
+            $('#myModals').modal('show');
+          };
+
     	}],
     	template: '<li class="list-group-item">' +
                   '<div class="btn-group" data-toggle="buttons">' +
@@ -42,6 +54,9 @@ angular.module('interactomeApp')
                     '</label>' +
                     '<label class="btn btn-primary" ng-click="dislikeClick()">' +
                       '<input type="radio" name="likeBtn" > <span class="glyphicon glyphicon-thumbs-down"></span>' +
+                    '</label>' +
+                    '<label class="btn btn-primary" ng-click="viewAbstract()">' +
+                      '<input type="radio" name="viewBtn" > <span class="glyphicon glyphicon-search"></span>' +
                     '</label>' +
                   '</div>' +
                   '<p>{{likeMsg}}</p>' +

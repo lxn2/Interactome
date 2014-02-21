@@ -6,6 +6,7 @@ angular.module('interactomeApp')
     .controller('MainCtrl', function($scope,$rootScope, UserService, AwsService) {
         $scope.abstractTargets = [];
         $scope.absRecd = null;
+        $scope.modalText = "first";
         // This function sets the user authentication from googleSignin directive. 
         $scope.signedIn = function(oauth) {
             // Google authentication passed into userService to hold onto and track user.
@@ -30,6 +31,13 @@ angular.module('interactomeApp')
                 AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_req', abstractsChecked);
                 $scope.absRecd = "Number of abstracts used to get recommendations: " + absCount; // this is just to show off functionality
             }
+        };
+
+        // Determines the content of the modal
+        $scope.updateModal = function() {
+
+            alert("script loaded");
+            $scope.modalText = "second";
         };
 
         // Listen for broadcasts of s3 event
