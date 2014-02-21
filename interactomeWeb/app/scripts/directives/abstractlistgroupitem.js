@@ -11,7 +11,7 @@ angular.module('interactomeApp')
       	scope: {
       		abstractId: '@'
       	},
-		    controller: ['$scope', '$http', 'AwsService', function($scope, $http, AwsService) {
+		    controller: ['$scope', '$http', 'AwsService', 'Abstractmodalservice', function($scope, $http, AwsService, Abstractmodalservice) {
       		$scope.getS3Data = function() {
       			$http.get(urlBase + $scope.abstractId).success(function(data){
       				$scope.s3Data = data;
@@ -35,16 +35,10 @@ angular.module('interactomeApp')
           };
 
           $scope.viewAbstract = function() {
-            //$scope.updateModal();
-            $.getScript("scripts/controllers/main.js", function(){
-              var eleme = document.getElementById('myModals');
-              angular.element(eleme).scope().updateModal($scope.s3Data.AbstractTitle,$scope.s3Data.FirstName[0],
-                $scope.s3Data.LastName,$scope.s3Data.Abstract);
-              angular.element(eleme).scope().$apply();
-            });
-
+            Abstractmodalservice.prepForBroadcast($scope.s3Data.AbstractTitle,$scope.s3Data.FirstName[0],
+                $scope.s3Data.LastName,$scope.s3Data.Abstract); // broadcast new selection
             
-            $('#myModals').modal('show');
+            $('#myModals').modal('show'); // open modal
           };
 
     	}],

@@ -5,8 +5,8 @@ angular.module('interactomeApp', [
     'ngSanitize',
     'interactomeApp.Awsservice',
     'interactomeApp.Userservice',
+    'interactomeApp.Abstractmodalservice',
     'ngRoute'
-    //'bootstrap.js'
 ])
 
 // Sets our AWS arn on config through Awsservice
