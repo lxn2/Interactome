@@ -117,6 +117,8 @@ angular.module('interactomeApp.Awsservice', [])
                 
             },
 
+            // Adds the abstractId into either the "Likes" or "Dislikes" attribute in "Interactions."
+            // Was unsure about naming conventions with get, set, post etc.
             updateDynamoPref: function (absId, liked) {
                 var interTable = new AWS.DynamoDB({params: {TableName: 'Interactions'}});
 
@@ -131,6 +133,8 @@ angular.module('interactomeApp.Awsservice', [])
                         }
                     };
 
+                    // Unfinished - once done this will check to see if the abstract exists in the dislikes
+                    // attribute, if so it will remove it. 
                     interTable.getItem(params, function(err, data){
                         if(err)
                             console.log("Error: " + err);
@@ -139,9 +143,8 @@ angular.module('interactomeApp.Awsservice', [])
                         }
                     });
 
-                    // To retrieve all strings held in the "Likes" attribute
-                    var likesArr = [];
-                    likesArr.push(absId);
+                    // To store the absId
+                    var likesArr = [absId];
 
                     var updateParams = {
                         Key: { 
@@ -169,6 +172,7 @@ angular.module('interactomeApp.Awsservice', [])
                     });
 
                 }else{
+                    // almost identical to likes
                     var params = {
                         AttributesToGet: [
                         'Likes'],
@@ -187,9 +191,8 @@ angular.module('interactomeApp.Awsservice', [])
                         }
                     });
 
-                    // To retrieve all strings held in the "Dislikes" attribute
-                    var dislikesArr = [];
-                    dislikesArr.push(absId);
+                    
+                    var dislikesArr = [absId];
 
                     var updateParams = {
                         Key: { 
