@@ -1,6 +1,10 @@
 'use strict';
 /**
   Represents a single abstract. This uses a list-group-item as the tag.
+
+
+  Implementation details/reasons:
+    To avoid having to call $compile, I use a somewhat convoluted template to use ng-show.
 **/
 
 angular.module('interactomeApp')
