@@ -46,9 +46,10 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
 
 });
 
-app.controller('SearchCtrl', function($scope, $rootScope, UserService, AwsService, SearchService) {
+app.controller('SearchCtrl', function($scope, UserService, AwsService, SearchService) {
 
-    var author = $scope.searchByAuthor;
-    $scope.dbStatus = SearchService.showResults(author);
-
+    var institution = $scope.searchByInstitution;
+    $scope.institution = [];
+    $scope.institution = SearchService.showResults(institution);
+    console.log("in search controller");
 });

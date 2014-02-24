@@ -142,33 +142,41 @@ app.provider('AwsService', function() {
 
 app.service('SearchService', function() {
 
-    this.showResults = function(authorName) {
-        var db = new AWS.DynamoDB({
-            params: {
-                TableName: "User"
+    this.showResults = function(institution) {
+
+        var results = institution;
+
+        var userTable = new AWS.DynamoDB();
+
+        var params = {
+            TableName: 'User',
+            IndexName: 'InstitutionName-index',
+            KeyConditions: {
+                "InstitutionName": {
+                    "AttributeValueList": [{
+
+
+                            "S": results
+
+                        }
+
+
+                    ],
+                    ComparisonOperator: "EQ"
+                }
             }
-        });
+        };
 
-        db.scan({
-
-        }, function(err, data) {
+        userTable.query(params, function(err, data) {
             if (err) {
-                document.getElementById('status').innerHTML =
-                    'Could not work DynamoDB';
+
                 console.log(err);
             } else {
-                document.getElementById('status').innerHTML =
-                    'Loaded ' + data.Contents.length + ' items from S3';
                 console.log(data.Items);
-                authorName = data.Items;
+                return data.Items.toString();
             }
         });
-
-        return authorName;
-
     }
-
-
 });
 
 
