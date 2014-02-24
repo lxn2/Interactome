@@ -3,7 +3,7 @@
     This is the main controller of the application. This controller should have logic for the main (always running?) parts of the website.
 **/
 angular.module('interactomeApp')
-    .controller('MainCtrl', function($scope,$rootScope, UserService, AwsService) {
+    .controller('MainCtrl', function($scope,$rootScope, UserService, AwsService, RecommendationService) {
         $scope.abstractTargets = [];
         $scope.absRecd = null;
         // This function sets the user authentication from googleSignin directive. 
@@ -31,14 +31,13 @@ angular.module('interactomeApp')
                 abstractsChecked =  abstractsChecked.slice(0,-1)// Remove last comma
                 //AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_req', abstractsChecked);
                 $scope.absRecd = "Number of abstracts used to get recommendations: " + absCount; // this is just to show off functionality
-                var recAbstracts = recMod(abstracts);
-                console.log(recAbstracts);
-                if (recAbstracts.length > 0) {
-                    console.log("not null");
-                    $scope.$apply(function () {
-                        $scope.abstractTargets.push.apply($scope.abstractTargets, recAbstracts);
-                    });
-                }
+                RecommendationService.getRecs(abstracts).then(function(paperList){
+                    var abstracts = [];
+                    for(var i = 0; i < paperList.length; i++)
+                        abstracts.push({id:paperList[i]});
+                    $scope.abstractTargets.length = 0;
+                    $scope.abstractTargets.push.apply($scope.abstractTargets, abstracts);
+                });
             }
         };
 

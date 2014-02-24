@@ -81,8 +81,12 @@ angular.module('interactomeApp.Awsservice', [])
 
                         // Clear the array and replace it with new abstracts
                         self.s3AbstractFilenames.length = 0;
+                        // Not sure how to avoid hardcoding this url.
+                        var urlBase = "https://s3-us-west-2.amazonaws.com/sagebionetworks-interactome-abstracts/";
+                        var wholeLink = "";
                         for (var i = 0; i < 10; i++) {
-                            self.s3AbstractFilenames.push({id:data.Contents[i].Key});
+                            wholeLink = urlBase + data.Contents[i].Key;
+                            self.s3AbstractFilenames.push({id:wholeLink});
                         }
 
                         // Broadcast that the abstracts are ready

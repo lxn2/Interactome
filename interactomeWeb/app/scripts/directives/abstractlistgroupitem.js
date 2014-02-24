@@ -5,7 +5,6 @@
 
 angular.module('interactomeApp')
   .directive('abstractListGroupItem', function () {
-  	var urlBase = "https://s3-us-west-2.amazonaws.com/sagebionetworks-interactome-abstracts/";
     return {	
       	restrict: 'E',
       	scope: {
@@ -13,9 +12,12 @@ angular.module('interactomeApp')
       	},
 		    controller: ['$scope', '$http', 'AwsService', function($scope, $http, AwsService) {
       		$scope.getS3Data = function() {
-      			$http.get(urlBase + $scope.abstractId).success(function(data){
+      			$http.get($scope.abstractId).success(function(data){
       				$scope.s3Data = data;
-      			})
+              $scope.noError = true;
+      			}).error(function() {
+              $scope.noError = false;
+            })
       		};
 
           $scope.likeClick = function() {
@@ -36,6 +38,8 @@ angular.module('interactomeApp')
 
     	}],
     	template: '<li class="list-group-item">' +
+                  '<h4 class="list-group-item-heading" ng-show="!noError"> ERROR. Could not find abstract. </h4>' +
+                  '<div ng-show="noError">' +
                   '<div class="btn-group" data-toggle="buttons">' +
                     '<label class="btn btn-primary" ng-click="likeClick()">' +
                       '<input type="radio" name="likeBtn" > <span class="glyphicon glyphicon-thumbs-up"></span>' +
@@ -48,6 +52,7 @@ angular.module('interactomeApp')
         	        '<h4 class="list-group-item-heading"> {{s3Data.AbstractTitle}} </h4>' +
             	    '<input type="checkbox" class="pull-right abstractChck" value="{{abstractId}}">' +
                 	'<p class="list-group-item-text"> Author: {{s3Data.FirstName[0] + ". " + s3Data.LastName}} </p>' +
+                  '</div>' +
               	'</li>',
       link: function (scope, element, attrs) {
       	scope.abstractId = attrs.abstractId;
