@@ -51,13 +51,11 @@ app.controller('SearchCtrl', function($scope, $rootScope, UserService, AwsServic
     var institution = $scope.searchByInstitution;
     $scope.institutions = [];
 
-    // once promise then set scope. 
+    // once promise is made, then set the scope 
     SearchService.showResults(institution).then(function(userData) {
         console.log(userData);
-        //$rootScope.$$phase || $scope.$apply(function() {
         $scope.institutions.push.apply($scope.institutions, userData);
-        //$scope.instituion = userData;
-        // });
+
     });
 
 });

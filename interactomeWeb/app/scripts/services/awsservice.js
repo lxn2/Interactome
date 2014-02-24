@@ -142,14 +142,14 @@ app.provider('AwsService', function() {
 
 app.factory('SearchService', function($q) {
 
+    // factory returns entire service as object 
     return {
         showResults: function(institution) {
             var results = institution;
-            // make defered 
-            var defered = $q.defer();
+            var defered = $q.defer(); // set up defered for asyncronous calls to Dynamo 
 
             var userTable = new AWS.DynamoDB();
-
+            // Set params for query 
             var params = {
                 TableName: 'User',
                 IndexName: 'InstitutionName-index',
@@ -168,20 +168,21 @@ app.factory('SearchService', function($q) {
             };
 
             var userData = [];
+            // run query 
             userTable.query(params, function(err, data) {
                 if (err) {
 
                     console.log(err);
                 } else {
-                    // console.log(data.Items);
+
                     for (var i = 0; i < data.Items.length; i++) {
 
                         userData.push(data.Items[i]);
                     }
-                    //userData.push(data.Items);
 
+                    // resolve defered 
                     defered.resolve(userData);
-                    // resolve
+
                 }
             });
             // return promise 
