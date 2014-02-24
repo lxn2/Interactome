@@ -46,14 +46,18 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
 
 });
 
-app.controller('SearchCtrl', function($scope, UserService, AwsService, SearchService) {
+app.controller('SearchCtrl', function($scope, $rootScope, UserService, AwsService, SearchService) {
 
     var institution = $scope.searchByInstitution;
+    $scope.institutions = [];
 
     // once promise then set scope. 
     SearchService.showResults(institution).then(function(userData) {
         console.log(userData);
-        $scope.instituion = userData;
+        //$rootScope.$$phase || $scope.$apply(function() {
+        $scope.institutions.push.apply($scope.institutions, userData);
+        //$scope.instituion = userData;
+        // });
     });
 
 });

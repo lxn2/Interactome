@@ -140,46 +140,54 @@ app.provider('AwsService', function() {
     }
 });
 
-app.service('SearchService', function($q) {
+app.factory('SearchService', function($q) {
 
-    this.showResults = function(institution) {
-        var results = institution;
-        // make defered 
-        var defered = $q.defer();
+    return {
+        showResults: function(institution) {
+            var results = institution;
+            // make defered 
+            var defered = $q.defer();
 
-        var userTable = new AWS.DynamoDB();
+            var userTable = new AWS.DynamoDB();
 
-        var params = {
-            TableName: 'User',
-            IndexName: 'InstitutionName-index',
-            KeyConditions: {
-                "InstitutionName": {
-                    "AttributeValueList": [{
+            var params = {
+                TableName: 'User',
+                IndexName: 'InstitutionName-index',
+                KeyConditions: {
+                    "InstitutionName": {
+                        "AttributeValueList": [{
 
 
-                        "S": results
+                            "S": results
 
-                    }],
+                        }],
 
-                    ComparisonOperator: "EQ"
+                        ComparisonOperator: "EQ"
+                    }
                 }
-            }
-        };
+            };
 
-        userTable.query(params, function(err, data) {
-            if (err) {
+            var userData = [];
+            userTable.query(params, function(err, data) {
+                if (err) {
 
-                console.log(err);
-            } else {
-                console.log(data.Items);
+                    console.log(err);
+                } else {
+                    // console.log(data.Items);
+                    for (var i = 0; i < data.Items.length; i++) {
 
-                defered.resolve(data.Items);
-                // resolve
-            }
-        });
-        // return promise 
-        return defered.promise;
-    }
+                        userData.push(data.Items[i]);
+                    }
+                    //userData.push(data.Items);
+
+                    defered.resolve(userData);
+                    // resolve
+                }
+            });
+            // return promise 
+            return defered.promise;
+        },
+    };
 });
 
 
