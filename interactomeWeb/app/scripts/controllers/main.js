@@ -49,7 +49,11 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
 app.controller('SearchCtrl', function($scope, UserService, AwsService, SearchService) {
 
     var institution = $scope.searchByInstitution;
-    $scope.institution = [];
-    $scope.institution = SearchService.showResults(institution);
-    console.log("in search controller");
+
+    // once promise then set scope. 
+    SearchService.showResults(institution).then(function(userData) {
+        console.log(userData);
+        $scope.instituion = userData;
+    });
+
 });

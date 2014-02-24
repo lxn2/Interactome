@@ -37,7 +37,6 @@ angular.module('interactomeApp.Userservice', [])
         }
 
 
-
     };
     return service;
 });

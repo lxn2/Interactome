@@ -140,11 +140,12 @@ app.provider('AwsService', function() {
     }
 });
 
-app.service('SearchService', function() {
+app.service('SearchService', function($q) {
 
     this.showResults = function(institution) {
-
         var results = institution;
+        // make defered 
+        var defered = $q.defer();
 
         var userTable = new AWS.DynamoDB();
 
@@ -156,12 +157,10 @@ app.service('SearchService', function() {
                     "AttributeValueList": [{
 
 
-                            "S": results
+                        "S": results
 
-                        }
+                    }],
 
-
-                    ],
                     ComparisonOperator: "EQ"
                 }
             }
@@ -173,9 +172,13 @@ app.service('SearchService', function() {
                 console.log(err);
             } else {
                 console.log(data.Items);
-                return data.Items.toString();
+
+                defered.resolve(data.Items);
+                // resolve
             }
         });
+        // return promise 
+        return defered.promise;
     }
 });
 
