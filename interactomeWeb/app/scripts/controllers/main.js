@@ -37,13 +37,13 @@ angular.module('interactomeApp')
             }
         };
 
-        // Listen for broadcast of new abstract view selections
-        $rootScope.$on('handleAbstractModalBroadcast', function() {
-            $scope.modalTitle = Abstractmodalservice.abTitle;
-            $scope.modalFirstName = Abstractmodalservice.firstName;
-            $scope.modalLastName = Abstractmodalservice.lastName;
-            $scope.modalText = Abstractmodalservice.abText;
-        });
+        $scope.showAbstract = function(abTitle,firstName,lastName,abText)
+        {
+            $scope.modalTitle = abTitle;
+            $scope.modalFirstName = firstName;
+            $scope.modalLastName = lastName;
+            $scope.modalText = abText;
+        }
 
         // Listen for broadcasts of s3 event
         var cleanupS3 = $rootScope.$on(AwsService.s3Broadcast, function() {
