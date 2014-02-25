@@ -4,7 +4,7 @@
 **/
 angular.module('interactomeApp')
     .controller('MainCtrl', function($scope,$rootScope, UserService, AwsService, RecommendationService) {
-        $scope.abstractTargets = [];
+        $scope.abstractLinks = [];
         $scope.absRecd = null;
         // This function sets the user authentication from googleSignin directive. 
         $scope.signedIn = function(oauth) {
@@ -32,21 +32,18 @@ angular.module('interactomeApp')
                 //AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_req', abstractsChecked);
                 $scope.absRecd = "Number of abstracts used to get recommendations: " + absCount; // this is just to show off functionality
                 RecommendationService.getRecs(abstracts).then(function(paperList){
-                    var abstracts = [];
-                    for(var i = 0; i < paperList.length; i++)
-                        abstracts.push({id:paperList[i]});
-                    $scope.abstractTargets.length = 0;
-                    $scope.abstractTargets.push.apply($scope.abstractTargets, abstracts);
+                    $scope.abstractLinks.length = 0;
+                    $scope.abstractLinks.push.apply($scope.abstractLinks, paperList);
                 });
             }
         };
 
         // Listen for broadcasts of s3 event
         var cleanupS3 = $rootScope.$on(AwsService.s3Broadcast, function() {
-            var targets = AwsService.getLoadedS3Filenames();
+            var loadedLinks = AwsService.getLoadedS3Links();
             $scope.$apply(function () {
-                $scope.abstractTargets.length = 0; //clears array without removing the array's refference (needed for binding)
-                $scope.abstractTargets.push.apply($scope.abstractTargets, targets); // adding more than once requires an apply (not sure why)
+                $scope.abstractLinks.length = 0; //clears array without removing the array's refference (needed for binding)
+                $scope.abstractLinks.push.apply($scope.abstractLinks, loadedLinks); // adding more than once requires an apply (not sure why)
             });
         });
         //Unsubscribe to S3 (from http://stackoverflow.com/questions/18856341/how-can-i-unregister-a-broadcast-event-to-rootscope-in-angularjs)

@@ -11,7 +11,7 @@ angular.module('interactomeApp.Awsservice', [])
 // creating service type provider. Provider used to configure service before app runs.
 .provider('AwsService', function() {
     var self = this;
-    self.s3AbstractFilenames = []
+    self.s3AbstractLinks = []
     AWS.config.region = 'us-west-2';
     self.arn = null;
 
@@ -81,15 +81,14 @@ angular.module('interactomeApp.Awsservice', [])
                             'Loaded ' + data.Contents.length + ' items from S3';
 
                         // Clear the array and replace it with new abstracts
-                        self.s3AbstractFilenames.length = 0;
+                        self.s3AbstractLinks.length = 0;
                         // Not sure how to avoid hardcoding this url.
                         var urlBase = "https://s3-us-west-2.amazonaws.com/sagebionetworks-interactome-abstracts/";
                         var wholeLink = "";
                         for (var i = 0; i < 10; i++) {
                             wholeLink = urlBase + data.Contents[i].Key;
-                            self.s3AbstractFilenames.push({id:wholeLink});
+                            self.s3AbstractLinks.push(wholeLink);
                         }
-
                         // Broadcast that the abstracts are ready
                         $rootScope.$broadcast(_S3BROADCAST);
                     }
@@ -98,7 +97,7 @@ angular.module('interactomeApp.Awsservice', [])
 
             // Should only be called after the _getS3URLs' broadcast 
             // Will probably return undefined if called premature
-            getLoadedS3Filenames: function() {return self.s3AbstractFilenames},
+            getLoadedS3Links: function() {return self.s3AbstractLinks},
 
             // General way to post a msg to a topic.
             // Topics are stored inside of a hash for optimization.

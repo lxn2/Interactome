@@ -16,7 +16,7 @@ angular.module('interactomeApp.RecommendationService', [])
 
           var limit = 10 + abstractList.length; // min of abstracts needed to make sure no duplicates returned
           var sourceAbstracts = [];
-          
+
           // This will get the last index of / and grab the substring until the end of it.
           // This will create an array of just the Abstract####.json part of the url.
           for(var i = 0; i < abstractList.length; i++)
