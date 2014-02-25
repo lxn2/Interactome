@@ -7,7 +7,6 @@ angular.module('interactomeApp', [
     'interactomeApp.Userservice',
     'interactomeApp.RecommendationService',
     'ngRoute'
-    //'bootstrap.js'
 ])
 
 // Sets our AWS arn on config through Awsservice

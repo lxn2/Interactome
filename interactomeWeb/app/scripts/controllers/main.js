@@ -6,6 +6,11 @@ angular.module('interactomeApp')
     .controller('MainCtrl', function($scope,$rootScope, UserService, AwsService, RecommendationService) {
         $scope.abstractLinks = [];
         $scope.absRecd = null;
+        $scope.modalTitle = null;
+        $scope.modalFirstName = null;
+        $scope.modalLastName = null;
+        $scope.modalText = null;
+
         // This function sets the user authentication from googleSignin directive. 
         $scope.signedIn = function(oauth) {
             // Google authentication passed into userService to hold onto and track user.
@@ -37,6 +42,14 @@ angular.module('interactomeApp')
                 });
             }
         };
+
+        $scope.showAbstract = function(abTitle,firstName,lastName,abText)
+        {
+            $scope.modalTitle = abTitle;
+            $scope.modalFirstName = firstName;
+            $scope.modalLastName = lastName;
+            $scope.modalText = abText;
+        }
 
         // Listen for broadcasts of s3 event
         var cleanupS3 = $rootScope.$on(AwsService.s3Broadcast, function() {

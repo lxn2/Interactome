@@ -14,7 +14,7 @@ angular.module('interactomeApp')
       	scope: {
       		abstractLink: '@'
       	},
-		    controller: ['$scope', '$http', 'AwsService', function($scope, $http, AwsService) {
+		    controller: ['$scope', '$http', 'AwsService', 'Abstractmodalservice', function($scope, $http, AwsService, Abstractmodalservice) {
       		$scope.getS3Data = function() {
       			$http.get($scope.abstractLink).success(function(data){
       				$scope.s3Data = data;
@@ -44,6 +44,13 @@ angular.module('interactomeApp')
             }
           };
 
+          $scope.viewAbstract = function() {
+            Abstractmodalservice.prepForBroadcast($scope.s3Data.AbstractTitle,$scope.s3Data.FirstName[0],
+                $scope.s3Data.LastName,$scope.s3Data.Abstract); // broadcast new selection
+            
+            $('#myModals').modal('show'); // open modal
+          };
+
     	}],
     	template: '<li class="list-group-item">' +
                   '<h4 class="list-group-item-heading" ng-show="!noError"> ERROR. Could not find abstract. </h4>' +
@@ -54,6 +61,9 @@ angular.module('interactomeApp')
                     '</label>' +
                     '<label class="btn btn-primary" ng-click="dislikeClick()">' +
                       '<input type="radio" name="likeBtn" > <span class="glyphicon glyphicon-thumbs-down"></span>' +
+                    '</label>' +
+                    '<label class="btn btn-primary" ng-click="viewAbstract()">' +
+                      '<input type="radio" name="viewBtn" > <span class="glyphicon glyphicon-search"></span>' +
                     '</label>' +
                   '</div>' +
                   '<p>{{likeMsg}}</p>' +
