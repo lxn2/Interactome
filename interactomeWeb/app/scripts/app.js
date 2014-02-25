@@ -5,7 +5,7 @@ angular.module('interactomeApp', [
     'ngSanitize',
     'interactomeApp.Awsservice',
     'interactomeApp.Userservice',
-    'interactomeApp.Abstractmodalservice',
+    'interactomeApp.RecommendationService',
     'ngRoute'
 ])
 
