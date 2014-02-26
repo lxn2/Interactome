@@ -24,36 +24,86 @@
 </head>
 
 <!-- We do not use ng-app here because we bootstrap our app in app.js -->
-<body>
+
+<body ng-controller="MainCtrl">
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
     <!-- Add your site or application content here -->
-    <div class="container" ng-view=""></div>
+    <div class="container">
+        <!--Top Header holds the page title, logo, and google+ signin -->
+        <div id="header">
+            <!-- Google+ signin button -->
+            <div ng-show="!user" class="row">
+                <div google-signin client-id='796741862543' after-signin="signedIn(oauth)"></div>
+            </div>
+            <h1 id="logoHeader">Sage Bionetworks Interactome
+                <small>Prototype</small>
+            </h1>
+        </div>
+        <!-- userSearchPannel holds the search bar and filter -->
+        <div id="userSearchPanel">
+            <div id="jumbotronBanner" class="jumbotron">
+                <!--searchBar code -->
+                <div class="searchForm">
+                    <input id="searchBar" type="text" ng-model="searchByInstitution" placeholder="Search i.e. author, title, keywords" />
+                    <!--searchButton -->
+                    <button id="searchButton" type="submit" onclick=location.href="#searchView" class="btn btn-primary">Search</button>
+                   
 
-    <!-- Henry - Manually added Libraries -->
-   <!-- AWS CDN --> 
-    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.0.0-rc1.min.js"></script>
-    
-    <!-- Google+ Signin button library, note this had to be also loaded in google+ directive to ensure it showed up--> 
-    <script type="text/javascript">
-    (function() {
-        var po = document.createElement('script');
-        po.type = 'text/javascript';
-        po.async = true;
-        po.src = 'https://apis.google.com/js/client:plusone.js?onload=onLoadCallback';
-        var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(po, s);
-    })();
-    </script>
-    
-  
+                    <!-- bookmarksDropDown holds the user bookmark history, operates as a dropDown -->
+                    <div id="bookmarksDropDown" class="btn-group dropdown">
+                        <button type="button" class="btn dropdown-toggle btn-primary" data-toggle="dropdown" href="#">
+                            Saved Papers
+                            <span class="caret"></span>
+                        </button>
+                        <ul id="dropDownMenu" class="dropdown-menu">
+                            <li><a href="#">Folder 1</a>
+                            </li>
+                            <li><a href="#">Folder 2</a>
+                            </li>
+                            <li><a href="#">Folder 3</a>
+                            </li>
+                            <li><a href="#">Folder 4</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <br></br>
+                    <button id="testrecMod" type="button" onclick="recMod()" class="btn btn-primary">Test recMod()</button>
+                </div>
+            </div>
+        </div>
 
-    <!--[if lt IE 9]>
+        <div id="main">
+         <!-- Angular views are injected here -->
+         <div class="container" ng-view=""></div>
+
+        </div>
+
+        <!-- Henry - Manually added Libraries -->
+        <!-- AWS CDN -->
+        <script src="https://sdk.amazonaws.com/js/aws-sdk-2.0.0-rc1.min.js"></script>
+
+        <!-- Google+ Signin button library, note this had to be also loaded in google+ directive to ensure it showed up-->
+        <script type="text/javascript">
+        (function() {
+            var po = document.createElement('script');
+            po.type = 'text/javascript';
+            po.async = true;
+            po.src = 'https://apis.google.com/js/client:plusone.js?onload=onLoadCallback';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(po, s);
+        })();
+        </script>
+
+      <!-- End of Henry's super cute manually added libraries, i love kitties --> 
+
+        <!--[if lt IE 9]>
     <script src="bower_components/es5-shim/es5-shim.js"></script>
     <script src="bower_components/json3/lib/json3.min.js"></script>
     <![endif]-->
+
 
     <!-- build:js scripts/vendor.js -->
     <!-- bower:js -->
@@ -76,6 +126,7 @@
     <script src="scripts/directives/abstractListGroupItem.js"></script>
     <script src="scripts/services/RecommendationService.js"></script>
     <!-- endbuild -->
+
 
 </body>
 

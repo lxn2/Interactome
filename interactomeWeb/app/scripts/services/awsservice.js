@@ -2,14 +2,21 @@
 /**
     This service handles the AWS resources. Setting or getting, should be through this API.
 
+
+var app = angular.module('interactomeApp.Awsservice', []);
+
+
+// creating service type provider. Provider used to configure service before app runs. 
+app.provider('AwsService', function() {
+
     I decided to use an observer pattern for notifying subscribers instead of $watch and $digest. I couldn't seem to get them to bind correctly
     when trying to use the mainCtrl. The observer pattern is slightly more wordy
 **/
-angular.module('interactomeApp.Awsservice', [])
+var app = angular.module('interactomeApp.AwsService', [])
 
 
 // creating service type provider. Provider used to configure service before app runs.
-.provider('AwsService', function() {
+app.provider('AwsService', function() {
     var self = this;
     self.s3AbstractLinks = []
     AWS.config.region = 'us-west-2';
@@ -33,7 +40,9 @@ angular.module('interactomeApp.Awsservice', [])
         return {
 
             // Simple getters / constants
-            credentials: function() { return credentialsPromise; },
+            credentials: function() {
+                return credentialsPromise;
+            },
             s3Broadcast: _S3BROADCAST,
 
             setToken: function(token) {
@@ -50,6 +59,7 @@ angular.module('interactomeApp.Awsservice', [])
                 credentialsDefer
                     .resolve(AWS.config.credentials);
 
+
                 // Refactor Warning: this should probably just be an event that is broadcasted letting subscribers know that credentials have been loaded.
                 this._getS3URLs();
 
@@ -65,6 +75,7 @@ angular.module('interactomeApp.Awsservice', [])
                 - Nathan
             **/
             _getS3URLs: function() {
+
                 // Simply list 10 abstracts json files on page to show connection to S3, will place in proper angular architecture later
                 var bucket = new AWS.S3({
                     params: {
@@ -97,51 +108,63 @@ angular.module('interactomeApp.Awsservice', [])
 
             // Should only be called after the _getS3URLs' broadcast 
             // Will probably return undefined if called premature
-            getLoadedS3Links: function() {return self.s3AbstractLinks},
+            getLoadedS3Links: function() {
+                return self.s3AbstractLinks
+            },
 
             // General way to post a msg to a topic.
             // Topics are stored inside of a hash for optimization.
-            postMessageToSNS: function (topicArn, msg) {
-                if(!topicArn || !msg) {
+            postMessageToSNS: function(topicArn, msg) {
+                if (!topicArn || !msg) {
                     console.log("postMessageToSNS param error. topicArn: " + topicArn + " msg: " + msg);
                     return;
                 }
 
                 // We store the SNS on first topic usage to avoid multiple instantiations
-                var sns = _SNSTopics[topicArn]; 
+                var sns = _SNSTopics[topicArn];
                 if (sns == undefined) {
-                    sns = new AWS.SNS({params: {TopicArn: topicArn}});
+                    sns = new AWS.SNS({
+                        params: {
+                            TopicArn: topicArn
+                        }
+                    });
                     _SNSTopics[topicArn] = sns;
                 }
 
-                sns.publish({Message: msg}, function (err, data) {
+                sns.publish({
+                    Message: msg
+                }, function(err, data) {
                     // if (!err) console.log(publishedmsg);
                 });
-                
             },
 
             // Adds the abstractId into either the "Likes" or "Dislikes" attribute in "Interactions."
             // Was unsure about naming conventions with get, set, post etc.
-            updateDynamoPref: function (absId, liked) {
-                var interTable = new AWS.DynamoDB({params: {TableName: 'Interactions'}});
+            updateDynamoPref: function(absId, liked) {
+                var interTable = new AWS.DynamoDB({
+                    params: {
+                        TableName: 'Interactions'
+                    }
+                });
 
-                if(liked){
+                if (liked) {
                     var params = {
                         AttributesToGet: [
-                        'Dislikes'],
-                        Key : { 
-                            "Id" : {
-                                "S" : 'GeneralThread'
+                            'Dislikes'
+                        ],
+                        Key: {
+                            "Id": {
+                                "S": 'GeneralThread'
                             }
                         }
                     };
 
                     // Unfinished - once done this will check to see if the abstract exists in the dislikes
                     // attribute, if so it will remove it. 
-                    interTable.getItem(params, function(err, data){
-                        if(err)
+                    interTable.getItem(params, function(err, data) {
+                        if (err)
                             console.log("Error: " + err);
-                        else{
+                        else {
                             // Check if abstract in Dislikes then remove and place in likes
                         }
                     });
@@ -150,7 +173,7 @@ angular.module('interactomeApp.Awsservice', [])
                     var likesArr = [absId];
 
                     var updateParams = {
-                        Key: { 
+                        Key: {
                             "Id": {
                                 "S": 'GeneralThread'
                             }
@@ -158,7 +181,7 @@ angular.module('interactomeApp.Awsservice', [])
                         AttributeUpdates: {
                             "Likes": {
                                 "Action": "ADD",
-                                "Value" : {
+                                "Value": {
                                     "SS": likesArr
                                 }
                             }
@@ -166,39 +189,40 @@ angular.module('interactomeApp.Awsservice', [])
                     }
 
                     // Update our table to include the new abstract
-                    interTable.updateItem(updateParams, function(err, data){
-                        if(err)
+                    interTable.updateItem(updateParams, function(err, data) {
+                        if (err)
                             console.log("Error: " + err);
-                        else{
+                        else {
                             console.log("Success!" + data)
                         }
                     });
 
-                }else{
+                } else {
                     // almost identical to likes
                     var params = {
                         AttributesToGet: [
-                        'Likes'],
-                        Key : { 
-                            "Id" : {
-                                "S" : 'GeneralThread'
+                            'Likes'
+                        ],
+                        Key: {
+                            "Id": {
+                                "S": 'GeneralThread'
                             }
                         }
                     };
 
-                    interTable.getItem(params, function(err, data){
-                        if(err)
+                    interTable.getItem(params, function(err, data) {
+                        if (err)
                             console.log("Error: " + err);
-                        else{
+                        else {
                             // Check if abstract in Likes then remove and place in likes
                         }
                     });
 
-                    
+
                     var dislikesArr = [absId];
 
                     var updateParams = {
-                        Key: { 
+                        Key: {
                             "Id": {
                                 "S": 'GeneralThread'
                             }
@@ -206,7 +230,7 @@ angular.module('interactomeApp.Awsservice', [])
                         AttributeUpdates: {
                             "Dislikes": {
                                 "Action": "ADD",
-                                "Value" : {
+                                "Value": {
                                     "SS": dislikesArr
                                 }
                             }
@@ -214,10 +238,10 @@ angular.module('interactomeApp.Awsservice', [])
                     }
 
                     // Update our table to include the new abstract
-                    interTable.updateItem(updateParams, function(err, data){
-                        if(err)
+                    interTable.updateItem(updateParams, function(err, data) {
+                        if (err)
                             console.log("Error: " + err);
-                        else{
+                        else {
                             console.log("Success!" + data)
                         }
                     });
@@ -229,3 +253,67 @@ angular.module('interactomeApp.Awsservice', [])
         } // end of return 
     }
 });
+
+app.factory('SearchService', function($q) {
+
+    // factory returns entire service as object 
+    return {
+        showResults: function(institution) {
+            var results = institution;
+            var defered = $q.defer(); // set up defered for asyncronous calls to Dynamo 
+
+            var userTable = new AWS.DynamoDB();
+            // Set params for query 
+            var params = {
+                TableName: 'User',
+                IndexName: 'InstitutionName-index',
+                KeyConditions: {
+                    "InstitutionName": {
+                        "AttributeValueList": [{
+
+
+                            "S": results
+
+                        }],
+
+                        ComparisonOperator: "EQ"
+                    }
+                }
+            };
+
+            var userData = [];
+            // run query 
+            userTable.query(params, function(err, data) {
+                if (err) {
+
+                    console.log(err);
+                } else {
+
+                    for (var i = 0; i < data.Items.length; i++) {
+
+                        userData.push(data.Items[i]);
+                    }
+
+                    // resolve defered 
+                    defered.resolve(userData);
+
+                }
+            });
+            // return promise 
+            return defered.promise;
+        },
+    };
+});
+
+
+
+
+
+
+
+
+/* Yo build came with this, commented it out. 
+.service('Awsservice', function Awsservice() {
+    // AngularJS will instantiate a singleton by calling "new" on this function
+});
+*/

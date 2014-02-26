@@ -1,76 +1,33 @@
-<div class="container">
-    <!--Top Header holds the page title, logo, and google+ signin -->
-    <div id="header">
-        <!-- Google+ signin button -->
-        <div ng-show="!user" class="row">
-            <div google-signin client-id='796741862543' after-signin="signedIn(oauth)"></div>
-        </div>
-        <h1 id="logoHeader">Sage Bionetworks Interactome
-            <small>Prototype</small>
-        </h1>
-    </div>
-    <!-- userSearchPannel holds the search bar and filter -->
-    <div id="userSearchPanel">
-        <div id="jumbotronBanner" class="jumbotron">
-            <!--searchBar code -->
-            <div class="searchForm">
-                <input id="searchBar" type="text" placeholder="Search i.e. author, title, keywords" ng-model="newSearchHistory" />
-                <!--searchButton -->
-                <button id="searchButton" type="button" class="btn btn-primary">Search</button>
-                <!-- bookmarksDropDown holds the user bookmark history, operates as a dropDown -->
-                <div id="bookmarksDropDown" class="btn-group dropdown">
-                    <button type="button" class="btn dropdown-toggle btn-primary" data-toggle="dropdown" href="#">
-                        Saved Papers
-                        <span class="caret"></span>
-                    </button>
-                    <ul id="dropDownMenu" class="dropdown-menu">
-                        <li><a href="#">Folder 1</a>
-                        </li>
-                        <li><a href="#">Folder 2</a>
-                        </li>
-                        <li><a href="#">Folder 3</a>
-                        </li>
-                        <li><a href="#">Folder 4</a>
-                        </li>
-                    </ul>
-                </div>
-                <br></br>
-                <button id="testrecMod" type="button" onclick="recMod()" class="btn btn-primary">Test recMod()</button>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- modal to be bootstrapped for abstract views -->
-    <div class="modal fade" id="abstractViewModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
+<!-- modal to be bootstrapped for abstract views -->
+<div class="modal fade" id="abstractViewModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title" id="myModalLabel">{{modalTitle}}</h4>
-            <h5 class="modal-title" id="myModalAuthor">{{modalFirstName}} {{modalLastName}}</h5>
-          </div>
-          <div class="modal-body">
-            {{modalText}}
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- filled in by AwsService --> 
-        <div id="status" ></div>
-        <ul id="objects" class="list-group">
-            <!-- this uses the mainctrl (it's attached to the route) -->
-            <div ng-repeat="abLink in abstractLinks">
-                <abstract-list-group-item abstract-link={{abLink}} on-view="showAbstract(abTitle,abFirst,abLast,abText)"> </abstract-list-group-item>
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">{{modalTitle}}</h4>
+                <h5 class="modal-title" id="myModalAuthor">{{modalFirstName}} {{modalLastName}}</h5>
             </div>
-        </ul>
-        <button id="testSelection" type="button" ng-click="abstractsRec()" class="btn btn-primary">Get Recs</button>
-        {{absRecd}}
-        <br></br>
-        <ul id ="abstracts"><ul>
-        
+            <div class="modal-body">
+                {{modalText}}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- filled in by AwsService -->
+<div id="status"></div>
+<ul id="objects" class="list-group">
+
+    <!-- this uses the mainctrl (it's attached to the route) -->
+    <div ng-repeat="abLink in abstractLinks">
+        <abstract-list-group-item abstract-link={{abLink}} on-view="showAbstract(abTitle,abFirst,abLast,abText)"></abstract-list-group-item>
+    </div>
+</ul>
+<button id="testSelection" type="button" ng-click="abstractsRec()" class="btn btn-primary">Get Recs</button>
+{{absRecd}}
+<br></br>
+<ul id="abstracts">
+    <ul>
