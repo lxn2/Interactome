@@ -65,7 +65,7 @@
         <ul id="objects" class="list-group">
             <!-- this uses the mainctrl (it's attached to the route) -->
             <div ng-repeat="abLink in abstractLinks">
-                <abstract-list-group-item abstract-link={{abLink}}> </abstract-list-group-item>
+                <abstract-list-group-item abstract-link={{abLink}} on-view="showAbstract(abTitle,abFirst,abLast,abText)"> </abstract-list-group-item>
             </div>
         </ul>
         <button id="testSelection" type="button" ng-click="abstractsRec()" class="btn btn-primary">Get Recs</button>
