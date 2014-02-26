@@ -9,9 +9,10 @@ angular.module('interactomeApp')
     return {	
       	restrict: 'E',
       	scope: {
-      		abstractId: '@'
+      		abstractId: '@',
+          localOnView: '&onView'
       	},
-		    controller: ['$scope', '$http', 'AwsService', 'Abstractmodalservice', function($scope, $http, AwsService, Abstractmodalservice) {
+		    controller: ['$scope', '$http', 'AwsService', function($scope, $http, AwsService) {
       		$scope.getS3Data = function() {
       			$http.get(urlBase + $scope.abstractId).success(function(data){
       				$scope.s3Data = data;
@@ -39,10 +40,8 @@ angular.module('interactomeApp')
           };
 
           $scope.viewAbstract = function() {
-            Abstractmodalservice.prepForBroadcast($scope.s3Data.AbstractTitle,$scope.s3Data.FirstName[0],
-                $scope.s3Data.LastName,$scope.s3Data.Abstract); // broadcast new selection
-            
-            $('#myModals').modal('show'); // open modal
+            $scope.localOnView({abTitle: $scope.s3Data.AbstractTitle,abFirst: $scope.s3Data.FirstName[0],abLast: $scope.s3Data.LastName,abText: $scope.s3Data.Abstract});
+            $('#abstractViewModal').modal('show'); // open modal
           };
 
     	}],
@@ -54,10 +53,10 @@ angular.module('interactomeApp')
                     '<label class="btn btn-primary" ng-click="dislikeClick()">' +
                       '<input type="radio" name="likeBtn" > <span class="glyphicon glyphicon-thumbs-down"></span>' +
                     '</label>' +
-                    '<label class="btn btn-primary" ng-click="viewAbstract()">' +
-                      '<input type="radio" name="viewBtn" > <span class="glyphicon glyphicon-search"></span>' +
-                    '</label>' +
                   '</div>' +
+                  '<button type="button" class="btn btn-primary" name="viewBtn" ng-click="viewAbstract()">' +
+                      '<span class="glyphicon glyphicon-search"></span>' +
+                  '</button>' +
                   '<p>{{likeMsg}}</p>' +
         	        '<h4 class="list-group-item-heading"> {{s3Data.AbstractTitle}} </h4>' +
             	    '<input type="checkbox" class="pull-right abstractChck" value="{{abstractId}}">' +

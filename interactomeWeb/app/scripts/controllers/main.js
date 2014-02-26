@@ -3,7 +3,7 @@
     This is the main controller of the application. This controller should have logic for the main (always running?) parts of the website.
 **/
 angular.module('interactomeApp')
-    .controller('MainCtrl', function($scope,$rootScope, UserService, AwsService, Abstractmodalservice) {
+    .controller('MainCtrl', function($scope,$rootScope, UserService, AwsService) {
         $scope.abstractTargets = [];
         $scope.absRecd = null;
         $scope.modalTitle = null;
