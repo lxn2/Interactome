@@ -13,8 +13,8 @@ angular.module('interactomeApp')
       	restrict: 'E',
       	scope: {      	
           localOnView: '&onView',
-      		abstractLink: '@'
-
+      		abstractLink: '@',
+          abstractId: '@'
       	},
 		    controller: ['$scope', '$http', 'AwsService', function($scope, $http, AwsService) {
       		$scope.getS3Data = function() {

@@ -6,7 +6,7 @@ var app = angular.module('interactomeApp');
 
 app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService, RecommendationService) {
     console.log("made conteoller");
-    $scope.abstractLinks = [];
+    $scope.papers = [];
 
     $scope.absRecd = null;
     $scope.modalTitle = null;
@@ -39,8 +39,8 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
             //AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_req', abstractsChecked);
             $scope.absRecd = "Number of abstracts used to get recommendations: " + absCount; // this is just to show off functionality
             RecommendationService.getRecs(abstracts).then(function(paperList) {
-                $scope.abstractLinks.length = 0;
-                $scope.abstractLinks.push.apply($scope.abstractLinks, paperList);
+                $scope.papers.length = 0;
+                $scope.papers.push.apply($scope.papers, paperList);
             });
         }
     };
@@ -55,8 +55,8 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
     // Listen for broadcasts of a token changing (this means AWS resources are available)
     var cleanupToken = $rootScope.$on(AwsService.tokenSetBroadcast, function() {
         AwsService.getPapers(10).then(function(paperList) {
-                $scope.abstractLinks.length = 0;
-                $scope.abstractLinks.push.apply($scope.abstractLinks, paperList);
+                $scope.papers.length = 0;
+                $scope.papers.push.apply($scope.papers, paperList);
             });
     });
 

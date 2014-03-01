@@ -18,7 +18,6 @@ var app = angular.module('interactomeApp.AwsService', [])
 // creating service type provider. Provider used to configure service before app runs.
 app.provider('AwsService', function() {
     var self = this;
-    self.s3AbstractLinks = []
     AWS.config.region = 'us-west-2';
     self.arn = null;
 
@@ -46,7 +45,6 @@ app.provider('AwsService', function() {
             tokenSetBroadcast: _TOKENBROADCAST,
 
             setToken: function(token) {
-                console.log("set tokens");
                 var config = {
                     RoleArn: self.arn,
                     WebIdentityToken: token,
@@ -75,15 +73,13 @@ app.provider('AwsService', function() {
                 var scanParams = {Limit: limit};
                 if (self._lastEvalKey != null)
                     scanParams.ExclusiveStartKey = self._lastEvalKey;
-                console.log(scanParams);
 
                 paperTable.scan(scanParams, function(err, data) {
                     if (err)
                         console.log(err);
                     else {
-                        console.log(data);
                         for (var i=0; i < data.Items.length; i++) {
-                            papers.push({Id:data.Items[i].Id.S, Link: data.Items[i].Link.S})
+                            papers.push({ Id: data.Items[i].Id.S, Link: data.Items[i].Link.S });
                         }
                         self._lastEvalKey = data.LastEvaluatedKey;
                         paperDefer.resolve(papers);

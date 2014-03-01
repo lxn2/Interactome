@@ -34,7 +34,7 @@ angular.module('interactomeApp.RecommendationService', [])
                   var fullLink = data.Items[i].Link.S;
                   var endOfLink = fullLink.substr(fullLink.lastIndexOf("/")+1);
                   if (sourceAbstracts.indexOf(endOfLink) == -1 )// not in list sent in
-                    returnedPapers.push(fullLink)
+                    returnedPapers.push({Id:data.Items[i].Id.S, Link: data.Items[i].Link.S})
                 }
                 defered.resolve(returnedPapers);
               }
