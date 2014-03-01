@@ -33,7 +33,7 @@ app.provider('AwsService', function() {
 
 
     self.$get = function($q, $cacheFactory, $http, $rootScope) {
-        var _S3BROADCAST = 's3Abstracts@AwsService';
+        var _TOKENBROADCAST = 'tokenSet@AwsService';
         var credentialsDefer = $q.defer();
         var credentialsPromise = credentialsDefer.promise;
         var _SNSTopics = {};
@@ -43,9 +43,10 @@ app.provider('AwsService', function() {
             credentials: function() {
                 return credentialsPromise;
             },
-            s3Broadcast: _S3BROADCAST,
+            tokenSetBroadcast: _TOKENBROADCAST,
 
             setToken: function(token) {
+                console.log("set tokens");
                 var config = {
                     RoleArn: self.arn,
                     WebIdentityToken: token,
@@ -60,56 +61,36 @@ app.provider('AwsService', function() {
                     .resolve(AWS.config.credentials);
 
 
-                // Refactor Warning: this should probably just be an event that is broadcasted letting subscribers know that credentials have been loaded.
-                this._getS3URLs();
-
+                // Let anyone listening that AWS resources can now be used
+                self._lastEvalKey = null;
+                $rootScope.$broadcast(_TOKENBROADCAST);
             }, // end of setToken func 
 
-            /**
-                This will eventually change once we get the recmod up and going (it will feed how we get abstracts).
-                I believe it is also bad form to manipulate the dom from inside of a service.
-                However, this fits our needs for now.
+            // Gets the next limit number of papers from dynamo
+            // This will eventually be done using the rec service (instead of scanning)
+            getPapers: function(limit) {
+                var paperDefer = $q.defer();
+                var papers = [];
+                var paperTable = new AWS.DynamoDB({params: {TableName: "Paper"}});
+                var scanParams = {Limit: limit};
+                if (self._lastEvalKey != null)
+                    scanParams.ExclusiveStartKey = self._lastEvalKey;
+                console.log(scanParams);
 
-                Note: I'm not sure if this should go on the outside of $get or not. I'm not going to worry about it for now as this will go away anyway 
-                    after rec is implemented.
-                - Nathan
-            **/
-            _getS3URLs: function() {
-
-                // Simply list 10 abstracts json files on page to show connection to S3, will place in proper angular architecture later
-                var bucket = new AWS.S3({
-                    params: {
-                        Bucket: 'sagebionetworks-interactome-abstracts'
-                    }
-                });
-                bucket.listObjects(function(err, data) {
-                    if (err) {
-                        document.getElementById('status').innerHTML =
-                            'Could not load objects from S3';
+                paperTable.scan(scanParams, function(err, data) {
+                    if (err)
                         console.log(err);
-                    } else {
-                        document.getElementById('status').innerHTML =
-                            'Loaded ' + data.Contents.length + ' items from S3';
-
-                        // Clear the array and replace it with new abstracts
-                        self.s3AbstractLinks.length = 0;
-                        // Not sure how to avoid hardcoding this url.
-                        var urlBase = "https://s3-us-west-2.amazonaws.com/sagebionetworks-interactome-abstracts/";
-                        var wholeLink = "";
-                        for (var i = 0; i < 10; i++) {
-                            wholeLink = urlBase + data.Contents[i].Key;
-                            self.s3AbstractLinks.push(wholeLink);
+                    else {
+                        console.log(data);
+                        for (var i=0; i < data.Items.length; i++) {
+                            papers.push({Id:data.Items[i].Id.S, Link: data.Items[i].Link.S})
                         }
-                        // Broadcast that the abstracts are ready
-                        $rootScope.$broadcast(_S3BROADCAST);
+                        self._lastEvalKey = data.LastEvaluatedKey;
+                        paperDefer.resolve(papers);
                     }
                 });
-            },
 
-            // Should only be called after the _getS3URLs' broadcast 
-            // Will probably return undefined if called premature
-            getLoadedS3Links: function() {
-                return self.s3AbstractLinks
+                return paperDefer.promise;
             },
 
             // General way to post a msg to a topic.
