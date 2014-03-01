@@ -16,7 +16,7 @@ angular.module('interactomeApp')
       		abstractLink: '@'
 
       	},
-		    controller: ['$scope', '$http', 'AwsService', function($scope, $http, AwsService) {
+		    controller: ['$scope', '$http', 'AwsService', 'UserService', function($scope, $http, AwsService, UserService) {
       		$scope.getS3Data = function() {
       			$http.get($scope.abstractLink).success(function(data){
       				$scope.s3Data = data;
@@ -31,7 +31,7 @@ angular.module('interactomeApp')
               $scope.likeMsg = " Liked abstract recommendation. ID = " + $scope.abstractLink;
               AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_liked', $scope.abstractLink);
               $scope.likeStatus = true; // true == liked
-              AwsService.updateDynamoPref($scope.abstractLink, $scope.likeStatus);
+              AwsService.updateDynamoPref($scope.abstractLink, $scope.likeStatus, UserService.currentUsername());
 
             }
           };
@@ -41,7 +41,7 @@ angular.module('interactomeApp')
               $scope.likeMsg = " Disliked abstract recommendation";
               AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_disliked', $scope.abstractLink);
               $scope.likeStatus = false; // false == disliked
-              AwsService.updateDynamoPref($scope.abstractLink, $scope.likeStatus);
+              AwsService.updateDynamoPref($scope.abstractLink, $scope.likeStatus, UserService.currentUsername());
 
             }
           };
