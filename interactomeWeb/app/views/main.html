@@ -23,7 +23,7 @@
 
     <!-- this uses the mainctrl (it's attached to the route) -->
     <div ng-repeat="paper in papers">
-        <abstract-list-group-item abstract-link={{paper.Link}} abstract-id={{paper.Id}} on-view="showAbstract(abTitle,abFirst,abLast,abText)"></abstract-list-group-item>
+        <abstract-list-group-item paper="paper" on-view="showAbstract(abTitle,abFirst,abLast,abText)"></abstract-list-group-item>
     </div>
 </ul>
 <button id="testSelection" type="button" ng-click="abstractsRec()" class="btn btn-primary">Get Recs</button>
