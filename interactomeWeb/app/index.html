@@ -31,54 +31,64 @@
     <![endif]-->
 
     <!-- Add your site or application content here -->
-    <div class="container">
+    <div class="container-fluid">
         <!--Top Header holds the page title, logo, and google+ signin -->
-        <div id="header">
-            <!-- Google+ signin button -->
-            <div ng-show="!user" class="row">
-                <div google-signin client-id='796741862543' after-signin="signedIn(oauth)"></div>
-            </div>
-            <h1 id="logoHeader">Sage Bionetworks Interactome
-                <small>Prototype</small>
-            </h1>
-        </div>
-        <!-- userSearchPannel holds the search bar and filter -->
-        <div id="userSearchPanel">
-            <div id="jumbotronBanner" class="jumbotron">
-                <!--searchBar code -->
-                <div class="searchForm">
-                    <input id="searchBar" type="text" ng-model="searchByInstitution" placeholder="Search i.e. author, title, keywords" />
-                    <!--searchButton -->
-                    <button id="searchButton" type="submit" onclick=location.href="#searchView" class="btn btn-primary">Search</button>
-                   
-
-                    <!-- bookmarksDropDown holds the user bookmark history, operates as a dropDown -->
-                    <div id="bookmarksDropDown" class="btn-group dropdown">
-                        <button type="button" class="btn dropdown-toggle btn-primary" data-toggle="dropdown" href="#">
-                            Saved Papers
-                            <span class="caret"></span>
-                        </button>
-                        <ul id="dropDownMenu" class="dropdown-menu">
-                            <li><a href="#">Folder 1</a>
-                            </li>
-                            <li><a href="#">Folder 2</a>
-                            </li>
-                            <li><a href="#">Folder 3</a>
-                            </li>
-                            <li><a href="#">Folder 4</a>
-                            </li>
-                        </ul>
+        <div class="row"> 
+            <div class="col-md-9"> 
+                <div id="header">
+                    <!-- Google+ signin button -->
+                    <div ng-show="!user" class="row">
+                        <div google-signin client-id='796741862543' after-signin="signedIn(oauth)"></div>
                     </div>
+                    <h1 id="logoHeader">Sage Bionetworks Interactome
+                        <small>Prototype</small>
+                    </h1>
+                </div>  
+                <div>
+                    <!-- userSearchPannel holds the search bar and filter -->
+                    <div id="userSearchPanel">
+                        <div id="jumbotronBanner" class="jumbotron">
+                            <!--searchBar code -->
+                            <div class="searchForm">
+                                <input id="searchBar" type="text" ng-model="searchByInstitution" placeholder="Search i.e. author, title, keywords" />
+                                <!--searchButton -->
+                                <button id="searchButton" type="submit" onclick=location.href="#searchView" class="btn btn-primary">Search</button>
+                               
+
+                                <!-- bookmarksDropDown holds the user bookmark history, operates as a dropDown -->
+                                <div id="bookmarksDropDown" class="btn-group dropdown">
+                                    <button type="button" class="btn dropdown-toggle btn-primary" data-toggle="dropdown" href="#">
+                                        Saved Papers
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul id="dropDownMenu" class="dropdown-menu">
+                                        <li><a href="#">Folder 1</a>
+                                        </li>
+                                        <li><a href="#">Folder 2</a>
+                                        </li>
+                                        <li><a href="#">Folder 3</a>
+                                        </li>
+                                        <li><a href="#">Folder 4</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="main">
+                     <!-- Angular views are injected here -->
+                     <div class="container" ng-view=""></div>
+
+                    </div> 
+                </div>
+            </div>
+            <div class="col-md-3" id="topics-bar-wrapper">
+                <div id="topics-bar" data-spy="affix" data-offset-top="30" data-offset-bottom="200" >
+                    <button>hello</button>
                 </div>
             </div>
         </div>
-
-        <div id="main">
-         <!-- Angular views are injected here -->
-         <div class="container" ng-view=""></div>
-
-        </div>
-
         <!-- Henry - Manually added Libraries -->
         <!-- AWS CDN -->
         <script src="https://sdk.amazonaws.com/js/aws-sdk-2.0.0-rc1.min.js"></script>
@@ -96,6 +106,14 @@
         </script>
 
       <!-- End of Henry's super cute manually added libraries, i love kitties --> 
+
+        <!-- <script type="text/javascript">
+            $(function() {
+                $('#topics-bar-wrapper').width($("#topics-bar").width());
+                $("#topics-bar").affix({offset: {top: $('$topics-bar').offset().top}});
+                alert('something');
+            });
+        </script> -->
 
         <!--[if lt IE 9]>
     <script src="bower_components/es5-shim/es5-shim.js"></script>
