@@ -14,7 +14,7 @@ var app = angular.module('interactomeApp', [
 app.config(function(AwsServiceProvider) {
     AwsServiceProvider
         .setArn(
-            'arn:aws:iam::005837367462:role/newRole');
+            'arn:aws:iam::005837367462:role/interactomeRole');
 });
 
 
