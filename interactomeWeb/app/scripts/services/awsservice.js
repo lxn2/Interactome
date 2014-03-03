@@ -140,12 +140,8 @@ app.provider('AwsService', function() {
 
             // Adds the abstractId into either the "Likes" or "Dislikes" attribute in "Interactions."
             // Was unsure about naming conventions with get, set, post etc.
-            updateDynamoPref: function(absId, liked) {
-                var interTable = new AWS.DynamoDB({
-                    params: {
-                        TableName: 'Interactions'
-                    }
-                });
+            updateDynamoPref: function(absId, liked, username) {
+                var recLikesTable = new AWS.DynamoDB({ params: { TableName: 'Recommendation_Likes' } });
 
                 if (liked) {
                     var params = {
@@ -153,7 +149,10 @@ app.provider('AwsService', function() {
                             'Dislikes'
                         ],
                         Key: {
-                            "Id": {
+                            "User": {
+                                "S": username
+                            },
+                            "Context": { 
                                 "S": 'GeneralThread'
                             }
                         }
@@ -161,7 +160,7 @@ app.provider('AwsService', function() {
 
                     // Unfinished - once done this will check to see if the abstract exists in the dislikes
                     // attribute, if so it will remove it. 
-                    interTable.getItem(params, function(err, data) {
+                    recLikesTable.getItem(params, function(err, data) {
                         if (err)
                             console.log("Error: " + err);
                         else {
@@ -174,7 +173,10 @@ app.provider('AwsService', function() {
 
                     var updateParams = {
                         Key: {
-                            "Id": {
+                            "User": {
+                                "S": username
+                            },
+                            "Context": { 
                                 "S": 'GeneralThread'
                             }
                         },
@@ -189,7 +191,7 @@ app.provider('AwsService', function() {
                     }
 
                     // Update our table to include the new abstract
-                    interTable.updateItem(updateParams, function(err, data) {
+                    recLikesTable.updateItem(updateParams, function(err, data) {
                         if (err)
                             console.log("Error: " + err);
                         else {
@@ -204,13 +206,16 @@ app.provider('AwsService', function() {
                             'Likes'
                         ],
                         Key: {
-                            "Id": {
+                            "User": {
+                                "S": username
+                            },
+                            "Context": { 
                                 "S": 'GeneralThread'
                             }
                         }
                     };
 
-                    interTable.getItem(params, function(err, data) {
+                    recLikesTable.getItem(params, function(err, data) {
                         if (err)
                             console.log("Error: " + err);
                         else {
@@ -223,7 +228,10 @@ app.provider('AwsService', function() {
 
                     var updateParams = {
                         Key: {
-                            "Id": {
+                            "User": {
+                                "S": username
+                            },
+                            "Context": { 
                                 "S": 'GeneralThread'
                             }
                         },
@@ -238,7 +246,7 @@ app.provider('AwsService', function() {
                     }
 
                     // Update our table to include the new abstract
-                    interTable.updateItem(updateParams, function(err, data) {
+                    recLikesTable.updateItem(updateParams, function(err, data) {
                         if (err)
                             console.log("Error: " + err);
                         else {

@@ -13,13 +13,14 @@ angular.module('interactomeApp.Userservice', [])
 .factory('UserService', function($q, $http, AwsService) {
     var service = {
         _user: null,
+        _username: "Ball hard 24/7",
         Bucket: 'sagebionetworks-interactome-abstracts',
-        setCurrentUser: function(u) {
+        setCurrentOAuthUser: function(u) {
             if (u && !u.error) {
                 service._user = u;
                 AwsService.setToken(u.id_token);
 
-                return service.currentUser();
+                return service.currentOAuthUser();
 
             } else {
                 // If google authentication has error the promise is defered and rejected, 
@@ -29,12 +30,14 @@ angular.module('interactomeApp.Userservice', [])
                 return d.promise;
             }
         },
-        currentUser: function() {
+        currentOAuthUser: function() {
             var d = $q.defer();
             d.resolve(service._user);
             return d.promise;
 
-        }
+        },
+
+        currentUsername: function () { return service._username; }
 
 
     };
