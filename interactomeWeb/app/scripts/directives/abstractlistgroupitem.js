@@ -23,6 +23,10 @@ angular.module('interactomeApp')
               $scope.noError = true;
       			}).error(function() {
               $scope.noError = false;
+              // Could add more logic here to customize the error message.
+              // This error message also makes it so that the listgroupitem doesn't display error
+              // before being completely loaded.
+              $scope.errorMsg = "ERROR. Could not find abstract.";
             })
       		};
 
@@ -53,7 +57,7 @@ angular.module('interactomeApp')
 
     	}],
     	template: '<li class="list-group-item">' +
-                  '<h4 class="list-group-item-heading" ng-show="!noError"> ERROR. Could not find abstract. </h4>' +
+                  '<h4 class="list-group-item-heading" ng-show="!noError"> {{errorMsg}} </h4>' +
                   '<div ng-show="noError">' +
                   '<div class="btn-group" data-toggle="buttons">' +
                     '<label class="btn btn-primary" ng-click="likeClick()">' +
