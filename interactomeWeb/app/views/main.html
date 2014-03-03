@@ -22,9 +22,7 @@
 <ul id="objects" class="list-group">
 
     <!-- this uses the mainctrl (it's attached to the route) -->
- 
-
-    <div ng-repeat="abLink in abstractLinks">
+    <div ng-repeat="abLink in filteredAbs">
         <abstract-list-group-item abstract-link={{abLink}} on-view="showAbstract(abTitle,abFirst,abLast,abText)"></abstract-list-group-item>
     </div>
 </ul>
@@ -32,14 +30,12 @@
 {{absRecd}}
 <br></br>
 <ul id="abstracts">
-    <ul>
+</ul>
 
-  <!-- Page Pagination --> 
-  <tfoot> 
-  <div> 
-  <pagination total-items="totalItems" page="currentPage"></pagination>
-    
-    <pre>The selected page no: {{currentPage}}</pre>
-    </div>
+<!-- Page Pagination -->
+<tfoot>
 
-    </tfoot>
+    <Pagination total-items="totalItems" num-pages="numPages()" items-per-page="10" page="currentPage" max-size="maxSize" boundary-links="true">
+    </pagination>
+
+</tfoot>

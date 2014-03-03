@@ -14,19 +14,27 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
     $scope.modalLastName = null;
     $scope.modalText = null;
 
-    // pagination stuff 
     $scope.totalItems = 64;
-    $scope.currentPage = 4;
+    $scope.numPerPage = 10
+    $scope.currentPage = 1;
     $scope.maxSize = 5;
+    $scope.filteredAbs = [];
 
-    $scope.setPage = function(pageNo) {
-        $scope.currentPage = pageNo;
+
+    $scope.numPages = function() {
+        return Math.ceil($scope.abstractsLinks.length / $scope.numPerPage);
     };
 
-    $scope.bigTotalItems = 175;
-    $scope.bigCurrentPage = 1;
+    $scope.$watch('currentPage + numPerPage', function() {
+        var begin = (($scope.currentPage - 1) * $scope.numPerPage),
+            end = begin + $scope.numPerPage;
 
-    // end of pagination stuff 
+        $scope.filteredAbs = $scope.abstractLinks.slice(begin, end);
+    });
+
+
+
+
 
     // This function sets the user authentication from googleSignin directive. 
     $scope.signedIn = function(oauth) {

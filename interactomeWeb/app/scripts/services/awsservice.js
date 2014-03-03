@@ -96,7 +96,7 @@ app.provider('AwsService', function() {
                         // Not sure how to avoid hardcoding this url.
                         var urlBase = "https://s3-us-west-2.amazonaws.com/sagebionetworks-interactome-abstracts/";
                         var wholeLink = "";
-                        for (var i = 0; i < 30; i++) {
+                        for (var i = 0; i < 100; i++) {
                             wholeLink = urlBase + data.Contents[i].Key;
                             self.s3AbstractLinks.push(wholeLink);
                         }
