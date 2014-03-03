@@ -5,6 +5,7 @@
 var app = angular.module('interactomeApp');
 
 app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService, RecommendationService) {
+
     $scope.abstractLinks = [];
 
     $scope.absRecd = null;
@@ -12,6 +13,20 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
     $scope.modalFirstName = null;
     $scope.modalLastName = null;
     $scope.modalText = null;
+
+    // pagination stuff 
+    $scope.totalItems = 64;
+    $scope.currentPage = 4;
+    $scope.maxSize = 5;
+
+    $scope.setPage = function(pageNo) {
+        $scope.currentPage = pageNo;
+    };
+
+    $scope.bigTotalItems = 175;
+    $scope.bigCurrentPage = 1;
+
+    // end of pagination stuff 
 
     // This function sets the user authentication from googleSignin directive. 
     $scope.signedIn = function(oauth) {
