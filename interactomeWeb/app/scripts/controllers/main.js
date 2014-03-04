@@ -17,17 +17,22 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
     $scope.modalText = null;
 
     $scope.totalItems = 64;
-    $scope.numPerPage = 10
+    $scope.numPerPage = 10;
     $scope.currentPage = 1;
     $scope.maxSize = 5;
     $scope.filteredPapers = [];
+
+
 
 
     $scope.numPages = function() {
         return Math.ceil($scope.papers.length / $scope.numPerPage);
     };
 
-    $scope.$watch('currentPage + numPerPage', function() {
+
+
+
+    $scope.$watch('currentPage + numPerPage + papers', function() {
         var begin = (($scope.currentPage - 1) * $scope.numPerPage),
             end = begin + $scope.numPerPage;
 
