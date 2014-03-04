@@ -17,13 +17,17 @@ angular.module('interactomeApp')
           localOnView: '&onView',
           paper: '='
       	},
-		    controller: ['$scope', '$http', 'AwsService', function($scope, $http, AwsService) {
+		    controller: ['$scope', '$http', 'AwsService', 'UserService', function($scope, $http, AwsService, UserService) {
       		$scope.getS3Data = function() {
       			$http.get($scope.paper.Link).success(function(data){
       				$scope.s3Data = data;
               $scope.noError = true;
       			}).error(function() {
               $scope.noError = false;
+              // Could add more logic here to customize the error message.
+              // This error message also makes it so that the listgroupitem doesn't display error
+              // before being completely loaded.
+              $scope.errorMsg = "ERROR. Could not find abstract.";
             })
       		};
 
@@ -32,7 +36,7 @@ angular.module('interactomeApp')
               $scope.likeMsg = " Liked abstract recommendation. ID = " + $scope.paper.Id;
               AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_liked', $scope.paper.Id);
               $scope.likeStatus = true; // true == liked
-              AwsService.updateDynamoPref($scope.paper.Id, $scope.likeStatus);
+              AwsService.updateDynamoPref($scope.abstractLink, $scope.likeStatus, UserService.currentUsername());
             }
           };
 
@@ -41,7 +45,7 @@ angular.module('interactomeApp')
               $scope.likeMsg = " Disliked abstract recommendation";
               AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_disliked', $scope.paper.Id);
               $scope.likeStatus = false; // false == disliked
-              AwsService.updateDynamoPref($scope.paper.Id, $scope.likeStatus);
+              AwsService.updateDynamoPref($scope.abstractLink, $scope.likeStatus, UserService.currentUsername());
             }
           };
 
@@ -52,7 +56,7 @@ angular.module('interactomeApp')
 
     	}],
     	template: '<li class="list-group-item">' +
-                  '<h4 class="list-group-item-heading" ng-show="!noError"> ERROR. Could not find abstract. </h4>' +
+                  '<h4 class="list-group-item-heading" ng-show="!noError"> {{errorMsg}} </h4>' +
                   '<div ng-show="noError">' +
                   '<div class="btn-group" data-toggle="buttons">' +
                     '<label class="btn btn-primary" ng-click="likeClick()">' +
