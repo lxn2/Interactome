@@ -22,8 +22,10 @@
 <ul id="objects" class="list-group">
 
     <!-- this uses the mainctrl (it's attached to the route) -->
-    <div ng-repeat="abLink in filteredAbs">
-        <abstract-list-group-item abstract-link={{abLink}} on-view="showAbstract(abTitle,abFirst,abLast,abText)"></abstract-list-group-item>
+
+    <div ng-repeat="paper in filteredPapers">
+        <abstract-list-group-item paper="paper" on-view="showAbstract(abTitle,abFirst,abLast,abText)"></abstract-list-group-item>
+
     </div>
 </ul>
 <button id="testSelection" type="button" ng-click="abstractsRec()" class="btn btn-primary">Get Recs</button>
