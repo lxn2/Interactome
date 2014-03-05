@@ -5,14 +5,43 @@
 var app = angular.module('interactomeApp');
 
 app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService, RecommendationService) {
+
     console.log("made conteoller");
     $scope.papers = [];
+
 
     $scope.absRecd = null;
     $scope.modalTitle = null;
     $scope.modalFirstName = null;
     $scope.modalLastName = null;
     $scope.modalText = null;
+
+    $scope.totalItems = 64;
+    $scope.numPerPage = 10;
+    $scope.currentPage = 1;
+    $scope.maxSize = 5;
+    $scope.filteredPapers = [];
+
+
+
+
+    $scope.numPages = function() {
+        return Math.ceil($scope.papers.length / $scope.numPerPage);
+    };
+
+
+
+
+    $scope.$watch('currentPage + numPerPage + papers', function() {
+        var begin = (($scope.currentPage - 1) * $scope.numPerPage),
+            end = begin + $scope.numPerPage;
+
+        $scope.filteredPapers = $scope.papers.slice(begin, end);
+    });
+
+
+
+
 
     // This function sets the user authentication from googleSignin directive. 
     $scope.signedIn = function(oauth) {
@@ -55,10 +84,10 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
 
     // Listen for broadcasts of a token changing (this means AWS resources are available)
     var cleanupToken = $rootScope.$on(AwsService.tokenSetBroadcast, function() {
-        AwsService.getPapers(10).then(function(paperList) {
-                $scope.papers.length = 0;
-                $scope.papers.push.apply($scope.papers, paperList);
-            });
+        AwsService.getPapers(100).then(function(paperList) {
+            $scope.papers.length = 0;
+            $scope.papers.push.apply($scope.papers, paperList);
+        });
     });
 
     //Unsubscribe (from http://stackoverflow.com/questions/18856341/how-can-i-unregister-a-broadcast-event-to-rootscope-in-angularjs)

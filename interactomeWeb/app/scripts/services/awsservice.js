@@ -69,17 +69,28 @@ app.provider('AwsService', function() {
             getPapers: function(limit) {
                 var paperDefer = $q.defer();
                 var papers = [];
-                var paperTable = new AWS.DynamoDB({params: {TableName: "Paper"}});
-                var scanParams = {Limit: limit};
+                var paperTable = new AWS.DynamoDB({
+                    params: {
+                        TableName: "Paper"
+                    }
+                });
+                var scanParams = {
+                    Limit: limit
+                };
                 if (self._lastEvalKey != null)
                     scanParams.ExclusiveStartKey = self._lastEvalKey;
 
                 paperTable.scan(scanParams, function(err, data) {
                     if (err)
                         console.log(err);
+
                     else {
-                        for (var i=0; i < data.Items.length; i++) {
-                            papers.push({ Id: data.Items[i].Id.S, Link: data.Items[i].Link.S });
+                        for (var i = 0; i < data.Items.length; i++) {
+                            papers.push({
+                                Id: data.Items[i].Id.S,
+                                Link: data.Items[i].Link.S
+                            });
+
                         }
                         self._lastEvalKey = data.LastEvaluatedKey;
                         paperDefer.resolve(papers);
@@ -118,7 +129,11 @@ app.provider('AwsService', function() {
             // Adds the abstractId into either the "Likes" or "Dislikes" attribute in "Interactions."
             // Was unsure about naming conventions with get, set, post etc.
             updateDynamoPref: function(absId, liked, username) {
-                var recLikesTable = new AWS.DynamoDB({ params: { TableName: 'Recommendation_Likes' } });
+                var recLikesTable = new AWS.DynamoDB({
+                    params: {
+                        TableName: 'Recommendation_Likes'
+                    }
+                });
 
                 if (liked) {
                     var params = {
@@ -129,7 +144,7 @@ app.provider('AwsService', function() {
                             "User": {
                                 "S": username
                             },
-                            "Context": { 
+                            "Context": {
                                 "S": 'GeneralThread'
                             }
                         }
@@ -153,7 +168,7 @@ app.provider('AwsService', function() {
                             "User": {
                                 "S": username
                             },
-                            "Context": { 
+                            "Context": {
                                 "S": 'GeneralThread'
                             }
                         },
@@ -186,7 +201,7 @@ app.provider('AwsService', function() {
                             "User": {
                                 "S": username
                             },
-                            "Context": { 
+                            "Context": {
                                 "S": 'GeneralThread'
                             }
                         }
@@ -208,7 +223,7 @@ app.provider('AwsService', function() {
                             "User": {
                                 "S": username
                             },
-                            "Context": { 
+                            "Context": {
                                 "S": 'GeneralThread'
                             }
                         },
