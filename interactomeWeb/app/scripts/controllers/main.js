@@ -5,7 +5,10 @@
 var app = angular.module('interactomeApp');
 
 app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService, RecommendationService) {
-    $scope.abstractLinks = [];
+
+    console.log("made conteoller");
+    $scope.papers = [];
+
 
     $scope.absRecd = null;
     $scope.modalTitle = null;
@@ -13,8 +16,33 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
     $scope.modalLastName = null;
     $scope.modalText = null;
 
-    $scope.likedAbstracts = [];
-    $scope.dislikedAbstracts = [];
+    $scope.totalItems = 64;
+    $scope.numPerPage = 10;
+    $scope.currentPage = 1;
+    $scope.maxSize = 5;
+    $scope.filteredPapers = [];
+
+
+
+
+    $scope.numPages = function() {
+        return Math.ceil($scope.papers.length / $scope.numPerPage);
+    };
+
+
+
+
+    $scope.$watch('currentPage + numPerPage + papers', function() {
+        var begin = (($scope.currentPage - 1) * $scope.numPerPage),
+            end = begin + $scope.numPerPage;
+
+        $scope.filteredPapers = $scope.papers.slice(begin, end);
+    });
+
+
+
+
+>>>>>>> 00bf3254e4d3289d1bc7b3bff7433b6c06c5d4b4
 
     // This function sets the user authentication from googleSignin directive. 
     $scope.signedIn = function(oauth) {
@@ -42,8 +70,8 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
             //AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_req', abstractsChecked);
             $scope.absRecd = "Number of abstracts used to get recommendations: " + absCount; // this is just to show off functionality
             RecommendationService.getRecs(abstracts).then(function(paperList) {
-                $scope.abstractLinks.length = 0;
-                $scope.abstractLinks.push.apply($scope.abstractLinks, paperList);
+                $scope.papers.length = 0;
+                $scope.papers.push.apply($scope.papers, paperList);
             });
         }
     };
@@ -55,18 +83,17 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
         $scope.modalText = abText;
     }
 
-    // Listen for broadcasts of s3 event
-    var cleanupS3 = $rootScope.$on(AwsService.s3Broadcast, function() {
-        var loadedLinks = AwsService.getLoadedS3Links();
-        $scope.$apply(function() {
-            $scope.abstractLinks.length = 0; //clears array without removing the array's refference (needed for binding)
-            $scope.abstractLinks.push.apply($scope.abstractLinks, loadedLinks); // adding more than once requires an apply (not sure why)
+    // Listen for broadcasts of a token changing (this means AWS resources are available)
+    var cleanupToken = $rootScope.$on(AwsService.tokenSetBroadcast, function() {
+        AwsService.getPapers(100).then(function(paperList) {
+            $scope.papers.length = 0;
+            $scope.papers.push.apply($scope.papers, paperList);
         });
     });
 
-    //Unsubscribe to S3 (from http://stackoverflow.com/questions/18856341/how-can-i-unregister-a-broadcast-event-to-rootscope-in-angularjs)
+    //Unsubscribe (from http://stackoverflow.com/questions/18856341/how-can-i-unregister-a-broadcast-event-to-rootscope-in-angularjs)
     $scope.$on("$destroy", function() {
-        cleanupS3();
+        cleanupToken();
     });
 
 });
