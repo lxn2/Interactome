@@ -138,11 +138,44 @@ app.provider('AwsService', function() {
                 });
             },
 
+            /*
+            getDynamoLikes: function(username){
+                var recLikesTable = new AWS.DynamoDB({ params: { TableName: 'Recommendation_Likes' } });
+                var params = {
+                    AttributesToGet: [
+                    'Likes'
+                    ],
+                    Key: {
+                        "User": {
+                            "S": username
+                        },
+                        "Context": { 
+                            "S": 'GeneralThread'
+                        }
+                    }
+                }; 
+
+                recLikesTable.getItem(params, function(err, data) {
+                    if (err)
+                        console.log("Error: " + err);
+                    else {
+                        console.log(data);
+                    }
+                });
+            }
+            */
+
+            /*
+            getDynamoDislikes: function(){
+
+            }
+            */
+
             // Adds the abstractId into either the "Likes" or "Dislikes" attribute in "Interactions."
             // Was unsure about naming conventions with get, set, post etc.
             updateDynamoPref: function(absId, liked, username) {
                 var recLikesTable = new AWS.DynamoDB({ params: { TableName: 'Recommendation_Likes' } });
-
+                
                 if (liked) {
                     var params = {
                         AttributesToGet: [
@@ -157,13 +190,19 @@ app.provider('AwsService', function() {
                             }
                         }
                     };
-
                     // Unfinished - once done this will check to see if the abstract exists in the dislikes
                     // attribute, if so it will remove it. 
                     recLikesTable.getItem(params, function(err, data) {
                         if (err)
                             console.log("Error: " + err);
                         else {
+                            var i = 0;
+                            console.log(data.Item.Dislikes.SS[0])
+
+                            while(i < data.Item.Dislikes.SS.length && absId != data.Item.Dislikes.SS[i])
+                                i++;
+                            if(i < data.Item.Dislikes.SS.length)
+
                             // Check if abstract in Dislikes then remove and place in likes
                         }
                     });

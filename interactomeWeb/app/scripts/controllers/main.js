@@ -13,6 +13,9 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
     $scope.modalLastName = null;
     $scope.modalText = null;
 
+    $scope.likedAbstracts = [];
+    $scope.dislikedAbstracts = [];
+
     // This function sets the user authentication from googleSignin directive. 
     $scope.signedIn = function(oauth) {
         // Google authentication passed into userService to hold onto and track user.

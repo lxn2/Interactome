@@ -79,6 +79,7 @@ angular.module('interactomeApp')
       link: function (scope, element, attrs) {
       	scope.abstractLink = attrs.abstractLink;
         scope.getS3Data();
+        
       }
     };
   });
