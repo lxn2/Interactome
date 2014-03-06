@@ -36,7 +36,7 @@ angular.module('interactomeApp')
               $scope.likeMsg = " Liked abstract recommendation. ID = " + $scope.paper.Id;
               AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_liked', $scope.paper.Id);
               $scope.likeStatus = true; // true == liked
-              AwsService.updateDynamoPref($scope.abstractLink, $scope.likeStatus, UserService.currentUsername());
+              AwsService.updateDynamoPref($scope.paper.Id, $scope.likeStatus, UserService.currentUsername());
             }
           };
 
@@ -45,7 +45,7 @@ angular.module('interactomeApp')
               $scope.likeMsg = " Disliked abstract recommendation";
               AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_disliked', $scope.paper.Id);
               $scope.likeStatus = false; // false == disliked
-              AwsService.updateDynamoPref($scope.abstractLink, $scope.likeStatus, UserService.currentUsername());
+              AwsService.updateDynamoPref($scope.paper.Id, $scope.likeStatus, UserService.currentUsername());
             }
           };
 

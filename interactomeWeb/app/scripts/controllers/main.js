@@ -40,10 +40,6 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
     });
 
 
-
-
->>>>>>> 00bf3254e4d3289d1bc7b3bff7433b6c06c5d4b4
-
     // This function sets the user authentication from googleSignin directive. 
     $scope.signedIn = function(oauth) {
         // Google authentication passed into userService to hold onto and track user.
