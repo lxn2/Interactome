@@ -125,43 +125,7 @@ app.provider('AwsService', function() {
                     // if (!err) console.log(publishedmsg);
                 });
             },
-
-            /*
-            getDynamoLikes: function(username){
-                var recLikesTable = new AWS.DynamoDB({ params: { TableName: 'Recommendation_Likes' } });
-                var params = {
-                    AttributesToGet: [
-                    'Likes'
-                    ],
-                    Key: {
-                        "User": {
-                            "S": username
-                        },
-                        "Context": { 
-                            "S": 'GeneralThread'
-                        }
-                    }
-                }; 
-
-                recLikesTable.getItem(params, function(err, data) {
-                    if (err)
-                        console.log("Error: " + err);
-                    else {
-                        console.log(data);
-                    }
-                });
-            }
-            */
-
-            /*
-            getDynamoDislikes: function(){
-
-            }
-            */
-
-            // Adds the abstractId into either the "Likes" or "Dislikes" attribute in "Interactions."
-            // Was unsure about naming conventions with get, set, post etc.
-
+            
             updateDynamoPref: function(paperId, liked, username) {
                 var recLikesTable = new AWS.DynamoDB({
                     params: {
@@ -174,7 +138,7 @@ app.provider('AwsService', function() {
                 var getParams;
                 var updateAdd;
                 var updateRemove;
-                
+
                 if (liked) {
                     // To hold get parameters
                     var getParams = {
