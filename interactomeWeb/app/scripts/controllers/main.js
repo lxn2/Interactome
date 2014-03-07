@@ -6,7 +6,7 @@ var app = angular.module('interactomeApp');
 
 app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService, RecommendationService) {
 
-    console.log("made conteoller");
+    console.log("made controller");
     $scope.papers = [];
 
 
@@ -21,7 +21,6 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
     $scope.currentPage = 1;
     $scope.maxSize = 5;
     $scope.filteredPapers = [];
-
 
 
 
