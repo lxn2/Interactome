@@ -6,7 +6,7 @@ var app = angular.module('interactomeApp');
 
 app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService, RecommendationService) {
     $scope.abstractLinks = [];
-
+    $scope.topics = [];
     $scope.absRecd = null;
     $scope.modalTitle = null;
     $scope.modalFirstName = null;
@@ -49,7 +49,7 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
         $scope.modalFirstName = firstName;
         $scope.modalLastName = lastName;
         $scope.modalText = abText;
-    }
+    };
 
     // Listen for broadcasts of s3 event
     var cleanupS3 = $rootScope.$on(AwsService.s3Broadcast, function() {
@@ -57,6 +57,17 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
         $scope.$apply(function() {
             $scope.abstractLinks.length = 0; //clears array without removing the array's refference (needed for binding)
             $scope.abstractLinks.push.apply($scope.abstractLinks, loadedLinks); // adding more than once requires an apply (not sure why)
+        });
+    });
+
+    var updateUserTopics = $rootScope.$on(AwsService.dynamoBroadcast, function() {
+
+        var loadedTopics = AwsService.getLoadedDynamoTopics();
+        $scope.$apply(function() {
+            $scope.topics.length = 0;
+            $scope.topics.push.apply($scope.topics, loadedTopics);
+            console.log("loaded topics from awsservice: ", loadedTopics);
+            console.log("scope.topics after push.apply: ", $scope.topics);
         });
     });
 

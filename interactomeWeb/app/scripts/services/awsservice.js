@@ -19,6 +19,7 @@ var app = angular.module('interactomeApp.AwsService', [])
 app.provider('AwsService', function() {
     var self = this;
     self.s3AbstractLinks = []
+    self.dynamoTopics = [];
     AWS.config.region = 'us-west-2';
     self.arn = null;
 
@@ -33,6 +34,7 @@ app.provider('AwsService', function() {
 
 
     self.$get = function($q, $cacheFactory, $http, $rootScope) {
+        var _DYNAMOBROADCAST = 'dynamoTopicsBroadcast@AwsService';
         var _S3BROADCAST = 's3Abstracts@AwsService';
         var credentialsDefer = $q.defer();
         var credentialsPromise = credentialsDefer.promise;
@@ -44,6 +46,7 @@ app.provider('AwsService', function() {
                 return credentialsPromise;
             },
             s3Broadcast: _S3BROADCAST,
+            dynamoBroadcast: _DYNAMOBROADCAST,
 
             setToken: function(token) {
                 var config = {
@@ -62,7 +65,7 @@ app.provider('AwsService', function() {
 
                 // Refactor Warning: this should probably just be an event that is broadcasted letting subscribers know that credentials have been loaded.
                 this._getS3URLs();
-
+                this._getDynamoTopics();
             }, // end of setToken func 
 
             /**
@@ -106,10 +109,34 @@ app.provider('AwsService', function() {
                 });
             },
 
+            _getDynamoTopics: function() {
+                console.log("in gentdynamotopics");
+                var dynamodb = new AWS.DynamoDB();
+                var params = {
+                    TableName: 'Topic',
+                    Select: 'ALL_ATTRIBUTES',
+                };
+                dynamodb.scan(params, function(err, data) {
+                    if (err) console.log(err, err.stack);
+                    else {
+                        for(var i = 0; i < data.Count; i++) {
+                            if('List' in data.Items[i]) {
+                            }
+                            self.dynamoTopics.push(data.Items[i]['Name']['S']);
+                        }
+                    }
+                });
+                $rootScope.$broadcast(_DYNAMOBROADCAST);
+            },
+
+            getLoadedDynamoTopics: function() {
+                return self.dynamoTopics;
+            },
+
             // Should only be called after the _getS3URLs' broadcast 
             // Will probably return undefined if called premature
             getLoadedS3Links: function() {
-                return self.s3AbstractLinks
+                return self.s3AbstractLinks;
             },
 
             // General way to post a msg to a topic.

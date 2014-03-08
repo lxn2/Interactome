@@ -6,8 +6,8 @@ var app = angular.module('interactomeApp', [
     'ngSanitize',
     'interactomeApp.AwsService',
     'interactomeApp.Userservice',
-    'interactomeApp.RecommendationService'
-
+    'interactomeApp.RecommendationService',
+    'ui.bootstrap'
 ])
 
 // Sets our AWS arn on config through Awsservice
