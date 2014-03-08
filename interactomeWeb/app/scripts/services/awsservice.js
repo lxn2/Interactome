@@ -1,16 +1,7 @@
 'use strict';
 /**
     This service handles the AWS resources. Setting or getting, should be through this API.
-
-
-var app = angular.module('interactomeApp.Awsservice', []);
-
-
-// creating service type provider. Provider used to configure service before app runs. 
-app.provider('AwsService', function() {
-
-    I decided to use an observer pattern for notifying subscribers instead of $watch and $digest. I couldn't seem to get them to bind correctly
-    when trying to use the mainCtrl. The observer pattern is slightly more wordy
+    
 **/
 var app = angular.module('interactomeApp.AwsService', [])
 
@@ -28,7 +19,6 @@ app.provider('AwsService', function() {
     self.setRegion = function(region) {
         if (region) AWS.config.region = region;
     }
-
 
 
     self.$get = function($q, $cacheFactory, $http, $rootScope) {

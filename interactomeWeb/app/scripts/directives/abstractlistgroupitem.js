@@ -50,8 +50,11 @@ angular.module('interactomeApp')
           };
 
           $scope.viewAbstract = function() {
-            $scope.localOnView({abTitle: $scope.s3Data.AbstractTitle,abFirst: $scope.s3Data.FirstName[0],abLast: $scope.s3Data.LastName,abText: $scope.s3Data.Abstract});
-            $('#abstractViewModal').modal('show'); // open modal
+            $scope.localOnView({
+              abTitle: $scope.s3Data.AbstractTitle,
+              abFirst: $scope.s3Data.FirstName[0],
+              abLast: $scope.s3Data.LastName,
+              abText: $scope.s3Data.Abstract});
           };
 
     	}],

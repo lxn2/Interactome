@@ -9,28 +9,21 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
     console.log("made conteoller");
     $scope.papers = [];
 
-
     $scope.absRecd = null;
     $scope.modalTitle = null;
     $scope.modalFirstName = null;
     $scope.modalLastName = null;
     $scope.modalText = null;
 
-    $scope.totalItems = 64;
+    $scope.paginationTotalItems = 100;
     $scope.numPerPage = 10;
     $scope.currentPage = 1;
     $scope.maxSize = 5;
     $scope.filteredPapers = [];
 
-
-
-
     $scope.numPages = function() {
         return Math.ceil($scope.papers.length / $scope.numPerPage);
     };
-
-
-
 
     $scope.$watch('currentPage + numPerPage + papers', function() {
         var begin = (($scope.currentPage - 1) * $scope.numPerPage),
@@ -38,10 +31,6 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
 
         $scope.filteredPapers = $scope.papers.slice(begin, end);
     });
-
-
-
-
 
     // This function sets the user authentication from googleSignin directive. 
     $scope.signedIn = function(oauth) {
@@ -80,6 +69,7 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
         $scope.modalFirstName = firstName;
         $scope.modalLastName = lastName;
         $scope.modalText = abText;
+        $('#abstractViewModal').modal('show'); // open modal
     }
 
     // Listen for broadcasts of a token changing (this means AWS resources are available)
@@ -87,6 +77,7 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
         AwsService.getPapers(100).then(function(paperList) {
             $scope.papers.length = 0;
             $scope.papers.push.apply($scope.papers, paperList);
+            $scope.paginationTotalItems = $scope.papers.length;
         });
     });
 
@@ -98,15 +89,12 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
 });
 
 app.controller('SearchCtrl', function($scope, $rootScope, UserService, AwsService, SearchService) {
-
     var institution = $scope.searchByInstitution;
     $scope.institutions = [];
 
     // once promise is made, then set the scope 
     SearchService.showResults(institution).then(function(userData) {
-        console.log(userData);
         $scope.institutions.push.apply($scope.institutions, userData);
-
     });
 
 });
