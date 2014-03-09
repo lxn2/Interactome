@@ -22,14 +22,26 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
     $scope.maxSize = 5;
     $scope.filteredPapers = [];
 
-
+    $scope.likes = [];
+    $scope.dislikes = [];
 
     $scope.numPages = function() {
         return Math.ceil($scope.papers.length / $scope.numPerPage);
     };
 
+    $scope.getPrefs = function(){
+        AwsService.getDynamoPref($scope.username).then(function(dbItem){
+            for(var i = 0; i < dbItem.Item.Likes.SS.length; i++)
+                $scope.likes.push(dbItem.Item.Likes.SS[i]);
+            for(var i = 0; i < dbItem.Item.Dislikes.SS.length; i++)
+                $scope.likes.push(dbItem.Item.Dislikes.SS[i]);
+        })
+    }
 
+    $scope.getPrefs();
 
+    console.log(likes);
+    console.log(dislikes)
 
     $scope.$watch('currentPage + numPerPage + papers', function() {
         var begin = (($scope.currentPage - 1) * $scope.numPerPage),
