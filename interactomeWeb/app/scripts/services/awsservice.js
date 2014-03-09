@@ -35,6 +35,7 @@ app.provider('AwsService', function() {
         var _TOKENBROADCAST = 'tokenSet@AwsService';
         var credentialsDefer = $q.defer();
         var credentialsPromise = credentialsDefer.promise;
+        var DynamoTopics = [];
         var _SNSTopics = {};
         return {
 
@@ -63,6 +64,41 @@ app.provider('AwsService', function() {
                 self._lastEvalKey = null;
                 $rootScope.$broadcast(_TOKENBROADCAST);
             }, // end of setToken func 
+
+            // Gets topics from dynamo table and broadcasts. Should be called initially
+            // and on table update
+            getTopics: function() {
+                console.log("in gentdynamotopics");
+                var topicDefer = $q.defer();
+                var dynamodb = new AWS.DynamoDB(); // should we catch error for this too?
+                var params = {
+                    TableName: 'Topic',
+                    Select: 'ALL_ATTRIBUTES',
+                };
+                var tempArray = [];
+                dynamodb.scan(params, function(err, data) {
+                    if (err) console.log(err, err.stack);
+                    else {
+                        for(var i = 0; i < data.Count; i++) {
+                            if('List' in data.Items[i]) {
+                                tempArray.push({
+                                    Name: data.Items[i]['Name']['S'],
+                                    PapersList: data.Items[i]['List']
+                                });
+                            }
+                            else {
+                                tempArray.push({
+                                    Name: data.Items[i]['Name']['S'] 
+                                });
+                            }
+                            //console.log(i, data.Count, data.Items[i]['Name']['S']);
+                        }
+                        topicDefer.resolve(tempArray);
+                    }
+                });
+                return topicDefer.promise;
+                //$rootScope.$broadcast(_DYNAMOBROADCAST);
+            },
 
             // Gets the next limit number of papers from dynamo
             // This will eventually be done using the rec service (instead of scanning)

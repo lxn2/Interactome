@@ -31,54 +31,69 @@
     <![endif]-->
 
     <!-- Add your site or application content here -->
-    <div class="container">
-        <!--Top Header holds the page title, logo, and google+ signin -->
-        <div id="header">
-            <!-- Google+ signin button -->
-            <div ng-show="!user" class="row">
-                <div google-signin client-id='796741862543' after-signin="signedIn(oauth)"></div>
-            </div>
-            <h1 id="logoHeader">Sage Bionetworks Interactome
-                <small>Prototype</small>
-            </h1>
-        </div>
-        <!-- userSearchPannel holds the search bar and filter -->
-        <div id="userSearchPanel">
-            <div id="jumbotronBanner" class="jumbotron">
-                <!--searchBar code -->
-                <div class="searchForm">
-                    <input id="searchBar" type="text" ng-model="searchByInstitution" placeholder="Search i.e. author, title, keywords" />
-                    <!--searchButton -->
-                    <button id="searchButton" type="submit" onclick=location.href="#searchView" class="btn btn-primary">Search</button>
-                   
-
-                    <!-- bookmarksDropDown holds the user bookmark history, operates as a dropDown -->
-                    <div id="bookmarksDropDown" class="btn-group dropdown">
-                        <button type="button" class="btn dropdown-toggle btn-primary" data-toggle="dropdown" href="#">
-                            Saved Papers
-                            <span class="caret"></span>
-                        </button>
-                        <ul id="dropDownMenu" class="dropdown-menu">
-                            <li><a href="#">Folder 1</a>
-                            </li>
-                            <li><a href="#">Folder 2</a>
-                            </li>
-                            <li><a href="#">Folder 3</a>
-                            </li>
-                            <li><a href="#">Folder 4</a>
-                            </li>
-                        </ul>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-9">
+                <!--Top Header holds the page title, logo, and google+ signin -->
+                <div id="header">
+                    <!-- Google+ signin button -->
+                    <div ng-show="!user" class="row">
+                        <div google-signin client-id='796741862543' after-signin="signedIn(oauth)"></div>
                     </div>
+                    <h1 id="logoHeader">Sage Bionetworks Interactome
+                        <small>Prototype</small>
+                    </h1>
+                </div>
+                <!-- userSearchPannel holds the search bar and filter -->
+                <div id="userSearchPanel">
+                    <div id="jumbotronBanner" class="jumbotron">
+                        <!--searchBar code -->
+                        <div class="searchForm">
+                            <input id="searchBar" type="text" ng-model="searchByInstitution" placeholder="Search i.e. author, title, keywords" />
+                            <!--searchButton -->
+                            <button id="searchButton" type="submit" onclick=location.href="#searchView" class="btn btn-primary">Search</button>
+                           
+
+                            <!-- bookmarksDropDown holds the user bookmark history, operates as a dropDown -->
+                            <div id="bookmarksDropDown" class="btn-group dropdown">
+                                <button type="button" class="btn dropdown-toggle btn-primary" data-toggle="dropdown" href="#">
+                                    Saved Papers
+                                    <span class="caret"></span>
+                                </button>
+                                <ul id="dropDownMenu" class="dropdown-menu">
+                                    <li><a href="#">Folder 1</a>
+                                    </li>
+                                    <li><a href="#">Folder 2</a>
+                                    </li>
+                                    <li><a href="#">Folder 3</a>
+                                    </li>
+                                    <li><a href="#">Folder 4</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="main">
+                 <!-- Angular views are injected here -->
+                 <div class="container" ng-view=""></div>
+
+                </div>
+
+            </div>
+            <div class="col-md-3" id="topics-bar-wrapper">
+                <div id="topics-bar" data-spy="affix" data-offset-top="30" data-offset-bottom="200" >
+                    <accordian>
+                        <accordion-group heading="Topics"  class="scroll">
+                            <div ng-repeat="topic in userTopics">
+                                <topic-panel-item topic-name={{topic}}></topic-panel-item>
+                            </div>
+                        </accordian-group>
+                    </accordian>
                 </div>
             </div>
         </div>
-
-        <div id="main">
-         <!-- Angular views are injected here -->
-         <div class="container" ng-view=""></div>
-
-        </div>
-
         <!-- Henry - Manually added Libraries -->
         <!-- AWS CDN -->
         <script src="https://sdk.amazonaws.com/js/aws-sdk-2.0.0-rc1.min.js"></script>
@@ -115,7 +130,8 @@
     <script src="bower_components/angular-cookies/angular-cookies.js"></script>
     <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
     <script src="bower_components/angular-route/angular-route.js"></script>
-    <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <!-- <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script> -->
+    <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.10.0.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
@@ -124,6 +140,7 @@
     <script src="scripts/directives/googleSignin.js"></script>
     <script src="scripts/services/UserService.js"></script>
     <script src="scripts/services/AWSservice.js"></script>
+    <script src="scripts/directives/topicpanelitem.js"></script>
 
     <script src="scripts/directives/abstractListGroupItem.js"></script>
     <script src="scripts/services/RecommendationService.js"></script>

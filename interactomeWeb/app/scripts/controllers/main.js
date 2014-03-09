@@ -6,9 +6,8 @@ var app = angular.module('interactomeApp');
 
 app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService, RecommendationService) {
 
-    console.log("made conteoller");
     $scope.papers = [];
-
+    $scope.userTopics = [];
 
     $scope.absRecd = null;
     $scope.modalTitle = null;
@@ -55,6 +54,7 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
 
     // Determines what happens after one or more abstract is selected
     $scope.abstractsRec = function() {
+        console.log("in abstractsrec");
         var abstractsChecked = ''
         var absCount = 0;
         var abstracts = []
@@ -83,11 +83,21 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
     }
 
     // Listen for broadcasts of a token changing (this means AWS resources are available)
+    // ***WHY DOES THIS GET CALLED TWICE?? **
     var cleanupToken = $rootScope.$on(AwsService.tokenSetBroadcast, function() {
+
+        AwsService.getTopics().then(function(topics) {
+            $scope.userTopics.length = 0;
+            $scope.userTopics.push.apply($scope.userTopics, topics);
+
+            console.log("cleanuptoken gettopics: ", $scope.userTopics);
+        });
+
         AwsService.getPapers(100).then(function(paperList) {
             $scope.papers.length = 0;
             $scope.papers.push.apply($scope.papers, paperList);
-        });
+            console.log("cleanuptoken getpapers: ", $scope.papers);
+        }); 
     });
 
     //Unsubscribe (from http://stackoverflow.com/questions/18856341/how-can-i-unregister-a-broadcast-event-to-rootscope-in-angularjs)

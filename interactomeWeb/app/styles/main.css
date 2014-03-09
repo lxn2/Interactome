@@ -77,3 +77,8 @@ body {
     border-bottom: 0;
   }
 }
+
+.scroll[class*="in collapse"] {
+  height: 400px;
+  overflow-y: visible;
+}
