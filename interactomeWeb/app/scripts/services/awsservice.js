@@ -135,9 +135,6 @@ app.provider('AwsService', function() {
 
                 //To hold the bool to determine if abstract exists in the opposite attribute (Likes/Dislikes)
                 var exists;
-                var getParams;
-                var updateAdd;
-                var updateRemove;
 
                 if (liked) {
                     // To hold get parameters
@@ -195,6 +192,41 @@ app.provider('AwsService', function() {
                         }
                     }
 
+                    // Function returns true if it found the Id in Dislikes
+                    exists = recLikesTable.getItem(getParams, function(err, data){
+                        if (err)
+                            console.log("Error: " + err);
+                        else {
+                            var i = 0;
+                            console.log(data.Item.Dislikes.SS)
+                            while(i < data.Item.Dislikes.SS.length && paperId != data.Item.Dislikes.SS[i])
+                                i++;
+                            if(i < data.Item.Dislikes.SS.length){
+                                console.log("It's in Dislikes!");
+                                exists = true;      
+                            }
+                        }
+                        return exists;
+                    });
+
+                    // If found remove from Dislikes
+                    if(exists){
+                        recLikesTable.updateItem(updateRemove, function(err, data){
+                            if(err)
+                                console.log(err);
+                            else
+                                console.log(paperId + " was removed!");
+                        });
+                    }
+
+                    // Add Id to Likes
+                    recLikesTable.updateItem(updateAdd, function(err, data){
+                        if(err)
+                            console.log(err);
+                        else
+                            console.log(paperId + " was added!");
+                    });
+
                 } else {
                     // almost identical to likes
                     var getParams = {
@@ -248,45 +280,44 @@ app.provider('AwsService', function() {
                             }
                         }
                     }
-                
-                }
-
-                 // Function returns true if it found the Id in Dislikes
-                exists = recLikesTable.getItem(getParams, function(err, data){
-                    if (err)
-                        console.log("Error: " + err);
-                    else {
-                        var i = 0;
-                        console.log(data.Item.Dislikes.SS)
-                        while(i < data.Item.Dislikes.SS.length && paperId != data.Item.Dislikes.SS[i])
-                            i++;
-                        if(i < data.Item.Dislikes.SS.length){
-                            console.log("It's in Dislikes!");
-                            exists = true;      
+                    exists = recLikesTable.getItem(getParams, function(err, data){
+                        if (err)
+                            console.log("Error: " + err);
+                        else {
+                            var i = 0;
+                            while(i < data.Item.Likes.SS.length && paperId != data.Item.Likes.SS[i])
+                                i++;
+                            if(i < data.Item.Likes.SS.length){
+                                console.log( paperId + " is in Likes!");
+                                exists = true;      
+                            }
                         }
-                    }
-                    return exists;
-                });
+                        return exists;
+                    });
 
-                // If found remove from Dislikes
-                if(exists){
-                    recLikesTable.updateItem(updateRemove, function(err, data){
+                    console.log(exists);
+
+                    if(exists){
+                        recLikesTable.updateItem(updateRemove, function(err, data){
+                            if(err)
+                                console.log(err);
+                            else{
+                                console.log(paperId + " was removed!");
+                                console.log(data);
+                            }
+                        });
+                    }
+
+                    recLikesTable.updateItem(updateAdd, function(err, data){
                         if(err)
                             console.log(err);
                         else
-                            console.log(paperId + " was removed!");
+                            console.log(paperId + " was added!");
                     });
                 }
 
-                // Add Id to Likes
-                recLikesTable.updateItem(updateAdd, function(err, data){
-                    if(err)
-                        console.log(err);
-                    else
-                        console.log(paperId + " was added!");
-                });
-
             }
+
 
 
         } // end of return 
