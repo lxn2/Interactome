@@ -87,7 +87,7 @@
                     <h3>Topics</h3>
                     <div>
                         <div ng-repeat="topic in userTopics">
-                            <topic-panel-item topic-name={{topic}}></topic-panel-item>
+                            <topic-panel-item topic-name={{topic['Name']}} papers-list={{topic['PapersList']}}></topic-panel-item>
                         </div>
                     </div>
                     <!-- <accordion close-others="false">
@@ -113,7 +113,7 @@
         <!-- AWS CDN -->
         <script src="https://sdk.amazonaws.com/js/aws-sdk-2.0.0-rc1.min.js"></script>
             
-             <script src="bower_components/angular-bootstrap/ui-bootstrap.js"></script>
+        <!-- <script src="bower_components/angular-bootstrap/ui-bootstrap.js"></script> -->
 
 
         <!-- Google+ Signin button library, note this had to be also loaded in google+ directive to ensure it showed up-->
@@ -138,8 +138,8 @@
 
     <!-- build:js scripts/vendor.js -->
     <!-- bower:js -->
-    <script src="bower_components/jquery/jquery.js"></script>
     <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/jquery/jquery.js"></script>
     <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script src="bower_components/angular-resource/angular-resource.js"></script>
     <script src="bower_components/angular-cookies/angular-cookies.js"></script>

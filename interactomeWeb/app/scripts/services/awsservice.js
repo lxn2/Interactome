@@ -81,9 +81,11 @@ app.provider('AwsService', function() {
                     else {
                         for(var i = 0; i < data.Count; i++) {
                             if('List' in data.Items[i]) {
+                                var papersArray = data.Items[i]['List']['SS'];
+                                console.log("in gettopics. papersArray: ", papersArray);
                                 tempArray.push({
                                     Name: data.Items[i]['Name']['S'],
-                                    PapersList: data.Items[i]['List']
+                                    PapersList: papersArray
                                 });
                             }
                             else {
@@ -96,6 +98,7 @@ app.provider('AwsService', function() {
                         topicDefer.resolve(tempArray);
                     }
                 });
+                console.log("in gettopics", (typeof tempArray))
                 return topicDefer.promise;
                 //$rootScope.$broadcast(_DYNAMOBROADCAST);
             },
