@@ -137,8 +137,8 @@ app.provider('AwsService', function() {
 
                 var getParams = {
                     AttributesToGet: [
-                    'Likes', 
-                    'Dislikes'
+                    "Likes", 
+                    "Dislikes"
                     ],
                     Key: {
                         "User": {
@@ -152,7 +152,7 @@ app.provider('AwsService', function() {
 
                 prefTable.getItem(getParams, function(err, data){
                     if(err)
-                        console.log(err);
+                        console.log("Error: " + err);
                     else
                         console.log(data)
                         defered.resolve(data);

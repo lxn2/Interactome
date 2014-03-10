@@ -29,19 +29,7 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
         return Math.ceil($scope.papers.length / $scope.numPerPage);
     };
 
-    $scope.getPrefs = function(){
-        AwsService.getDynamoPref($scope.username).then(function(dbItem){
-            for(var i = 0; i < dbItem.Item.Likes.SS.length; i++)
-                $scope.likes.push(dbItem.Item.Likes.SS[i]);
-            for(var i = 0; i < dbItem.Item.Dislikes.SS.length; i++)
-                $scope.likes.push(dbItem.Item.Dislikes.SS[i]);
-        })
-    }
-
-    $scope.getPrefs();
-
-    console.log(likes);
-    console.log(dislikes)
+    
 
     $scope.$watch('currentPage + numPerPage + papers', function() {
         var begin = (($scope.currentPage - 1) * $scope.numPerPage),
@@ -90,8 +78,10 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
         $scope.modalText = abText;
     }
 
+
     // Listen for broadcasts of a token changing (this means AWS resources are available)
     var cleanupToken = $rootScope.$on(AwsService.tokenSetBroadcast, function() {
+
         AwsService.getPapers(100).then(function(paperList) {
             $scope.papers.length = 0;
             $scope.papers.push.apply($scope.papers, paperList);
@@ -102,6 +92,25 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
     $scope.$on("$destroy", function() {
         cleanupToken();
     });
+
+    $scope.getPrefs = function(){
+        console.log("In getprefs function");
+        AwsService.getDynamoPref($scope.username).then(function(dbItem){
+            console.log(dbItem);
+            console.log("In getDynamoPref callback")
+            for(var i = 0; i < dbItem.Item.Likes.SS.length; i++){
+                console.log("In likes loop!");
+                $scope.likes.push(dbItem.Item.Likes.SS[i]);
+            }
+            for(var i = 0; i < dbItem.Item.Dislikes.SS.length; i++)
+                $scope.likes.push(dbItem.Item.Dislikes.SS[i]);
+        });
+    }
+
+    $scope.getPrefs();
+
+    console.log($scope.likes);
+    console.log($scope.dislikes);
 
 });
 
