@@ -54,7 +54,6 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
 
     // Determines what happens after one or more abstract is selected
     $scope.abstractsRec = function() {
-        console.log("in abstractsrec");
         var abstractsChecked = ''
         var absCount = 0;
         var abstracts = []
@@ -75,6 +74,7 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
         }
     };
 
+    // updates abstract information for modal view
     $scope.showAbstract = function(abTitle, firstName, lastName, abText) {
         $scope.modalTitle = abTitle;
         $scope.modalFirstName = firstName;
@@ -89,14 +89,11 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
         AwsService.getTopics().then(function(topics) {
             $scope.userTopics.length = 0;
             $scope.userTopics.push.apply($scope.userTopics, topics);
-
-            console.log("cleanuptoken gettopics: ", $scope.userTopics);
         });
 
         AwsService.getPapers(100).then(function(paperList) {
             $scope.papers.length = 0;
             $scope.papers.push.apply($scope.papers, paperList);
-            console.log("cleanuptoken getpapers: ", $scope.papers);
         }); 
     });
 

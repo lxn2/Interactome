@@ -19,7 +19,7 @@
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css({.tmp,app}) styles/main.css -->
-    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/main.css" />
     <!-- endbuild -->
 </head>
 
@@ -83,36 +83,21 @@
 
             </div>
             <div class="col-md-4" id="topics-bar-wrapper">
-                <div id="topicsbar" data-spy="affix" data-offset-top="30" data-offset-bottom="30" >
+                <div id="topicsbar" data-spy="affix" data-offset-top="30" data-offset-bottom="30" class="fill">
                     <h3>Topics</h3>
                     <div>
                         <div ng-repeat="topic in userTopics">
                             <topic-panel-item topic-name={{topic['Name']}} papers-list={{topic['PapersList']}}></topic-panel-item>
                         </div>
                     </div>
-                    <!-- <accordion close-others="false">
-                        <accordion-group heading="Topics" class="scroll">
-                            <div ng-repeat="topic in userTopics">
-                                <topic-panel-item topic-name={{topic}}></topic-panel-item>
-                            </div>
-                        </accordion-group>
-                    </accordion> -->
-                    <!--<div class="accordion" id="accordion-parent">
-                        <div class="accordion-group">
-                            <div class="accordion-heading">
-                                <div ng-repeat="topic in userTopics">
-                                    <topic-panel-item topic-name={{topic}}></topic-panel-item>
-                                </div>
-                            </div>
-                        </div> 
-                    </div> -->
                 </div>
             </div>
         </div>
         <!-- Henry - Manually added Libraries -->
         <!-- AWS CDN -->
         <script src="https://sdk.amazonaws.com/js/aws-sdk-2.0.0-rc1.min.js"></script>
-            
+        
+        
         <!-- <script src="bower_components/angular-bootstrap/ui-bootstrap.js"></script> -->
 
 
@@ -146,11 +131,16 @@
     <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
     <script src="bower_components/angular-route/angular-route.js"></script>
     <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <link rel="stylesheet" href="bower_components/jquery.ui/themes/base/jquery.ui.all.css">
 
-     <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+    <script src="bower_components/angular-bootstrap/ui-bootstrap.js"></script>
+
+    <!-- Ly: I'm not sure why these two remote scripts are required for the topics components.
+    I tried subbing in the closest files we have to these, locally, but those didn't work.
+    I'll have to look into this more, to include local scripts instead. -->
     <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-
     <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.10.0.js"></script>
+
 
     <script>
         $(function() {
@@ -166,7 +156,6 @@
     <script src="scripts/services/UserService.js"></script>
     <script src="scripts/services/AWSservice.js"></script>
     <script src="scripts/directives/topicpanelitem.js"></script>
-
     <script src="scripts/directives/abstractListGroupItem.js"></script>
     <script src="scripts/services/RecommendationService.js"></script>
     <!-- endbuild -->

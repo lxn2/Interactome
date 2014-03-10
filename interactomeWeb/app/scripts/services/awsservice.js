@@ -65,8 +65,8 @@ app.provider('AwsService', function() {
                 $rootScope.$broadcast(_TOKENBROADCAST);
             }, // end of setToken func 
 
-            // Gets topics from dynamo table and broadcasts. Should be called initially
-            // and on table update
+            // Gets topics from dynamo table, currently paper Id's
+            // Should eventually return paper Names and/or links
             getTopics: function() {
                 console.log("in gentdynamotopics");
                 var topicDefer = $q.defer();
@@ -75,32 +75,28 @@ app.provider('AwsService', function() {
                     TableName: 'Topic',
                     Select: 'ALL_ATTRIBUTES',
                 };
-                var tempArray = [];
+                var topicsArray = []; // list of dictionaries
                 dynamodb.scan(params, function(err, data) {
                     if (err) console.log(err, err.stack);
                     else {
-                        for(var i = 0; i < data.Count; i++) {
-                            if('List' in data.Items[i]) {
+                        for(var i = 0; i < data.Count; i++) { // loop through all Topic entrees
+                            if('List' in data.Items[i]) { // add paper array to topics array if exists
                                 var papersArray = data.Items[i]['List']['SS'];
-                                console.log("in gettopics. papersArray: ", papersArray);
-                                tempArray.push({
+                                topicsArray.push({
                                     Name: data.Items[i]['Name']['S'],
                                     PapersList: papersArray
                                 });
                             }
                             else {
-                                tempArray.push({
+                                topicsArray.push({
                                     Name: data.Items[i]['Name']['S'] 
                                 });
                             }
-                            //console.log(i, data.Count, data.Items[i]['Name']['S']);
                         }
-                        topicDefer.resolve(tempArray);
+                        topicDefer.resolve(topicsArray);
                     }
                 });
-                console.log("in gettopics", (typeof tempArray))
                 return topicDefer.promise;
-                //$rootScope.$broadcast(_DYNAMOBROADCAST);
             },
 
             // Gets the next limit number of papers from dynamo
