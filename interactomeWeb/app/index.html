@@ -83,14 +83,23 @@
 
             </div>
             <div class="col-md-3" id="topics-bar-wrapper">
-                <div id="topics-bar" data-spy="affix" data-offset-top="30" data-offset-bottom="200" >
-                    <accordian>
-                        <accordion-group heading="Topics"  class="scroll">
+                <div id="topics-bar" data-spy="affix" data-offset-top="30" data-offset-bottom="30" >
+                    <accordion close-others="false">
+                        <accordion-group heading="Topics" class="scroll">
                             <div ng-repeat="topic in userTopics">
                                 <topic-panel-item topic-name={{topic}}></topic-panel-item>
                             </div>
-                        </accordian-group>
-                    </accordian>
+                        </accordion-group>
+                    </accordion>
+                    <!--<div class="accordion" id="accordion-parent">
+                        <div class="accordion-group">
+                            <div class="accordion-heading">
+                                <div ng-repeat="topic in userTopics">
+                                    <topic-panel-item topic-name={{topic}}></topic-panel-item>
+                                </div>
+                            </div>
+                        </div> 
+                    </div> -->
                 </div>
             </div>
         </div>
