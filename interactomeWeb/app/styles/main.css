@@ -83,13 +83,16 @@ body {
   overflow-y: scroll;
 }*/
 
-/*.scroll{
-  height: 200px;
-  overflow-y: scroll; /* works when not in collapse */
-
-
-.scroll[class*="in collapse"] {
-  height: 200px; /* works (box not visible) when in collapse */
-  overflow-y: scroll; /* works when not in collapse */
+.col-md-4 {
+  height: 400px;
 }
+
+/*.scroll{
+  overflow-y: scroll; /* works when not in collapse */
+
+
+/*.scroll[class*="in collapse"] {
+  /*height: 200px; /* works (box not visible) when in collapse */
+  /*overflow-y: scroll; /* works when not in collapse */
+
 
