@@ -78,11 +78,20 @@ body {
   }
 }
 
+.someClass {
+  max-height: 100px;
+  overflow-y: scroll;
+}
+
+.limSize {
+  max-height: 100px;
+}
+
 .fill {
   width: 100%;
 }
 
 .col-md-4 {
-  height: 400px;
+  height: 500px;
 }
 
