@@ -93,7 +93,7 @@ div.affix {
   position: fixed;
 }
 
-.someClass {
+.smallScroll {
   max-height: 100px;
   overflow-y: scroll;
 }
