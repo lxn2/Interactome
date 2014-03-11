@@ -68,7 +68,6 @@ app.provider('AwsService', function() {
             // Gets topics from dynamo table, currently paper Id's
             // Should eventually return paper Names and/or links
             getTopics: function() {
-                console.log("in gentdynamotopics");
                 var topicDefer = $q.defer();
                 var dynamodb = new AWS.DynamoDB(); // should we catch error for this too?
                 var params = {

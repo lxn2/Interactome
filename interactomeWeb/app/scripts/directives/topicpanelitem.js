@@ -30,6 +30,9 @@ angular.module('interactomeApp')
       link: function (scope, element, attrs) {
         scope.topicName = attrs.topicName;
         scope.scopePapersList = ((attrs.papersList).replace(/['"\[\]]/gi,'')).split(','); // removes quotations and brackets, converts string into array
+        if(scope.scopePapersList.length == 1 && scope.scopePapersList[0] == "") { // inserts a message if no abstracts
+          scope.scopePapersList = ["No abstracts added"];
+        }
       }
     };
   });
