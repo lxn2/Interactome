@@ -78,7 +78,7 @@ body {
   }
 }
 
-.accordion-heading {
+.accordion-heading, .topic-div {
   background-color: #EEEEEE;
   padding-top: 5px;
   padding-bottom: 5px;

@@ -33,6 +33,9 @@ angular.module('interactomeApp')
         if(scope.scopePapersList.length == 1 && scope.scopePapersList[0] == "") { // inserts a message if no abstracts
           scope.scopePapersList = ["No abstracts added"];
         }
+        else {
+          scope.scopePapersList.sort();
+        }
       }
     };
   });

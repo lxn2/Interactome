@@ -92,6 +92,9 @@ app.provider('AwsService', function() {
                                 });
                             }
                         }
+                        topicsArray.sort(function(a,b) {
+                            return a['Name'] > b['Name'];
+                        });
                         topicDefer.resolve(topicsArray);
                     }
                 });
