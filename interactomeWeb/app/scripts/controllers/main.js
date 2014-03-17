@@ -26,9 +26,12 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
     };
 
     $scope.$watch('currentPage + numPerPage + papers', function() {
-        var begin = (($scope.currentPage - 1) * $scope.numPerPage),
-            end = begin + $scope.numPerPage;
-
+        // Setting currentPage to 0 is a hack to get the recs working on page 1.
+        // $watching papers only works for having papers go from null to an array.
+        if ($scope.currentPage == 0)
+            $scope.currentPage = 1;
+        var begin = (($scope.currentPage - 1) * $scope.numPerPage);
+        var end = begin + $scope.numPerPage;
         $scope.filteredPapers = $scope.papers.slice(begin, end);
     });
 
@@ -60,6 +63,8 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
             RecommendationService.getRecs(abstracts).then(function(paperList) {
                 $scope.papers.length = 0;
                 $scope.papers.push.apply($scope.papers, paperList);
+                $scope.currentPage = 0;
+                $scope.paginationTotalItems = $scope.papers.length;
             });
         }
     };
@@ -78,6 +83,7 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
             $scope.papers.length = 0;
             $scope.papers.push.apply($scope.papers, paperList);
             $scope.paginationTotalItems = $scope.papers.length;
+            $scope.currentPage = 0;
         });
     });
 
