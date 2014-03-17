@@ -45,11 +45,11 @@
         <div id="userSearchPanel">
             <div id="jumbotronBanner" class="jumbotron">
                 <!--searchBar code -->
-                <div class="searchForm">
+                <form ng-submit="searchSubmit()">
                     <input id="searchBar" type="text" ng-model="searchByInstitution" placeholder="Search i.e. author, title, keywords" />
                     <!--searchButton -->
-                    <button id="searchButton" type="submit" onclick=location.href="#searchView" class="btn btn-primary">Search</button>
-                </div>
+                    <button id="searchButton" type="submit" class="btn btn-primary">Search</button>
+                </form>
             </div>
         </div>
     </div>

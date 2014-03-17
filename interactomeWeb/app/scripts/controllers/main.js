@@ -85,11 +85,9 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
 
 });
 
-app.controller('SearchCtrl', function($scope, SearchService) {
-    var institution = $scope.searchByInstitution;
+app.controller('SearchCtrl', function($scope, $location, SearchService) {
+    var institution = ($location.search()).search;
     $scope.institutions = [];
-    console.log("in search");
-    console.log($scope);
     // once promise is made, then set the scope 
     SearchService.showResults(institution).then(function(userData) {
         $scope.institutions.push.apply($scope.institutions, userData);
@@ -100,7 +98,7 @@ app.controller('SearchCtrl', function($scope, SearchService) {
 /*
     Controls the elements in the header (search bar, sign in).
 */
-app.controller('HeaderCtrl', function($scope, UserService) {
+app.controller('HeaderCtrl', function($scope, $location, UserService) {
 
     // This function sets the user authentication from googleSignin directive. 
     $scope.signedIn = function(oauth) {
@@ -112,5 +110,11 @@ app.controller('HeaderCtrl', function($scope, UserService) {
             });
     };
 
+    $scope.searchSubmit = function() {
+        if ($scope.searchByInstitution && $scope.searchByInstitution.length > 0) {
+            var url = "/searchView";
+            $location.search('search', $scope.searchByInstitution).path(url);
+        }
+    };
 
 });
