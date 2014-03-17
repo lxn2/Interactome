@@ -47,6 +47,8 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
                 $scope.user = user;
                 $scope.username = UserService.currentUsername();
             });
+
+            
     };
 
     // Determines what happens after one or more abstract is selected
@@ -77,10 +79,18 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
         $scope.modalLastName = lastName;
         $scope.modalText = abText;
     }
-
-
     // Listen for broadcasts of a token changing (this means AWS resources are available)
     var cleanupToken = $rootScope.$on(AwsService.tokenSetBroadcast, function() {
+        var uName = UserService.currentUsername();
+
+        UserService.getDynamoPref(uName).then(function(dbItem){
+            for(var i = 0; i < dbItem.Item.Likes.SS.length; i++){
+                $scope.likes[i] = dbItem.Item.Likes.SS[i];
+            }
+            for(var i = 0; i < dbItem.Item.Dislikes.SS.length; i++){
+                $scope.dislikes[i] = dbItem.Item.Dislikes.SS[i];
+            }
+        });
 
         AwsService.getPapers(100).then(function(paperList) {
             $scope.papers.length = 0;
@@ -92,25 +102,6 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
     $scope.$on("$destroy", function() {
         cleanupToken();
     });
-
-    $scope.getPrefs = function(){
-        console.log("In getprefs function");
-        AwsService.getDynamoPref($scope.username).then(function(dbItem){
-            console.log(dbItem);
-            console.log("In getDynamoPref callback")
-            for(var i = 0; i < dbItem.Item.Likes.SS.length; i++){
-                console.log("In likes loop!");
-                $scope.likes.push(dbItem.Item.Likes.SS[i]);
-            }
-            for(var i = 0; i < dbItem.Item.Dislikes.SS.length; i++)
-                $scope.likes.push(dbItem.Item.Dislikes.SS[i]);
-        });
-    }
-
-    $scope.getPrefs();
-
-    console.log($scope.likes);
-    console.log($scope.dislikes);
 
 });
 

@@ -7,7 +7,7 @@
 angular.module('interactomeApp.Userservice', [])
 
 
-// Used a servie type: factory instead of a pure service, because how I understand it
+// Used a service type: factory instead of a pure service, because how I understand it
 // factories allow more controlled access: can decide what to return instead of returning the entire service itself.
 // Not too much of a difference really, still learning....
 .factory('UserService', function($q, $http, AwsService) {
@@ -37,9 +37,39 @@ angular.module('interactomeApp.Userservice', [])
 
         },
 
-        currentUsername: function () { return service._username; }
+        currentUsername: function () {
+            return service._username; 
+        },
 
+        getDynamoPref: function(username) {
+            var defered = $q.defer();
 
+            var prefTable = new AWS.DynamoDB({
+                params: {
+                    TableName: 'Recommendation_Likes'
+                }
+            });
+
+            var getParams = {
+                Key: {
+                    "User": {
+                        "S": username
+                    },
+                    "Context": {
+                        "S": 'GeneralThread'
+                    }
+                }
+            }
+            
+            prefTable.getItem(getParams, function(err, data){
+                if(err)
+                    console.log(err);
+                else
+                    defered.resolve(data);
+            });
+
+            return defered.promise;
+        }
     };
     return service;
 });

@@ -136,10 +136,6 @@ app.provider('AwsService', function() {
                 });
 
                 var getParams = {
-                    AttributesToGet: [
-                    "Likes", 
-                    "Dislikes"
-                    ],
                     Key: {
                         "User": {
                             "S": username
@@ -150,6 +146,8 @@ app.provider('AwsService', function() {
                     }
                 }
 
+                console.log(getParams);
+                
                 prefTable.getItem(getParams, function(err, data){
                     if(err)
                         console.log("Error: " + err);
