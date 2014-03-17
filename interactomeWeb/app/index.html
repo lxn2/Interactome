@@ -24,13 +24,13 @@
 </head>
 
 <!-- We do not use ng-app here because we bootstrap our app in app.js -->
-<body ng-controller="MainCtrl">
+<body>
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
     <!-- Add your site or application content here -->
-    <div class="container">
+    <div class="container" ng-controller="HeaderCtrl">
         <!--Top Header holds the page title, logo, and google+ signin -->
         <div id="header">
             <!-- Google+ signin button -->
@@ -52,28 +52,28 @@
                 </div>
             </div>
         </div>
-
-        <div id="main">
-            <!-- Angular views are injected here -->
-            <div class="container" ng-view=""></div>
-        </div>
+    </div>
+    <div id="main">
+        <!-- Angular views are injected here -->
+        <div class="container" ng-view=""></div>
+    </div>
 
     <!-- Henry - Manually added Libraries -->
-        <!-- AWS CDN -->
-        <script src="https://sdk.amazonaws.com/js/aws-sdk-2.0.0-rc1.min.js"></script>
-        <script src="bower_components/angular-bootstrap/ui-bootstrap.js"></script>
+    <!-- AWS CDN -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.0.0-rc1.min.js"></script>
+    <script src="bower_components/angular-bootstrap/ui-bootstrap.js"></script>
 
-        <!-- Google+ Signin button library, note this had to be also loaded in google+ directive to ensure it showed up-->
-        <script type="text/javascript">
-        (function() {
-            var po = document.createElement('script');
-            po.type = 'text/javascript';
-            po.async = true;
-            po.src = 'https://apis.google.com/js/client:plusone.js?onload=onLoadCallback';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(po, s);
-        })();
-        </script>
+    <!-- Google+ Signin button library, note this had to be also loaded in google+ directive to ensure it showed up-->
+    <script type="text/javascript">
+    (function() {
+        var po = document.createElement('script');
+        po.type = 'text/javascript';
+        po.async = true;
+        po.src = 'https://apis.google.com/js/client:plusone.js?onload=onLoadCallback';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(po, s);
+    })();
+    </script>
 
     <!-- End of Henry's super cute manually added libraries, i love kitties --> 
 

@@ -35,15 +35,6 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
         $scope.filteredPapers = $scope.papers.slice(begin, end);
     });
 
-    // This function sets the user authentication from googleSignin directive. 
-    $scope.signedIn = function(oauth) {
-        // Google authentication passed into userService to hold onto and track user.
-        UserService.setCurrentOAuthUser(oauth)
-            .then(function(user) {
-                $scope.user = user;
-                $scope.username = UserService.currentUsername();
-            });
-    };
 
     // Determines what happens after one or more abstract is selected
     $scope.abstractsRec = function() {
@@ -94,13 +85,32 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
 
 });
 
-app.controller('SearchCtrl', function($scope, $rootScope, UserService, AwsService, SearchService) {
+app.controller('SearchCtrl', function($scope, SearchService) {
     var institution = $scope.searchByInstitution;
     $scope.institutions = [];
-
+    console.log("in search");
+    console.log($scope);
     // once promise is made, then set the scope 
     SearchService.showResults(institution).then(function(userData) {
         $scope.institutions.push.apply($scope.institutions, userData);
     });
+
+});
+
+/*
+    Controls the elements in the header (search bar, sign in).
+*/
+app.controller('HeaderCtrl', function($scope, UserService) {
+
+    // This function sets the user authentication from googleSignin directive. 
+    $scope.signedIn = function(oauth) {
+        // Google authentication passed into userService to hold onto and track user.
+        UserService.setCurrentOAuthUser(oauth)
+            .then(function(user) {
+                $scope.user = user;
+                $scope.username = UserService.currentUsername();
+            });
+    };
+
 
 });
