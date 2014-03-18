@@ -73,6 +73,8 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
         }
     };
 
+    console.log("Here");
+
     $scope.showAbstract = function(abTitle, firstName, lastName, abText) {
         $scope.modalTitle = abTitle;
         $scope.modalFirstName = firstName;
@@ -82,7 +84,7 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
     // Listen for broadcasts of a token changing (this means AWS resources are available)
     var cleanupToken = $rootScope.$on(AwsService.tokenSetBroadcast, function() {
         var uName = UserService.currentUsername();
-
+        console.log(uName);
         UserService.getDynamoPref(uName).then(function(dbItem){
             for(var i = 0; i < dbItem.Item.Likes.SS.length; i++){
                 $scope.likes[i] = dbItem.Item.Likes.SS[i];

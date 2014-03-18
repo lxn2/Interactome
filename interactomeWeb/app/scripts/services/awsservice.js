@@ -125,39 +125,6 @@ app.provider('AwsService', function() {
                     // if (!err) console.log(publishedmsg);
                 });
             },
-
-            getDynamoPref: function(username) {
-                var defered = $q.defer();
-
-                var prefTable = new AWS.DynamoDB({
-                    params: {
-                        TableName: 'Recommendation_Likes'
-                    }
-                });
-
-                var getParams = {
-                    Key: {
-                        "User": {
-                            "S": username
-                        },
-                        "Context": {
-                            "S": 'GeneralThread'
-                        }
-                    }
-                }
-
-                console.log(getParams);
-                
-                prefTable.getItem(getParams, function(err, data){
-                    if(err)
-                        console.log("Error: " + err);
-                    else
-                        console.log(data)
-                        defered.resolve(data);
-                });
-
-                return defered.promise;
-            },
             
             updateDynamoPref: function(paperId, liked, username) {
                 var recLikesTable = new AWS.DynamoDB({
