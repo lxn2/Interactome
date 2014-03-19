@@ -29,8 +29,6 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
         return Math.ceil($scope.papers.length / $scope.numPerPage);
     };
 
-    
-
     $scope.$watch('currentPage + numPerPage + papers', function() {
         var begin = (($scope.currentPage - 1) * $scope.numPerPage),
             end = begin + $scope.numPerPage;
@@ -47,7 +45,6 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
                 $scope.user = user;
                 $scope.username = UserService.currentUsername();
             });
-
             
     };
 
@@ -73,8 +70,6 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
         }
     };
 
-    console.log("Here");
-
     $scope.showAbstract = function(abTitle, firstName, lastName, abText) {
         $scope.modalTitle = abTitle;
         $scope.modalFirstName = firstName;
@@ -84,7 +79,6 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
     // Listen for broadcasts of a token changing (this means AWS resources are available)
     var cleanupToken = $rootScope.$on(AwsService.tokenSetBroadcast, function() {
         var uName = UserService.currentUsername();
-        console.log(uName);
         UserService.getDynamoPref(uName).then(function(dbItem){
             for(var i = 0; i < dbItem.Item.Likes.SS.length; i++){
                 $scope.likes[i] = dbItem.Item.Likes.SS[i];
@@ -92,11 +86,11 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
             for(var i = 0; i < dbItem.Item.Dislikes.SS.length; i++){
                 $scope.dislikes[i] = dbItem.Item.Dislikes.SS[i];
             }
-        });
 
-        AwsService.getPapers(100).then(function(paperList) {
-            $scope.papers.length = 0;
-            $scope.papers.push.apply($scope.papers, paperList);
+            AwsService.getPapers(100).then(function(paperList) {
+                $scope.papers.length = 0;
+                $scope.papers.push.apply($scope.papers, paperList);
+            });
         });
     });
 

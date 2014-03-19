@@ -15,7 +15,9 @@ angular.module('interactomeApp')
       	restrict: 'E',
       	scope: {      	
           localOnView: '&onView',
-          paper: '='
+          paper: '=',
+          likes: '=',
+          dislikes: '='
       	},
 		    controller: ['$scope', '$http', 'AwsService', 'UserService', function($scope, $http, AwsService, UserService) {
       		$scope.getS3Data = function() {
@@ -37,7 +39,6 @@ angular.module('interactomeApp')
               AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_liked', $scope.paper.Id);
               $scope.likeStatus = true; // true == liked
               AwsService.updateDynamoPref($scope.paper.Id, $scope.likeStatus, UserService.currentUsername());
-              console.log($scope.likes);
             }
           };
 
@@ -64,7 +65,7 @@ angular.module('interactomeApp')
                       '<input type="radio" name="likeBtn" > <span class="glyphicon glyphicon-thumbs-up"></span>' +
                     '</label>' +
                     '<label class="btn btn-primary" ng-click="dislikeClick()">' +
-                      '<input type="radio" name="likeBtn" > <span class="glyphicon glyphicon-thumbs-down"></span>' +
+                      '<input type="radio" name="dislikeBtn" > <span class="glyphicon glyphicon-thumbs-down"></span>' +
                     '</label>' +
                   '</div>' +
                   '<button type="button" class="btn btn-primary" name="viewBtn" ng-click="viewAbstract()">' +
@@ -76,9 +77,11 @@ angular.module('interactomeApp')
                 	'<p class="list-group-item-text"> Author: {{s3Data.FirstName[0] + ". " + s3Data.LastName}} </p>' +
                   '</div>' +
               	'</li>',
-      link: function (scope, element, attrs) {
-        scope.getS3Data();
-        
+
+      link: function ($scope, element, attrs) {
+        $scope.getS3Data();
+        }
+
       }
     };
   });
