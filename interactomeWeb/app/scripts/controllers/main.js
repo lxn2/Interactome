@@ -102,6 +102,12 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
         cleanupToken();
     });
 
+    $scope.addTopic = function(topicName) {
+        AwsService.addTopic(topicName).then(function() {
+            alert("done");
+        });
+    }
+
 });
 
 app.controller('SearchCtrl', function($scope, $rootScope, UserService, AwsService, SearchService) {

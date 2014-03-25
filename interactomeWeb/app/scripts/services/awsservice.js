@@ -29,8 +29,6 @@ app.provider('AwsService', function() {
         if (region) AWS.config.region = region;
     }
 
-
-
     self.$get = function($q, $cacheFactory, $http, $rootScope) {
         var _TOKENBROADCAST = 'tokenSet@AwsService';
         var credentialsDefer = $q.defer();
@@ -95,6 +93,69 @@ app.provider('AwsService', function() {
                         topicDefer.resolve(topicsArray);
                     }
                 });
+                return topicDefer.promise;
+            },
+
+            // Wrapper for DynamoDb.putItem
+            putItem: function(tableName, topicName) { // should this be private
+                var topicDefer = $q.defer();
+                var params = {
+                    Item: {
+                        Id: {
+                            S: 'Topic1'
+                        },
+                        Name: {
+                            S: topicName
+                        },
+                    },
+                    TableName: tableName,
+                    // ReturnValues: may be useful for updating view
+                };
+
+                dynamodb.putItem(params, function(err, data) {
+                    if (err) console.log(err, err.stack);
+                    else {
+                        topicDefer.resolve();
+                    }
+                });
+                return topicDefer.promise;
+            },
+
+            // Adds topic to Dynamo Topic table
+            addTopic: function(topicName) { // need to strip this of spaces?
+                var topicDefer = $q.defer();
+                var dynamodb = new AWS.DynamoDB();
+
+                var params = {
+                    TableName: 'Topic',
+                    IndexName: 'Name-index',
+                    Select: 'COUNT',
+                    // Limit -- ADD THIS LATER. query until you get 1 or done
+                    KeyConditions: {
+                        Name: {
+                            ComparisonOperator: 'EQ',
+                            AttributeValueList: [
+                                {
+                                    'S': topicName,
+                                },
+                            ],
+                        },
+                    },
+                };
+                dynamodb.query(params, function(err, data) {
+                    if (err) console.log(err, err.stack); // call error
+                    else if (data.Count == 0) { // if topic doesn't exist, add it
+                        putItem('Topic', topicName).then(function() {
+                            topicDefer.resolve();
+                            console.log("input success");
+                        });
+                    }
+                    else { // if different, assume exists
+                        console.log("already exists", data.Count);
+                        topicDefer.resolve(data.Count);
+                    }
+                });
+
                 return topicDefer.promise;
             },
 
