@@ -61,10 +61,10 @@ angular.module('interactomeApp')
                   '<h4 class="list-group-item-heading" ng-show="!noError"> {{errorMsg}} </h4>' +
                   '<div ng-show="noError">' +
                   '<div class="btn-group" data-toggle="buttons">' +
-                    '<label class="btn btn-primary" ng-click="likeClick()">' +
+                    '<label class="btn btn-primary" id="liked" ng-click="likeClick()">' +
                       '<input type="radio" name="likeBtn" > <span class="glyphicon glyphicon-thumbs-up"></span>' +
                     '</label>' +
-                    '<label class="btn btn-primary" ng-click="dislikeClick()">' +
+                    '<label class="btn btn-primary" id="disliked" ng-click="dislikeClick()">' +
                       '<input type="radio" name="dislikeBtn" > <span class="glyphicon glyphicon-thumbs-down"></span>' +
                     '</label>' +
                   '</div>' +
@@ -80,8 +80,19 @@ angular.module('interactomeApp')
 
       link: function ($scope, element, attrs) {
         $scope.getS3Data();
+
+        // Changed scope variable to $scope to allow me to access likes and dislikes
+
+        for(var i = 0; i < $scope.likes.length; i++){
+          if($scope.likes[i] == $scope.paper.Id)
+            element.find("#liked").addClass("btn btn-primary active");
         }
 
+        for(var i = 0; i < $scope.dislikes.length; i++){
+          if($scope.dislikes[i] == $scope.paper.Id)
+            element.find("#disliked").addClass("btn btn-primary active");
+        }
+     
       }
     };
   });
