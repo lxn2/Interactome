@@ -85,12 +85,12 @@ angular.module('interactomeApp')
 
         for(var i = 0; i < $scope.likes.length; i++){
           if($scope.likes[i] == $scope.paper.Id)
-            element.find("#liked").addClass("btn btn-primary active");
+            element.find("#liked").addClass("active");
         }
 
         for(var i = 0; i < $scope.dislikes.length; i++){
           if($scope.dislikes[i] == $scope.paper.Id)
-            element.find("#disliked").addClass("btn btn-primary active");
+            element.find("#disliked").addClass("active");
         }
      
       }
