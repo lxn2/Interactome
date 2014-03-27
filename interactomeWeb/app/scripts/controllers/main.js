@@ -83,7 +83,6 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
     }
 
     // Listen for broadcasts of a token changing (this means AWS resources are available)
-    // ***WHY DOES THIS GET CALLED TWICE?? **
     var cleanupToken = $rootScope.$on(AwsService.tokenSetBroadcast, function() {
 
         AwsService.getTopics().then(function(topics) {
