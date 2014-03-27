@@ -78,7 +78,7 @@ body {
   }
 }
 
-.accordion-heading, .topic-div {
+.accordion-heading {
   background-color: #EEEEEE;
   padding-top: 5px;
   padding-bottom: 5px;
@@ -93,22 +93,17 @@ div.affix {
   position: fixed;
 }
 
-.smallScroll {
+.smallScrollDiv {
   max-height: 100px;
   overflow-y: scroll;
 }
 
-.limSize {
+.topicAccordionSize {
   max-height: 100px;
   max-width: 100px;
 }
 
-.fill {
-  width: 400px;
-  position: fixed;
-}
-
-.topics-bar {
+.topicMasterAccordionSize {
   height: 500px;
 }
 

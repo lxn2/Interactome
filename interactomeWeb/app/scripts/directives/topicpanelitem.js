@@ -14,11 +14,11 @@ angular.module('interactomeApp')
 		    controller: ['$scope', 'AwsService', function($scope, AwsService) {          
           $scope.scopePapersList = [];
     	}],
-    	template: '<div class="accordion-group" class="limSize fill">' + 
+    	template: '<div class="accordion-group topic-accordion-size">' + 
                   '<div class="accordion-heading accordion-toggle" ng-click="isOpen = !isOpen">' +
                     '{{topicName}}' +
                   '</div>' +
-                  '<div class="accordion-body" collapse="!isOpen" ng-class="{smallScroll:isOpen}">' +
+                  '<div class="accordion-body" collapse="!isOpen" ng-class="{smallScrollDiv:isOpen}">' +
                     '<div class="accordion-inner">' +
                       '<li ng-repeat="paper in scopePapersList track by $index">' + // track by $index solves ng-repeat duplicate error: http://stackoverflow.com/questions/16296670/angular-ng-repeat-error-duplicates-in-a-repeater-are-not-allowed
                         '{{paper}}' +
