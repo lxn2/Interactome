@@ -6,7 +6,7 @@ var app = angular.module('interactomeApp');
 
 app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService, RecommendationService) {
 
-    console.log("made conteoller");
+    console.log("made controller");
     $scope.papers = [];
 
 
@@ -22,15 +22,12 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
     $scope.maxSize = 5;
     $scope.filteredPapers = [];
 
-
-
+    $scope.likes = [];
+    $scope.dislikes = [];
 
     $scope.numPages = function() {
         return Math.ceil($scope.papers.length / $scope.numPerPage);
     };
-
-
-
 
     $scope.$watch('currentPage + numPerPage + papers', function() {
         var begin = (($scope.currentPage - 1) * $scope.numPerPage),
@@ -38,9 +35,6 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
 
         $scope.filteredPapers = $scope.papers.slice(begin, end);
     });
-
-
-
 
 
     // This function sets the user authentication from googleSignin directive. 
@@ -51,6 +45,7 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
                 $scope.user = user;
                 $scope.username = UserService.currentUsername();
             });
+            
     };
 
     // Determines what happens after one or more abstract is selected
@@ -81,12 +76,21 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
         $scope.modalLastName = lastName;
         $scope.modalText = abText;
     }
-
     // Listen for broadcasts of a token changing (this means AWS resources are available)
     var cleanupToken = $rootScope.$on(AwsService.tokenSetBroadcast, function() {
-        AwsService.getPapers(100).then(function(paperList) {
-            $scope.papers.length = 0;
-            $scope.papers.push.apply($scope.papers, paperList);
+        var uName = UserService.currentUsername();
+        UserService.getDynamoPref(uName).then(function(dbItem){
+            for(var i = 0; i < dbItem.Item.Likes.SS.length; i++){
+                $scope.likes[i] = dbItem.Item.Likes.SS[i];
+            }
+            for(var i = 0; i < dbItem.Item.Dislikes.SS.length; i++){
+                $scope.dislikes[i] = dbItem.Item.Dislikes.SS[i];
+            }
+
+            AwsService.getPapers(100).then(function(paperList) {
+                $scope.papers.length = 0;
+                $scope.papers.push.apply($scope.papers, paperList);
+            });
         });
     });
 
