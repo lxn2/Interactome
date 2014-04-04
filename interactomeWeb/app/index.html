@@ -56,7 +56,7 @@
                 </div>
             </div>
             <div class="col-md-4 topicMasterAccordionSize" id="topics-bar-wrapper">
-                <div id="topicsbar" data-spy="affix" data-offset-top="30" data-offset-bottom="30" class="fill">
+                <div id="topicsbar" data-spy="affix" data-offset-top="5" data-offset-bottom="5" class="fill">
                     <h3>Topics</h3>
                     <div>
                         <div ng-repeat="topic in userTopics">
@@ -66,10 +66,13 @@
                 </div>
             </div>
         </div>
-    
         <div id="main">
             <!-- Angular views are injected here -->
-            <div class="container" ng-view=""></div>
+            <div class="row">
+            <div class="col-md-8">
+            <div ng-view=""></div>
+            </div>
+            </div>
         </div>
     </div>
     <!-- Henry - Manually added Libraries -->
