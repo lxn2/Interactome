@@ -94,6 +94,7 @@
                 </div>
             </div>
         </div>
+    </div>
         <!-- Henry - Manually added Libraries -->
         <!-- AWS CDN -->
         <script src="https://sdk.amazonaws.com/js/aws-sdk-2.0.0-rc1.min.js"></script>
@@ -111,6 +112,7 @@
             s.parentNode.insertBefore(po, s);
         })();
         </script>
+
 
       <!-- End of Henry's super cute manually added libraries, i love kitties --> 
 
@@ -130,17 +132,6 @@
     <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
     <script src="bower_components/angular-route/angular-route.js"></script>
     <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-    <link rel="stylesheet" href="bower_components/jquery.ui/themes/base/jquery.ui.all.css">
-    <script src="bower_components/angular-bootstrap/ui-bootstrap.js"></script>
-    <script src="bower_components/jquery.ui/ui/jquery.ui.widget.js"></script> 
-    <script src="bower_components/jquery.ui/ui/jquery.ui.accordion.js"></script>
-    <script src="bower_components/jquery.ui/ui/jquery.ui.effect.js"></script>
-
-    <script>
-        $(function() {
-            $("#topicsbar").accordion({collapsible: true, heightStyle: "fill"});
-        });
-    </script>
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
@@ -152,6 +143,17 @@
     <script src="scripts/directives/topicpanelitem.js"></script>
     <script src="scripts/directives/abstractListGroupItem.js"></script>
     <script src="scripts/services/RecommendationService.js"></script>
+        <link rel="stylesheet" href="bower_components/jquery.ui/themes/base/jquery.ui.all.css">
+    <script src="bower_components/angular-bootstrap/ui-bootstrap.js"></script>
+    <script src="bower_components/jquery.ui/ui/jquery.ui.widget.js"></script> 
+    <script src="bower_components/jquery.ui/ui/jquery.ui.accordion.js"></script>
+    <script src="bower_components/jquery.ui/ui/jquery.ui.effect.js"></script>
+
+    <script>
+        $(function() {
+            $("#topicsbar").accordion({collapsible: true, heightStyle: "fill"});
+        });
+    </script>
     <!-- endbuild -->
 
 

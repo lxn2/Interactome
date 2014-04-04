@@ -21,15 +21,12 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
     $scope.maxSize = 5;
     $scope.filteredPapers = [];
 
-
-
+    $scope.likes = [];
+    $scope.dislikes = [];
 
     $scope.numPages = function() {
         return Math.ceil($scope.papers.length / $scope.numPerPage);
     };
-
-
-
 
     $scope.$watch('currentPage + numPerPage + papers', function() {
         var begin = (($scope.currentPage - 1) * $scope.numPerPage),
@@ -37,9 +34,6 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
 
         $scope.filteredPapers = $scope.papers.slice(begin, end);
     });
-
-
-
 
 
     // This function sets the user authentication from googleSignin directive. 
@@ -50,6 +44,7 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
                 $scope.user = user;
                 $scope.username = UserService.currentUsername();
             });
+            
     };
 
     // Determines what happens after one or more abstract is selected
@@ -81,19 +76,26 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
         $scope.modalLastName = lastName;
         $scope.modalText = abText;
     }
-
     // Listen for broadcasts of a token changing (this means AWS resources are available)
     var cleanupToken = $rootScope.$on(AwsService.tokenSetBroadcast, function() {
+        var uName = UserService.currentUsername();
+        UserService.getDynamoPref(uName).then(function(dbItem){
+            for(var i = 0; i < dbItem.Item.Likes.SS.length; i++){
+                $scope.likes[i] = dbItem.Item.Likes.SS[i];
+            }
+            for(var i = 0; i < dbItem.Item.Dislikes.SS.length; i++){
+                $scope.dislikes[i] = dbItem.Item.Dislikes.SS[i];
+            }
 
+            AwsService.getPapers(100).then(function(paperList) {
+                $scope.papers.length = 0;
+                $scope.papers.push.apply($scope.papers, paperList);
+            });
+        });
         AwsService.getTopics().then(function(topics) {
             $scope.userTopics.length = 0;
             $scope.userTopics.push.apply($scope.userTopics, topics);
         });
-
-        AwsService.getPapers(100).then(function(paperList) {
-            $scope.papers.length = 0;
-            $scope.papers.push.apply($scope.papers, paperList);
-        }); 
     });
 
     //Unsubscribe (from http://stackoverflow.com/questions/18856341/how-can-i-unregister-a-broadcast-event-to-rootscope-in-angularjs)
