@@ -96,7 +96,8 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
             $scope.userTopics.length = 0;
             $scope.userTopics.push.apply($scope.userTopics, topics);
         }, function(reason) {
-            alert(reason);
+            console.log(reason);
+            alert.log("Error: Cannot query topics");
         });
     });
 
