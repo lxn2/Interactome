@@ -67,16 +67,29 @@ app.provider('AwsService', function() {
 
             // Gets topics from dynamo table, currently paper Id's
             // Should eventually return paper Names and/or links
-            getTopics: function() {
+            getTopics: function(username) {
                 var topicDefer = $q.defer();
                 var dynamodb = new AWS.DynamoDB(); // should we catch error for this too?
                 var params = {
                     TableName: 'Topic',
                     Select: 'ALL_ATTRIBUTES',
-                };
+                    IndexName: 'User-index',
+                    KeyConditions: {
+                        'User': {
+                            ComparisonOperator: 'EQ',
+                            AttributeValueList: [
+                                {
+                                    S: username
+                                }
+                            ]
+                        }
+                    }
+                }
                 var topicsArray = []; // list of dictionaries
-                dynamodb.scan(params, function(err, data) {
-                    if (err) console.log(err, err.stack);
+                dynamodb.query(params, function(err, data) {
+                    if (err) {
+                        topicDefer.reject(err, err.stack);
+                    }
                     else {
                         for(var i = 0; i < data.Count; i++) { // loop through all Topic entrees
                             if('List' in data.Items[i]) { // add paper array to topics array if exists

@@ -92,9 +92,11 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
                 $scope.papers.push.apply($scope.papers, paperList);
             });
         });
-        AwsService.getTopics().then(function(topics) {
+        AwsService.getTopics(uName).then(function(topics) {
             $scope.userTopics.length = 0;
             $scope.userTopics.push.apply($scope.userTopics, topics);
+        }, function(reason) {
+            alert(reason);
         });
     });
 
