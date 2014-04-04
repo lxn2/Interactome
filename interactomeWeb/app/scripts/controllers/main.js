@@ -109,7 +109,7 @@ app.controller('SearchCtrl', function($scope, $location, SearchService) {
 /*
     Controls the elements in the header (search bar, sign in).
 */
-app.controller('HeaderCtrl', function($scope, $location, UserService) {
+app.controller('HeaderCtrl', function($scope, $rootScope, $location, UserService, AwsService) {
     $scope.userTopics = [];
 
     // This function sets the user authentication from googleSignin directive. 
@@ -118,7 +118,6 @@ app.controller('HeaderCtrl', function($scope, $location, UserService) {
         UserService.setCurrentOAuthUser(oauth)
             .then(function(user) {
                 $scope.user = user;
-                $scope.username = UserService.currentUsername();
             });
     };
 
@@ -130,13 +129,12 @@ app.controller('HeaderCtrl', function($scope, $location, UserService) {
     };
     // Listen for broadcasts of a token changing (this means AWS resources are available)
     var cleanupToken = $rootScope.$on(AwsService.tokenSetBroadcast, function() {
-        // We can use $scope.username because the token is only set AFTER a user is set.
-        AwsService.getTopics($scope.username).then(function(topics) {
+        AwsService.getTopics(UserService.currentUsername()).then(function(topics) {
             $scope.userTopics.length = 0;
             $scope.userTopics.push.apply($scope.userTopics, topics);
         }, function(reason) {
             console.log(reason);
-            alert.log("Error: Cannot query topics");
+            alert("Error: Cannot query topics");
         });
     });
 

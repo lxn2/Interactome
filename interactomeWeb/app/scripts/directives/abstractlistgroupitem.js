@@ -85,7 +85,6 @@ angular.module('interactomeApp')
         $scope.getS3Data();
 
         // Changed scope variable to $scope to allow me to access likes and dislikes
-        console.log(element);
 
         for(var i = 0; i < $scope.likes.length; i++){
           if($scope.likes[i] == $scope.paper.Id)
