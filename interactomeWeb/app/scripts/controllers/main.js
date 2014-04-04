@@ -6,9 +6,8 @@ var app = angular.module('interactomeApp');
 
 app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService, RecommendationService) {
 
-    console.log("made controller");
     $scope.papers = [];
-
+    $scope.userTopics = [];
 
     $scope.absRecd = null;
     $scope.modalTitle = null;
@@ -70,6 +69,7 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
         }
     };
 
+    // updates abstract information for modal view
     $scope.showAbstract = function(abTitle, firstName, lastName, abText) {
         $scope.modalTitle = abTitle;
         $scope.modalFirstName = firstName;
@@ -91,6 +91,13 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
                 $scope.papers.length = 0;
                 $scope.papers.push.apply($scope.papers, paperList);
             });
+        });
+        AwsService.getTopics(uName).then(function(topics) {
+            $scope.userTopics.length = 0;
+            $scope.userTopics.push.apply($scope.userTopics, topics);
+        }, function(reason) {
+            console.log(reason);
+            alert.log("Error: Cannot query topics");
         });
     });
 

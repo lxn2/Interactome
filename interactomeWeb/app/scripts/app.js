@@ -8,7 +8,6 @@ var app = angular.module('interactomeApp', [
     'interactomeApp.Userservice',
     'interactomeApp.RecommendationService',
     'ui.bootstrap'
-
 ])
 
 // Sets our AWS arn on config through Awsservice

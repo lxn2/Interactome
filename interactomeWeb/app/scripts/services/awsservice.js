@@ -35,6 +35,7 @@ app.provider('AwsService', function() {
         var _TOKENBROADCAST = 'tokenSet@AwsService';
         var credentialsDefer = $q.defer();
         var credentialsPromise = credentialsDefer.promise;
+        var DynamoTopics = [];
         var _SNSTopics = {};
         return {
 
@@ -63,6 +64,55 @@ app.provider('AwsService', function() {
                 self._lastEvalKey = null;
                 $rootScope.$broadcast(_TOKENBROADCAST);
             }, // end of setToken func 
+
+            // Gets topics from dynamo table, currently paper Id's
+            // Should eventually return paper Names and/or links
+            getTopics: function(username) {
+                var topicDefer = $q.defer();
+                var dynamodb = new AWS.DynamoDB(); // should we catch error for this too?
+                var params = {
+                    TableName: 'Topic',
+                    Select: 'ALL_ATTRIBUTES',
+                    IndexName: 'User-index',
+                    KeyConditions: {
+                        'User': {
+                            ComparisonOperator: 'EQ',
+                            AttributeValueList: [
+                                {
+                                    S: username
+                                }
+                            ]
+                        }
+                    }
+                }
+                var topicsArray = []; // list of dictionaries
+                dynamodb.query(params, function(err, data) {
+                    if (err) {
+                        topicDefer.reject(err, err.stack);
+                    }
+                    else {
+                        for(var i = 0; i < data.Count; i++) { // loop through all Topic entrees
+                            if('List' in data.Items[i]) { // add paper array to topics array if exists
+                                var papersArray = data.Items[i]['List']['SS'];
+                                topicsArray.push({
+                                    Name: data.Items[i]['Name']['S'],
+                                    PapersList: papersArray
+                                });
+                            }
+                            else {
+                                topicsArray.push({
+                                    Name: data.Items[i]['Name']['S'] 
+                                });
+                            }
+                        }
+                        topicsArray.sort(function(a,b) {
+                            return a['Name'] > b['Name'];
+                        });
+                        topicDefer.resolve(topicsArray);
+                    }
+                });
+                return topicDefer.promise;
+            },
 
             // Gets the next limit number of papers from dynamo
             // This will eventually be done using the rec service (instead of scanning)
