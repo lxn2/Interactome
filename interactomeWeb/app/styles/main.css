@@ -78,7 +78,36 @@ body {
   }
 }
 
-
 .pagination {
   cursor: pointer;
 }
+
+.accordion-heading {
+  background-color: #EEEEEE;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  border-style: solid;
+  border-width: 1px;
+}
+
+div.affix {
+  width: 400px;
+  position: fixed;
+}
+
+.smallScrollDiv {
+  max-height: 100px;
+  overflow-y: scroll;
+}
+
+.topicAccordionSize {
+  max-height: 100px;
+  max-width: 100px;
+}
+
+.topicMasterAccordionSize {
+  height: 500px;
+}
+

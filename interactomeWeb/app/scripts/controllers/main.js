@@ -1,12 +1,12 @@
 'use strict';
 /**
-    This is the main controller of the application. This controller should have logic for the main (always running?) parts of the website.
+    This is the main controller of the application. This controller should have logic for the main (always running?) 
+    parts of the website.
 **/
 var app = angular.module('interactomeApp');
 
 app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService, RecommendationService) {
 
-    console.log("made conteoller");
     $scope.papers = [];
 
     $scope.absRecd = null;
@@ -21,6 +21,9 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
     $scope.maxSize = 5;
     $scope.filteredPapers = [];
 
+    $scope.likes = [];
+    $scope.dislikes = [];
+
     $scope.numPages = function() {
         return Math.ceil($scope.papers.length / $scope.numPerPage);
     };
@@ -34,7 +37,6 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
         var end = begin + $scope.numPerPage;
         $scope.filteredPapers = $scope.papers.slice(begin, end);
     });
-
 
     // Determines what happens after one or more abstract is selected
     $scope.abstractsRec = function() {
@@ -60,6 +62,7 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
         }
     };
 
+    // updates abstract information for modal view
     $scope.showAbstract = function(abTitle, firstName, lastName, abText) {
         $scope.modalTitle = abTitle;
         $scope.modalFirstName = firstName;
@@ -67,15 +70,23 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
         $scope.modalText = abText;
         $('#abstractViewModal').modal('show'); // open modal
     }
-
     // Listen for broadcasts of a token changing (this means AWS resources are available)
     var cleanupToken = $rootScope.$on(AwsService.tokenSetBroadcast, function() {
-        AwsService.getPapers(100).then(function(paperList) {
-            $scope.papers.length = 0;
-            $scope.papers.push.apply($scope.papers, paperList);
-            $scope.paginationTotalItems = $scope.papers.length;
-            $scope.currentPage = 0;
+        var uName = UserService.currentUsername();
+        UserService.getDynamoPref(uName).then(function(dbItem){
+            for(var i = 0; i < dbItem.Item.Likes.SS.length; i++){
+                $scope.likes[i] = dbItem.Item.Likes.SS[i];
+            }
+            for(var i = 0; i < dbItem.Item.Dislikes.SS.length; i++){
+                $scope.dislikes[i] = dbItem.Item.Dislikes.SS[i];
+            }
+
+            AwsService.getPapers(100).then(function(paperList) {
+                $scope.papers.length = 0;
+                $scope.papers.push.apply($scope.papers, paperList);
+            });
         });
+        
     });
 
     //Unsubscribe (from http://stackoverflow.com/questions/18856341/how-can-i-unregister-a-broadcast-event-to-rootscope-in-angularjs)
@@ -99,6 +110,7 @@ app.controller('SearchCtrl', function($scope, $location, SearchService) {
     Controls the elements in the header (search bar, sign in).
 */
 app.controller('HeaderCtrl', function($scope, $location, UserService) {
+    $scope.userTopics = [];
 
     // This function sets the user authentication from googleSignin directive. 
     $scope.signedIn = function(oauth) {
@@ -116,5 +128,20 @@ app.controller('HeaderCtrl', function($scope, $location, UserService) {
             $location.search('search', $scope.searchByInstitution).path(url);
         }
     };
+    // Listen for broadcasts of a token changing (this means AWS resources are available)
+    var cleanupToken = $rootScope.$on(AwsService.tokenSetBroadcast, function() {
+        // We can use $scope.username because the token is only set AFTER a user is set.
+        AwsService.getTopics($scope.username).then(function(topics) {
+            $scope.userTopics.length = 0;
+            $scope.userTopics.push.apply($scope.userTopics, topics);
+        }, function(reason) {
+            console.log(reason);
+            alert.log("Error: Cannot query topics");
+        });
+    });
 
+
+    $scope.$on("$destroy", function() {
+        cleanupToken();
+    });
 });
