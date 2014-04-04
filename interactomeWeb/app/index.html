@@ -33,29 +33,29 @@
     <div class="container-fluid" ng-controller="HeaderCtrl">
         <div class="row">
             <div class="col-md-8">
-        <!--Top Header holds the page title, logo, and google+ signin -->
-        <div id="header">
-            <!-- Google+ signin button -->
-            <div ng-show="!user" class="row">
-                <div google-signin client-id='796741862543' after-signin="signedIn(oauth)"></div>
+                <!--Top Header holds the page title, logo, and google+ signin -->
+                <div id="header">
+                    <!-- Google+ signin button -->
+                    <div ng-show="!user" class="row">
+                        <div google-signin client-id='796741862543' after-signin="signedIn(oauth)"></div>
+                    </div>
+                    <h1 id="logoHeader">Sage Bionetworks Interactome
+                        <small>Prototype</small>
+                    </h1>
+                </div>
+                <!-- userSearchPannel holds the search bar and filter -->
+                <div id="userSearchPanel">
+                    <div id="jumbotronBanner" class="jumbotron">
+                        <!--searchBar code -->
+                        <form ng-submit="searchSubmit()">
+                            <input id="searchBar" type="text" ng-model="searchByInstitution" placeholder="Search i.e. author, title, keywords" />
+                            <!--searchButton -->
+                            <button id="searchButton" type="submit" class="btn btn-primary">Search</button>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <h1 id="logoHeader">Sage Bionetworks Interactome
-                <small>Prototype</small>
-            </h1>
-        </div>
-        <!-- userSearchPannel holds the search bar and filter -->
-        <div id="userSearchPanel">
-            <div id="jumbotronBanner" class="jumbotron">
-                <!--searchBar code -->
-                <form ng-submit="searchSubmit()">
-                    <input id="searchBar" type="text" ng-model="searchByInstitution" placeholder="Search i.e. author, title, keywords" />
-                    <!--searchButton -->
-                    <button id="searchButton" type="submit" class="btn btn-primary">Search</button>
-                </form>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4 topicMasterAccordionSize" id="topics-bar-wrapper">
+            <div class="col-md-4 topicMasterAccordionSize" id="topics-bar-wrapper">
                 <div id="topicsbar" data-spy="affix" data-offset-top="30" data-offset-bottom="30" class="fill">
                     <h3>Topics</h3>
                     <div>
@@ -65,7 +65,8 @@
                     </div>
                 </div>
             </div>
-</div></div>
+        </div>
+    </div>
     <div id="main">
         <!-- Angular views are injected here -->
         <div class="container" ng-view=""></div>
