@@ -17,12 +17,8 @@
     </div>
 </div>
 
-<!-- filled in by AwsService -->
-<div id="status"></div>
+<!-- see main.js and abstractlistgroupitem.js -->
 <ul id="objects" class="list-group">
-
-    <!-- this uses the mainctrl (it's attached to the route) -->
-
     <div ng-repeat="paper in filteredPapers">
         <abstract-list-group-item paper="paper" likes="likes" dislikes="dislikes" on-view="showAbstract(abTitle,abFirst,abLast,abText)"></abstract-list-group-item>
 
@@ -38,7 +34,7 @@
 <!-- Page Pagination -->
 <div> 
 <tfoot>
-<Pagination total-items="totalItems" num-pages="numPages()" items-per-page="numPerPage" page="currentPage" max-size="maxSize" boundary-links="true">
+<Pagination total-items="paginationTotalItems" num-pages="numPages()" items-per-page="numPerPage" page="currentPage" max-size="maxSize" boundary-links="true">
     </pagination>
 </tfoot>
 </div> 

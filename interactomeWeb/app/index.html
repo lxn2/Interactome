@@ -24,14 +24,13 @@
 </head>
 
 <!-- We do not use ng-app here because we bootstrap our app in app.js -->
-
-<body ng-controller="MainCtrl">
+<body>
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
     <!-- Add your site or application content here -->
-    <div class="container-fluid">
+    <div class="container-fluid" ng-controller="HeaderCtrl">
         <div class="row">
             <div class="col-md-8">
                 <!--Top Header holds the page title, logo, and google+ signin -->
@@ -48,43 +47,16 @@
                 <div id="userSearchPanel">
                     <div id="jumbotronBanner" class="jumbotron">
                         <!--searchBar code -->
-                        <div class="searchForm">
+                        <form ng-submit="searchSubmit()">
                             <input id="searchBar" type="text" ng-model="searchByInstitution" placeholder="Search i.e. author, title, keywords" />
                             <!--searchButton -->
-                            <button id="searchButton" type="submit" onclick=location.href="#searchView" class="btn btn-primary">Search</button>
-                           
-
-                            <!-- bookmarksDropDown holds the user bookmark history, operates as a dropDown -->
-                            <div id="bookmarksDropDown" class="btn-group dropdown">
-                                <button type="button" class="btn dropdown-toggle btn-primary" data-toggle="dropdown" href="#">
-                                    Saved Papers
-                                    <span class="caret"></span>
-                                </button>
-                                <ul id="dropDownMenu" class="dropdown-menu">
-                                    <li><a href="#">Folder 1</a>
-                                    </li>
-                                    <li><a href="#">Folder 2</a>
-                                    </li>
-                                    <li><a href="#">Folder 3</a>
-                                    </li>
-                                    <li><a href="#">Folder 4</a>
-                                    </li>
-                                </ul>
-                            </div>
-
-                        </div>
+                            <button id="searchButton" type="submit" class="btn btn-primary">Search</button>
+                        </form>
                     </div>
                 </div>
-
-                <div id="main">
-                 <!-- Angular views are injected here -->
-                 <div class="container" ng-view=""></div>
-
-                </div>
-
             </div>
             <div class="col-md-4 topicMasterAccordionSize" id="topics-bar-wrapper">
-                <div id="topicsbar" data-spy="affix" data-offset-top="30" data-offset-bottom="30" class="fill">
+                <div id="topicsbar" data-spy="affix" data-offset-top="5" data-offset-bottom="5" class="fill">
                     <h3>Topics</h3>
                     <div>
                         <div ng-repeat="topic in userTopics">
@@ -94,38 +66,43 @@
                 </div>
             </div>
         </div>
+        <div id="main">
+            <!-- Angular views are injected here -->
+            <div class="row">
+            <div class="col-md-8">
+            <div ng-view=""></div>
+            </div>
+            </div>
+        </div>
     </div>
-        <!-- Henry - Manually added Libraries -->
-        <!-- AWS CDN -->
-        <script src="https://sdk.amazonaws.com/js/aws-sdk-2.0.0-rc1.min.js"></script>
-        <script src="bower_components/angular-bootstrap/ui-bootstrap.js"></script>
-        
+    <!-- Henry - Manually added Libraries -->
+    <!-- AWS CDN -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.0.0-rc1.min.js"></script>
+    <script src="bower_components/angular-bootstrap/ui-bootstrap.js"></script>
 
-        <!-- Google+ Signin button library, note this had to be also loaded in google+ directive to ensure it showed up-->
-        <script type="text/javascript">
-        (function() {
-            var po = document.createElement('script');
-            po.type = 'text/javascript';
-            po.async = true;
-            po.src = 'https://apis.google.com/js/client:plusone.js?onload=onLoadCallback';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(po, s);
-        })();
-        </script>
+    <!-- Google+ Signin button library, note this had to be also loaded in google+ directive to ensure it showed up-->
+    <script type="text/javascript">
+    (function() {
+        var po = document.createElement('script');
+        po.type = 'text/javascript';
+        po.async = true;
+        po.src = 'https://apis.google.com/js/client:plusone.js?onload=onLoadCallback';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(po, s);
+    })();
+    </script>
 
+    <!-- End of Henry's super cute manually added libraries, i love kitties --> 
 
-      <!-- End of Henry's super cute manually added libraries, i love kitties --> 
-
-        <!--[if lt IE 9]>
+    <!--[if lt IE 9]>
     <script src="bower_components/es5-shim/es5-shim.js"></script>
     <script src="bower_components/json3/lib/json3.min.js"></script>
     <![endif]-->
 
-
     <!-- build:js scripts/vendor.js -->
     <!-- bower:js -->
-    <script src="bower_components/jquery/jquery.js"></script>
     <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/jquery/jquery.js"></script>
     <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script src="bower_components/angular-resource/angular-resource.js"></script>
     <script src="bower_components/angular-cookies/angular-cookies.js"></script>
@@ -137,14 +114,13 @@
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="scripts/app.js"></script>
     <script src="scripts/controllers/main.js"></script>
-    <script src="scripts/directives/googleSignin.js"></script>
-    <script src="scripts/services/UserService.js"></script>
-    <script src="scripts/services/AWSservice.js"></script>
+    <script src="scripts/directives/googlesignin.js"></script>
+    <script src="scripts/services/userservice.js"></script>
+    <script src="scripts/services/awsservice.js"></script>
     <script src="scripts/directives/topicpanelitem.js"></script>
-    <script src="scripts/directives/abstractListGroupItem.js"></script>
-    <script src="scripts/services/RecommendationService.js"></script>
-        <link rel="stylesheet" href="bower_components/jquery.ui/themes/base/jquery.ui.all.css">
-    <script src="bower_components/angular-bootstrap/ui-bootstrap.js"></script>
+    <script src="scripts/directives/abstractlistgroupitem.js"></script>
+    <script src="scripts/services/recommendationservice.js"></script>
+    <link rel="stylesheet" href="bower_components/jquery.ui/themes/base/jquery.ui.all.css">
     <script src="bower_components/jquery.ui/ui/jquery.ui.widget.js"></script> 
     <script src="bower_components/jquery.ui/ui/jquery.ui.accordion.js"></script>
     <script src="bower_components/jquery.ui/ui/jquery.ui.effect.js"></script>
@@ -155,8 +131,6 @@
         });
     </script>
     <!-- endbuild -->
-
-
 </body>
 
 </html>

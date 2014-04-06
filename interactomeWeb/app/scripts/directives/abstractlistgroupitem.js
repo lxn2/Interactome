@@ -52,8 +52,11 @@ angular.module('interactomeApp')
           };
 
           $scope.viewAbstract = function() {
-            $scope.localOnView({abTitle: $scope.s3Data.AbstractTitle,abFirst: $scope.s3Data.FirstName[0],abLast: $scope.s3Data.LastName,abText: $scope.s3Data.Abstract});
-            $('#abstractViewModal').modal('show'); // open modal
+            $scope.localOnView({
+              abTitle: $scope.s3Data.AbstractTitle,
+              abFirst: $scope.s3Data.FirstName[0],
+              abLast: $scope.s3Data.LastName,
+              abText: $scope.s3Data.Abstract});
           };
 
     	}],
@@ -82,7 +85,6 @@ angular.module('interactomeApp')
         $scope.getS3Data();
 
         // Changed scope variable to $scope to allow me to access likes and dislikes
-        console.log(element);
 
         for(var i = 0; i < $scope.likes.length; i++){
           if($scope.likes[i] == $scope.paper.Id)

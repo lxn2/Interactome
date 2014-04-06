@@ -29,7 +29,7 @@ app.config(
             controller: 'MainCtrl'
         })
             .when('/searchView', {
-                templateUrl: 'views/searchView.html',
+                templateUrl: 'views/searchview.html',
                 controller: 'SearchCtrl'
 
 

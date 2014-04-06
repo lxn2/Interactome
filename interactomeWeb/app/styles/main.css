@@ -78,6 +78,10 @@ body {
   }
 }
 
+.pagination {
+  cursor: pointer;
+}
+
 .accordion-heading {
   background-color: #EEEEEE;
   padding-top: 5px;
