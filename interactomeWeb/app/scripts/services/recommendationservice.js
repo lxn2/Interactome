@@ -14,7 +14,7 @@ angular.module('interactomeApp.RecommendationService', [])
       getRecs: function(abstractList) {
           var defered = $q.defer();
 
-          var limit = 10 + abstractList.length; // min of abstracts needed to make sure no duplicates returned
+          var limit = 100 + abstractList.length; // min of abstracts needed to make sure no duplicates returned
 
           // Scan table for limit number of papers
           if(abstractList.length > 0) {
