@@ -63,6 +63,32 @@ app.provider('AwsService', function() {
                 $rootScope.$broadcast(_TOKENBROADCAST);
             }, // end of setToken func 
 
+            /*getSequence: function() {
+                var sequenceDefer = $q.defer();
+                var dynamodb = new AWS.DynamoDB();
+                var params = {
+                    TableName: 'Sequencer',
+                    AttributesToGet: [
+                        'Sequence',
+                    ],
+                    ConsistentRead: true,
+                    Key: {
+                        Id: {
+                            'N': 1,
+                        }
+                    },
+                };
+                dynamodb.getItem(params, function(err, data) {
+                    if (err) console.log(err. err.stack);
+                    else {
+                        console.log("sequence",data.Item['Sequence']['N']);
+                        sequenceDefer.resolve(data.Item['Sequence']['N']);
+                    }
+                })
+                return sequenceDefer.promise;
+
+            }*/
+
             // Gets topics from dynamo table, currently paper Id's
             // Should eventually return paper Names and/or links
             getTopics: function() {
@@ -96,42 +122,89 @@ app.provider('AwsService', function() {
                 return topicDefer.promise;
             },
 
-            // Wrapper for DynamoDb.putItem
-            putItem: function(tableName, topicName) { // should this be private
-                var topicDefer = $q.defer();
-                var params = {
-                    Item: {
-                        Id: {
-                            S: 'Topic1'
-                        },
-                        Name: {
-                            S: topicName
+            // puts new Topic item into Dynamo
+            _putNewTopic: function(username, topicname) { // private
+                var defer = $q.defer();
+                var dynamodb = new AWS.DynamoDB();
+
+                // params to update & get new Sequence from Sequencer table
+                var sequenceParams = {
+                    TableName: 'Sequencer',
+                    AttributeUpdates: {
+                        Sequence: {
+                            Action: 'ADD',
+                            Value: {
+                                N: '1',
+                            },
                         },
                     },
-                    TableName: tableName,
-                    // ReturnValues: may be useful for updating view
+                    Key: {
+                        Id: {
+                            N: '1',
+                        }
+                    },
+                    ReturnValues: 'UPDATED_NEW',
                 };
+                var seq = "";
 
-                dynamodb.putItem(params, function(err, data) {
-                    if (err) console.log(err, err.stack);
+                // call update to Sequencer
+                dynamodb.updateItem(sequenceParams, function(err, data) {
+                    if (err) {
+                        console.log(err, err.stack);
+                        defer.reject();
+                    }
                     else {
-                        topicDefer.resolve();
+                        seq = data.Attributes['Sequence']['N'];
+
+                        // params to put new item into Topics
+                        var putParams = {
+                            Item: {
+                                Id: {
+                                    S: 'Topic' + seq
+                                },
+                                Name: {
+                                    S: topicname
+                                },
+                                User: {
+                                    S: username
+                                }
+                            },
+                            TableName: 'Topic'
+                        };
+
+                        // call udpate to Topic
+                        dynamodb.putItem(putParams, function(err, data) {
+                            if (err) {
+                                console.log(err, err.stack);
+                                defer.reject();
+                            }
+                            else {
+                                defer.resolve();
+                            }
+                        });
                     }
                 });
-                return topicDefer.promise;
+                return defer.promise;
             },
 
             // Adds topic to Dynamo Topic table
-            addTopic: function(topicName) { // need to strip this of spaces?
+            addTopic: function(username, topicName) {
                 var topicDefer = $q.defer();
                 var dynamodb = new AWS.DynamoDB();
-
+                var self = this;
                 var params = {
                     TableName: 'Topic',
-                    IndexName: 'Name-index',
+                    IndexName: 'User-index',
                     Select: 'COUNT',
-                    // Limit -- ADD THIS LATER. query until you get 1 or done
                     KeyConditions: {
+                        User: {
+                            ComparisonOperator: 'EQ',
+                            AttributeValueList: [
+                                {
+                                    'S': username,
+                                }
+                            ],
+                        },
                         Name: {
                             ComparisonOperator: 'EQ',
                             AttributeValueList: [
@@ -139,20 +212,25 @@ app.provider('AwsService', function() {
                                     'S': topicName,
                                 },
                             ],
-                        },
+                        }
                     },
                 };
+
                 dynamodb.query(params, function(err, data) {
-                    if (err) console.log(err, err.stack); // call error
-                    else if (data.Count == 0) { // if topic doesn't exist, add it
-                        putItem('Topic', topicName).then(function() {
-                            topicDefer.resolve();
-                            console.log("input success");
-                        });
+                    if (err) {
+                        console.log(err, err.stack); // call error
+                        topicDefer.reject();
                     }
-                    else { // if different, assume exists
-                        console.log("already exists", data.Count);
-                        topicDefer.resolve(data.Count);
+                    else if (data.Count == 0) { // if topic doesn't exist, add it
+                        self._putNewTopic(username,topicName).then(function() {
+                            topicDefer.resolve();
+                        }, function() {
+                            topicDefer.reject();
+                        });
+                        
+                    }
+                    else { // if exists, don't add
+                        topicDefer.reject("Topic already exists");
                     }
                 });
 

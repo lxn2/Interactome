@@ -4,10 +4,12 @@
 **/
 var app = angular.module('interactomeApp');
 
-app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService, RecommendationService) {
+app.controller('MainCtrl', function($scope, $rootScope, $timeout,UserService, AwsService, RecommendationService) {
 
     $scope.papers = [];
     $scope.userTopics = [];
+
+    $scope.newTopic = null;
 
     $scope.absRecd = null;
     $scope.modalTitle = null;
@@ -39,7 +41,9 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
     });
 
 
-
+    $scope.$watch('userTopics', function() {
+        $scope.$apply();
+    });
 
 
     // This function sets the user authentication from googleSignin directive. 
@@ -102,10 +106,30 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
         cleanupToken();
     });
 
-    $scope.addTopic = function(topicName) {
-        AwsService.addTopic(topicName).then(function() {
-            alert("done");
-        });
+    $scope.addTopic = function() {
+        AwsService.addTopic("Ball hard 24/7", $scope.newTopic).then(
+            function() {
+                AwsService.getTopics().then(function(topics) {
+                    
+                    $scope.userTopics.length = 0;
+                    //$scope.userTopics.push.apply($scope.userTopics, topics);
+                    //$scope.userTopics.push($scope.userTopics, topics);
+                    $scope.userTopics.push.apply($scope.userTopics, topics);
+                });
+                //$scope.userTopics = $scope.userTopics;
+                console.log('updated', $scope.userTopics);
+            }, 
+            function(err) {
+                if ("Topic already exists" == err) {
+                    alert("Topic already exists", $scope.newTopic, "already exists. Please try something else.");
+                }
+                else {
+                    alert("Could not add topic");
+                }
+            }
+        );
+        // reset to null
+        $scope.newTopic = null;
     }
 
 });
