@@ -1,16 +1,7 @@
 'use strict';
 /**
     This service handles the AWS resources. Setting or getting, should be through this API.
-
-
-var app = angular.module('interactomeApp.Awsservice', []);
-
-
-// creating service type provider. Provider used to configure service before app runs. 
-app.provider('AwsService', function() {
-
-    I decided to use an observer pattern for notifying subscribers instead of $watch and $digest. I couldn't seem to get them to bind correctly
-    when trying to use the mainCtrl. The observer pattern is slightly more wordy
+    
 **/
 var app = angular.module('interactomeApp.AwsService', [])
 
@@ -91,16 +82,29 @@ app.provider('AwsService', function() {
 
             // Gets topics from dynamo table, currently paper Id's
             // Should eventually return paper Names and/or links
-            getTopics: function() {
+            getTopics: function(username) {
                 var topicDefer = $q.defer();
                 var dynamodb = new AWS.DynamoDB(); // should we catch error for this too?
                 var params = {
                     TableName: 'Topic',
                     Select: 'ALL_ATTRIBUTES',
-                };
+                    IndexName: 'User-index',
+                    KeyConditions: {
+                        'User': {
+                            ComparisonOperator: 'EQ',
+                            AttributeValueList: [
+                                {
+                                    S: username
+                                }
+                            ]
+                        }
+                    }
+                }
                 var topicsArray = []; // list of dictionaries
-                dynamodb.scan(params, function(err, data) {
-                    if (err) console.log(err, err.stack);
+                dynamodb.query(params, function(err, data) {
+                    if (err) {
+                        topicDefer.reject(err, err.stack);
+                    }
                     else {
                         for(var i = 0; i < data.Count; i++) { // loop through all Topic entrees
                             if('List' in data.Items[i]) { // add paper array to topics array if exists
@@ -116,6 +120,9 @@ app.provider('AwsService', function() {
                                 });
                             }
                         }
+                        topicsArray.sort(function(a,b) {
+                            return a['Name'] > b['Name'];
+                        });
                         topicDefer.resolve(topicsArray);
                     }
                 });
@@ -298,20 +305,22 @@ app.provider('AwsService', function() {
                     // if (!err) console.log(publishedmsg);
                 });
             },
-
-            // Adds the abstractId into either the "Likes" or "Dislikes" attribute in "Interactions."
-            // Was unsure about naming conventions with get, set, post etc.
-            updateDynamoPref: function(absId, liked, username) {
+            
+            updateDynamoPref: function(paperId, liked, username) {
                 var recLikesTable = new AWS.DynamoDB({
                     params: {
                         TableName: 'Recommendation_Likes'
                     }
                 });
 
+                //To hold the bool to determine if abstract exists in the opposite attribute (Likes/Dislikes)
+                var exists;
+
                 if (liked) {
-                    var params = {
+                    // To hold get parameters
+                    var getParams = {
                         AttributesToGet: [
-                            'Dislikes'
+                        'Dislikes'
                         ],
                         Key: {
                             "User": {
@@ -321,22 +330,10 @@ app.provider('AwsService', function() {
                                 "S": 'GeneralThread'
                             }
                         }
-                    };
+                    }
 
-                    // Unfinished - once done this will check to see if the abstract exists in the dislikes
-                    // attribute, if so it will remove it. 
-                    recLikesTable.getItem(params, function(err, data) {
-                        if (err)
-                            console.log("Error: " + err);
-                        else {
-                            // Check if abstract in Dislikes then remove and place in likes
-                        }
-                    });
-
-                    // To store the absId
-                    var likesArr = [absId];
-
-                    var updateParams = {
+                    // For adding abstract to Likes
+                    var updateAdd = {
                         Key: {
                             "User": {
                                 "S": username
@@ -349,26 +346,72 @@ app.provider('AwsService', function() {
                             "Likes": {
                                 "Action": "ADD",
                                 "Value": {
-                                    "SS": likesArr
+                                    "SS": [paperId]
                                 }
                             }
                         }
                     }
 
-                    // Update our table to include the new abstract
-                    recLikesTable.updateItem(updateParams, function(err, data) {
+                    // For removing abstract from Dislikes 
+                    var updateRemove = {
+                        Key: {
+                            "User": {
+                                "S": username
+                            },
+                            "Context": {
+                                "S": 'GeneralThread'
+                            }
+                        },
+                        AttributeUpdates: {
+                            "Dislikes": {
+                                "Action": "DELETE",
+                                "Value": {
+                                    "SS": [paperId]
+                                }
+                            }
+                        }
+                    }
+
+                    // Function returns true if it found the Id in Dislikes
+                    exists = recLikesTable.getItem(getParams, function(err, data){
                         if (err)
                             console.log("Error: " + err);
                         else {
-                            console.log("Success!" + data)
+                            var i = 0;
+                            console.log(data.Item.Dislikes.SS)
+                            while(i < data.Item.Dislikes.SS.length && paperId != data.Item.Dislikes.SS[i])
+                                i++;
+                            if(i < data.Item.Dislikes.SS.length){
+                                console.log("It's in Dislikes!");
+                                exists = true;      
+                            }
                         }
+                        return exists;
+                    });
+
+                    // If found remove from Dislikes
+                    if(exists){
+                        recLikesTable.updateItem(updateRemove, function(err, data){
+                            if(err)
+                                console.log(err);
+                            else
+                                console.log(paperId + " was removed!");
+                        });
+                    }
+
+                    // Add Id to Likes
+                    recLikesTable.updateItem(updateAdd, function(err, data){
+                        if(err)
+                            console.log(err);
+                        else
+                            console.log(paperId + " was added!");
                     });
 
                 } else {
                     // almost identical to likes
-                    var params = {
+                    var getParams = {
                         AttributesToGet: [
-                            'Likes'
+                        'Likes'
                         ],
                         Key: {
                             "User": {
@@ -378,20 +421,9 @@ app.provider('AwsService', function() {
                                 "S": 'GeneralThread'
                             }
                         }
-                    };
+                    }
 
-                    recLikesTable.getItem(params, function(err, data) {
-                        if (err)
-                            console.log("Error: " + err);
-                        else {
-                            // Check if abstract in Likes then remove and place in likes
-                        }
-                    });
-
-
-                    var dislikesArr = [absId];
-
-                    var updateParams = {
+                    var updateAdd = {
                         Key: {
                             "User": {
                                 "S": username
@@ -404,23 +436,68 @@ app.provider('AwsService', function() {
                             "Dislikes": {
                                 "Action": "ADD",
                                 "Value": {
-                                    "SS": dislikesArr
+                                    "SS": [paperId]
                                 }
                             }
                         }
                     }
 
-                    // Update our table to include the new abstract
-                    recLikesTable.updateItem(updateParams, function(err, data) {
+                    var updateRemove = {
+                        Key: {
+                            "User": {
+                                "S": username
+                            },
+                            "Context": {
+                                "S": 'GeneralThread'
+                            }
+                        },
+                        AttributeUpdates: {
+                            "Likes": {
+                                "Action": 'DELETE',
+                                "Value": {
+                                    "SS": [paperId]
+                                }
+                            }
+                        }
+                    }
+                    exists = recLikesTable.getItem(getParams, function(err, data){
                         if (err)
                             console.log("Error: " + err);
                         else {
-                            console.log("Success!" + data)
+                            var i = 0;
+                            while(i < data.Item.Likes.SS.length && paperId != data.Item.Likes.SS[i])
+                                i++;
+                            if(i < data.Item.Likes.SS.length){
+                                console.log( paperId + " is in Likes!");
+                                exists = true;      
+                            }
                         }
+                        return exists;
+                    });
+
+                    console.log(exists);
+
+                    if(exists){
+                        recLikesTable.updateItem(updateRemove, function(err, data){
+                            if(err)
+                                console.log(err);
+                            else{
+                                console.log(paperId + " was removed!");
+                                console.log(data);
+                            }
+                        });
+                    }
+
+                    recLikesTable.updateItem(updateAdd, function(err, data){
+                        if(err)
+                            console.log(err);
+                        else
+                            console.log(paperId + " was added!");
                     });
                 }
 
             }
+
 
 
         } // end of return 

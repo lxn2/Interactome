@@ -15,7 +15,9 @@ angular.module('interactomeApp')
       	restrict: 'E',
       	scope: {      	
           localOnView: '&onView',
-          paper: '='
+          paper: '=',
+          likes: '=',
+          dislikes: '='
       	},
 		    controller: ['$scope', '$http', 'AwsService', 'UserService', function($scope, $http, AwsService, UserService) {
       		$scope.getS3Data = function() {
@@ -36,7 +38,7 @@ angular.module('interactomeApp')
               $scope.likeMsg = " Liked abstract recommendation. ID = " + $scope.paper.Id;
               AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_liked', $scope.paper.Id);
               $scope.likeStatus = true; // true == liked
-              AwsService.updateDynamoPref($scope.abstractLink, $scope.likeStatus, UserService.currentUsername());
+              AwsService.updateDynamoPref($scope.paper.Id, $scope.likeStatus, UserService.currentUsername());
             }
           };
 
@@ -45,13 +47,16 @@ angular.module('interactomeApp')
               $scope.likeMsg = " Disliked abstract recommendation";
               AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_disliked', $scope.paper.Id);
               $scope.likeStatus = false; // false == disliked
-              AwsService.updateDynamoPref($scope.abstractLink, $scope.likeStatus, UserService.currentUsername());
+              AwsService.updateDynamoPref($scope.paper.Id, $scope.likeStatus, UserService.currentUsername());
             }
           };
 
           $scope.viewAbstract = function() {
-            $scope.localOnView({abTitle: $scope.s3Data.AbstractTitle,abFirst: $scope.s3Data.FirstName[0],abLast: $scope.s3Data.LastName,abText: $scope.s3Data.Abstract});
-            $('#abstractViewModal').modal('show'); // open modal
+            $scope.localOnView({
+              abTitle: $scope.s3Data.AbstractTitle,
+              abFirst: $scope.s3Data.FirstName[0],
+              abLast: $scope.s3Data.LastName,
+              abText: $scope.s3Data.Abstract});
           };
 
     	}],
@@ -59,11 +64,11 @@ angular.module('interactomeApp')
                   '<h4 class="list-group-item-heading" ng-show="!noError"> {{errorMsg}} </h4>' +
                   '<div ng-show="noError">' +
                   '<div class="btn-group" data-toggle="buttons">' +
-                    '<label class="btn btn-primary" ng-click="likeClick()">' +
+                    '<label class="btn btn-primary liked" ng-click="likeClick()">' +
                       '<input type="radio" name="likeBtn" > <span class="glyphicon glyphicon-thumbs-up"></span>' +
                     '</label>' +
-                    '<label class="btn btn-primary" ng-click="dislikeClick()">' +
-                      '<input type="radio" name="likeBtn" > <span class="glyphicon glyphicon-thumbs-down"></span>' +
+                    '<label class="btn btn-primary disliked" ng-click="dislikeClick()">' +
+                      '<input type="radio" name="dislikeBtn" > <span class="glyphicon glyphicon-thumbs-down"></span>' +
                     '</label>' +
                   '</div>' +
                   '<button type="button" class="btn btn-primary" name="viewBtn" ng-click="viewAbstract()">' +
@@ -75,8 +80,22 @@ angular.module('interactomeApp')
                 	'<p class="list-group-item-text"> Author: {{s3Data.FirstName[0] + ". " + s3Data.LastName}} </p>' +
                   '</div>' +
               	'</li>',
-      link: function (scope, element, attrs) {
-        scope.getS3Data();
+
+      link: function ($scope, element, attrs) {
+        $scope.getS3Data();
+
+        // Changed scope variable to $scope to allow me to access likes and dislikes
+
+        for(var i = 0; i < $scope.likes.length; i++){
+          if($scope.likes[i] == $scope.paper.Id)
+            element.find('.liked').addClass("active");
+        }
+
+        for(var i = 0; i < $scope.dislikes.length; i++){
+          if($scope.dislikes[i] == $scope.paper.Id)
+            element.find('.disliked').addClass("active");
+        }
+     
       }
     };
   });
