@@ -81,18 +81,18 @@ def connectToAWS(authCSVFileName):
         Note: This should retry if failing for an access reason. If it fails for some other weird reason it will return None.
 '''
 def getSequence():
-    sequenceItem = None
+    sequenceNumber = None
     try:
-      sequenceItem = dynamoConn.update_item(SEQUENCER_TABLE_NAME, 
+      sequenceNumber = dynamoConn.update_item(SEQUENCER_TABLE_NAME, 
                                     {"Id":{"N":"1"}}, 
                                     attribute_updates={"Sequence":{"Action":"ADD", "Value":{"N":"1"}}}, 
                                     expected=None, 
                                     return_values="UPDATED_NEW", 
                                     return_consumed_capacity=None, 
-                                    return_item_collection_metrics=None)
+                                    return_item_collection_metrics=None)['Attributes']['Sequence']['N']
     except Exception, e:
         print(e)
-    return sequenceItem
+    return sequenceNumber
 
 '''
     Parses the csv file and adds the users found within to the users table. 
@@ -108,12 +108,12 @@ def addUsers(csvFileName):
     # read each csv row to insert into dynamo Paper table
     for row in authorData:
         rowIndex += 1 # Starts at 2 to mimic csv, used for logging
-        sequencerItem = getSequence()
-        if (sequencerItem == None):
+        sequenceNumber = getSequence()
+        if (sequenceNumber == None):
             lostIndexFile.write(str(rowIndex) + "\n")
             logging.error("Unabled to sequence item. Index not added: " + str(rowIndex))
             continue
-        id = "User" + sequencerItem['Attributes']['Sequence']['N']
+        id = "User" + sequenceNumber
         row[PRESENTATION_NUM_EXCEL_FIELD] = int(row[PRESENTATION_NUM_EXCEL_FIELD])
         attributesList = ['Id'] + row.keys()
         valuesList = [id] + row.values()
@@ -151,12 +151,14 @@ def addAbstracts(csvFileName):
         try:
             # convert rows into json format, upload to s3
             rowJSON = json.dumps(row, skipkeys=False, ensure_ascii=False, sort_keys=True)
-            sequencerItem = getSequence()
-            if (sequencerItem == None):
+            sequenceNumber = getSequence()
+            if (sequenceNumber == None):
                 lostIndexFile.write(str(rowIndex) + "\n")
                 logging.error("Unabled to sequence item. Index not added: " + str(rowIndex))
                 continue
-            abstractKey.key = 'Abstract' + sequencerItem['Attributes']['Sequence']['N'] + '.json'
+            print sequenceNumber
+            return;
+            abstractKey.key = 'Abstract' + sequenceNumber + '.json'
             abstractKey.set_metadata("Content-Type", 'application/json')
             abstractKey.set_contents_from_string(rowJSON)
             abstractKey.make_public()
@@ -173,8 +175,8 @@ def addAbstracts(csvFileName):
             if len(listUserQueryResults) == 1:
                 userId = str(listUserQueryResults[0]['Id'])
             # Insert new dynamo Paper item
-            sequencerItem = getSequence()
-            dynamoPaperId = 'Paper' + sequencerItem['Attributes']['Sequence']['N']
+            sequenceNumber = getSequence()
+            dynamoPaperId = 'Paper' + sequenceNumber
             attributesList = ['Id', 'Link', 'PresentationNumber', 'UserId']
             valuesList = [dynamoPaperId, abstractUrlLink, int(presentationNumber), userId]
             newItem = dict(map(None, attributesList, valuesList))
