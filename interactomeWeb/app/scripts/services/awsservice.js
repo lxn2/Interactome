@@ -416,12 +416,6 @@ app.factory('SearchService', function($q) {
 });
 
 
-
-
-
-
-
-
 /* Yo build came with this, commented it out. 
 .service('Awsservice', function Awsservice() {
     // AngularJS will instantiate a singleton by calling "new" on this function
