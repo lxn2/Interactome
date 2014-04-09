@@ -99,15 +99,19 @@ app.controller('MainCtrl', function($scope, $rootScope, $timeout,UserService, Aw
     $scope.addTopic = function() {
         AwsService.addTopic("Ball hard 24/7", $scope.newTopic).then(
             function() {
-                AwsService.getTopics().then(function(topics) {
+                console.log('updated', $scope.userTopics);
+                AwsService.getTopics(UserService.currentUsername()).then(function(topics) {
                     
                     $scope.userTopics.length = 0;
                     //$scope.userTopics.push.apply($scope.userTopics, topics);
                     //$scope.userTopics.push($scope.userTopics, topics);
                     $scope.userTopics.push.apply($scope.userTopics, topics);
+                    
+                }, function(reason) {
+                    console.log(reason);
+                    alert("Error: Cannot query topics");
                 });
                 //$scope.userTopics = $scope.userTopics;
-                console.log('updated', $scope.userTopics);
             }, 
             function(err) {
                 if ("Topic already exists" == err) {
