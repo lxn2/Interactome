@@ -54,32 +54,6 @@ app.provider('AwsService', function() {
                 $rootScope.$broadcast(_TOKENBROADCAST);
             }, // end of setToken func 
 
-            /*getSequence: function() {
-                var sequenceDefer = $q.defer();
-                var dynamodb = new AWS.DynamoDB();
-                var params = {
-                    TableName: 'Sequencer',
-                    AttributesToGet: [
-                        'Sequence',
-                    ],
-                    ConsistentRead: true,
-                    Key: {
-                        Id: {
-                            'N': 1,
-                        }
-                    },
-                };
-                dynamodb.getItem(params, function(err, data) {
-                    if (err) console.log(err. err.stack);
-                    else {
-                        console.log("sequence",data.Item['Sequence']['N']);
-                        sequenceDefer.resolve(data.Item['Sequence']['N']);
-                    }
-                })
-                return sequenceDefer.promise;
-
-            }*/
-
             // Gets topics from dynamo table, currently paper Id's
             // Should eventually return paper Names and/or links
             getTopics: function(username) {
@@ -90,7 +64,7 @@ app.provider('AwsService', function() {
                     Select: 'ALL_ATTRIBUTES',
                     IndexName: 'User-index',
                     KeyConditions: {
-                        'User': {
+                        User: {
                             ComparisonOperator: 'EQ',
                             AttributeValueList: [
                                 {
@@ -103,7 +77,8 @@ app.provider('AwsService', function() {
                 var topicsArray = []; // list of dictionaries
                 dynamodb.query(params, function(err, data) {
                     if (err) {
-                        topicDefer.reject(err, err.stack);
+                        console.log(err, err.stack);
+                        topicDefer.reject('Cannot query Topic table');
                     }
                     else {
                         for(var i = 0; i < data.Count; i++) { // loop through all Topic entrees
@@ -158,7 +133,7 @@ app.provider('AwsService', function() {
                 dynamodb.updateItem(sequenceParams, function(err, data) {
                     if (err) {
                         console.log(err, err.stack);
-                        defer.reject();
+                        defer.reject('Cannot update Sequencer');
                     }
                     else {
                         seq = data.Attributes['Sequence']['N'];
@@ -179,11 +154,11 @@ app.provider('AwsService', function() {
                             TableName: 'Topic'
                         };
 
-                        // call udpate to Topic
+                        // call update to Topic
                         dynamodb.putItem(putParams, function(err, data) {
                             if (err) {
                                 console.log(err, err.stack);
-                                defer.reject();
+                                defer.reject('Cannot put Topic item');
                             }
                             else {
                                 defer.resolve();
@@ -199,6 +174,8 @@ app.provider('AwsService', function() {
                 var topicDefer = $q.defer();
                 var dynamodb = new AWS.DynamoDB();
                 var self = this;
+
+                // params for query table for existing topic
                 var params = {
                     TableName: 'Topic',
                     IndexName: 'User-index',
@@ -224,15 +201,15 @@ app.provider('AwsService', function() {
                 };
 
                 dynamodb.query(params, function(err, data) {
-                    if (err) {
-                        console.log(err, err.stack); // call error
-                        topicDefer.reject();
+                    if (err) { // query error
+                        console.log(err, err.stack);
+                        topicDefer.reject('Cannot query Topic table');
                     }
                     else if (data.Count == 0) { // if topic doesn't exist, add it
                         self._putNewTopic(username,topicName).then(function() {
                             topicDefer.resolve();
-                        }, function() {
-                            topicDefer.reject();
+                        }, function(reason) {
+                            topicDefer.reject(reason);
                         });
                         
                     }

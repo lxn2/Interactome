@@ -97,29 +97,20 @@ app.controller('MainCtrl', function($scope, $rootScope, $timeout,UserService, Aw
     });
 
     $scope.addTopic = function() {
-        AwsService.addTopic("Ball hard 24/7", $scope.newTopic).then(
+        var username = UserService.currentUsername();
+        AwsService.addTopic(username, $scope.newTopic).then(
             function() {
-                console.log('updated', $scope.userTopics);
-                AwsService.getTopics(UserService.currentUsername()).then(function(topics) {
+                AwsService.getTopics(username).then(function(topics) {
                     
                     $scope.userTopics.length = 0;
-                    //$scope.userTopics.push.apply($scope.userTopics, topics);
-                    //$scope.userTopics.push($scope.userTopics, topics);
                     $scope.userTopics.push.apply($scope.userTopics, topics);
                     
                 }, function(reason) {
-                    console.log(reason);
-                    alert("Error: Cannot query topics");
+                    alert(reason);
                 });
-                //$scope.userTopics = $scope.userTopics;
             }, 
-            function(err) {
-                if ("Topic already exists" == err) {
-                    alert("Topic already exists", $scope.newTopic, "already exists. Please try something else.");
-                }
-                else {
-                    alert("Could not add topic");
-                }
+            function(reason) {
+                alert(reason);
             }
         );
         // reset to null
@@ -165,8 +156,7 @@ app.controller('HeaderCtrl', function($scope, $rootScope, $location, UserService
             $scope.userTopics.length = 0;
             $scope.userTopics.push.apply($scope.userTopics, topics);
         }, function(reason) {
-            console.log(reason);
-            alert("Error: Cannot query topics");
+            alert(reason);
         });
     });
 

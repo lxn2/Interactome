@@ -66,9 +66,8 @@
                             </span>
                         </div>-->
                         <form ng-submit="addTopic()" ng-controller="MainCtrl">
-                        Enter text and hit enter:
-                            <input type="text" ng-model="newTopic" name="text" />
-                            <input type="submit" id="submit" value="Submit" />
+                            <input type="text" ng-model="newTopic" placeholder="New topic name..." name="text" />
+                            <input type="submit" id="submit" value="Add" />
                         </form>
                         <div ng-repeat="topic in userTopics">
                             <topic-panel-item topic-name={{topic['Name']}} papers-list={{topic['PapersList']}}></topic-panel-item>
