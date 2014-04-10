@@ -56,16 +56,10 @@
                 </div>
             </div>
             <div class="col-md-4 topicMasterAccordionSize" id="topics-bar-wrapper">
-                <div id="topicsbar" data-spy="affix" data-offset-top="5" data-offset-bottom="5" class="fill">
+                <div id="topicsbar" data-spy="affix" data-offset-top="30" data-offset-bottom="30" class="fill">
                     <h3>Topics</h3>
                     <div>
-                        <!--<div class="input-group">
-                            <input type="text" class="form-control" placeholder="topic name...">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-default" type="button">Add Topic</button>
-                            </span>
-                        </div>-->
-                        <form ng-submit="addTopic()" ng-controller="MainCtrl">
+                        <form ng-submit="addTopic()">
                             <input type="text" ng-model="newTopic" placeholder="New topic name..." name="text" />
                             <input type="submit" id="submit" value="Add" />
                         </form>

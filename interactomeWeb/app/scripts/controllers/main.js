@@ -5,11 +5,9 @@
 **/
 var app = angular.module('interactomeApp');
 
-app.controller('MainCtrl', function($scope, $rootScope, $timeout,UserService, AwsService, RecommendationService) {
+app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService, RecommendationService) {
 
     $scope.papers = [];
-
-    $scope.newTopic = null;
 
     $scope.absRecd = null;
     $scope.modalTitle = null;
@@ -96,26 +94,7 @@ app.controller('MainCtrl', function($scope, $rootScope, $timeout,UserService, Aw
         cleanupToken();
     });
 
-    $scope.addTopic = function() {
-        var username = UserService.currentUsername();
-        AwsService.addTopic(username, $scope.newTopic).then(
-            function() {
-                AwsService.getTopics(username).then(function(topics) {
-                    
-                    $scope.userTopics.length = 0;
-                    $scope.userTopics.push.apply($scope.userTopics, topics);
-                    
-                }, function(reason) {
-                    alert(reason);
-                });
-            }, 
-            function(reason) {
-                alert(reason);
-            }
-        );
-        // reset to null
-        $scope.newTopic = null;
-    }
+
 
 });
 
@@ -132,8 +111,10 @@ app.controller('SearchCtrl', function($scope, $location, SearchService) {
 /*
     Controls the elements in the header (search bar, sign in).
 */
-app.controller('HeaderCtrl', function($scope, $rootScope, $location, UserService, AwsService) {
+app.controller('HeaderCtrl', function($scope, $rootScope, $timeout, $location, UserService, AwsService) {
+    
     $scope.userTopics = [];
+    $scope.newTopic = null;
 
     // This function sets the user authentication from googleSignin directive. 
     $scope.signedIn = function(oauth) {
@@ -160,6 +141,24 @@ app.controller('HeaderCtrl', function($scope, $rootScope, $location, UserService
         });
     });
 
+    $scope.addTopic = function() {
+        var username = UserService.currentUsername();
+        var newTopic = {Name: $scope.newTopic};
+        var scope = $scope;
+        AwsService.addTopic(username, $scope.newTopic).then(
+            function() {
+                scope.userTopics.push(newTopic);
+                scope.userTopics.sort(function(a,b) {
+                    return a['Name'] > b['Name'];
+                });
+            }, 
+            function(reason) {
+                alert(reason);
+            }
+        );
+        // reset to null
+        $scope.newTopic = null;
+    }
 
     $scope.$on("$destroy", function() {
         cleanupToken();
