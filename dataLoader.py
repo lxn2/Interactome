@@ -26,6 +26,7 @@ import logging
 import csv
 import json 
 import argparse
+import time
 from boto.s3.key import Key
 from boto.dynamodb2.table import Table
 from boto import s3
@@ -100,62 +101,89 @@ def getSequence():
     Parses the csv file and adds the users found within to the users table. 
         Warning: This does not check for dupe users.
 '''
-def addUsers(csvFileName):
-    # Temporary for encode/decode bug
-    lostIndexFile = open("indexesNotAdded.txt", 'w')
-    # set up csv read
-    csvFile = open(csvFileName, 'rU')
-    authorData = csv.DictReader(csvFile)
-    rowIndex = 1
-    # read each csv row to insert into dynamo Paper table
-    for row in authorData:
-        rowIndex += 1 # Starts at 2 to mimic csv, used for logging
-        sequenceNumber = getSequence()
-        if (sequenceNumber == None):
-            lostIndexFile.write(str(rowIndex) + "\n")
-            logging.error("Unabled to sequence item. Index not added: " + str(rowIndex))
+def addUsers(excelFileName):
+    WRITES_ALLOWED_PER_LOOP = 32
+    # Load the excel stuff. See http://pythonhosted.org/openpyxl/api.html#module-openpyxl-reader-iter-worksheet-optimized-reader
+    workbook = load_workbook(filename = excelFileName, use_iterators = True)
+    first_sheet = workbook.get_sheet_names()[0]
+    worksheet = workbook.get_sheet_by_name(first_sheet)
+
+    lostIndexFile = open("indexesNotAddedUSERS.txt", 'w')
+]
+    rowIndex = 0
+
+    for row in worksheet.iter_rows():
+        rowIndex += 1
+        # skip row with header info. (Don't use iter to make sure we only read one row at a time into memory)
+        if(rowIndex == 1):
             continue
-        id = "User" + sequenceNumber
-        row[PRESENTATION_NUM_EXCEL_FIELD] = int(row[PRESENTATION_NUM_EXCEL_FIELD])
-        attributesList = ['Id'] + row.keys()
-        valuesList = [id] + row.values()
-        newItem = dict(map(None, attributesList, valuesList))
-        # Delete blank header
-        if '' in newItem:
-            del newItem['']
+        # put to sleep for a second so that we don't go over the throughput allowed
+        elif(rowIndex % WRITES_ALLOWED_PER_LOOP == 0):
+            time.sleep(1)
         try:
-            usersTable.put_item(data=newItem)
+            #control number + presentation number
+            hashKey = str(row[0].internal_value) + str(row[1].internal_value)
+            sequenceNumber = getSequence()
+            if (sequenceNumber == None):
+                lostIndexFile.write(str(rowIndex) + "\n")
+                logging.error("Unabled to sequence item. Index not added: " + str(rowIndex))
+                continue
+
+            id = "User" + sequenceNumber
+            # row[PRESENTATION_NUM_EXCEL_FIELD] = int(row[PRESENTATION_NUM_EXCEL_FIELD])
+            # attributesList = ['Id'] + row.keys()
+            # valuesList = [id] + row.values()
+            # newItem = dict(map(None, attributesList, valuesList))
+
+            # query to see if user was already added
+            userId = ''
+            # userQueryResults = usersTable.query(email__eq=emailers, index='email-index')
+            # listUserQueryResults = list(userQueryResults)
+            # for user in listUserQueryResults:
+            #     if(user['FirstName'] == firstname && user['Institution'] == institution && )
+            #         userId = user['Id']
+            #         break
+            try:
+                if(userId == '')
+                    usersTable.put_item(data=newItem)
+                # else
+                #     usersTable.edit_item
+            except Exception, e:
+                lostIndexFile.write(str(rowIndex) + "\n")
+                logging.error("Unabled to add to usersTable. Index not added: " + str(rowIndex))
         except Exception, e:
             lostIndexFile.write(str(rowIndex) + "\n")
-            logging.error("Unabled to add to usersTable. Index not added: " + str(rowIndex))
-    # close csv file
-    csvFile.close()
-    lostIndexFile.close() # Temporary
+            logging.error("Unknown abstract error. Index not added: " + str(rowIndex) + "\nErr: " + str(e))
+
+    lostIndexFile.close()
 
 '''
     Parses the csv file for abstracts. It will query to find if the author is already a user. If so, puts the user id with the abstract
     The abstract will be dumped into S3 in json format. The URL will be stored in the papers table.
         Warning: does not check for dupes
 '''
-def addAbstracts(csvFileName):
+def addAbstracts(excelFileName):
     WRITES_ALLOWED_PER_LOOP = 32
     abstractToPaperDict = {}
 
     # Load the excel stuff. See http://pythonhosted.org/openpyxl/api.html#module-openpyxl-reader-iter-worksheet-optimized-reader
-    workbook = load_workbook(filename = csvFileName, use_iterators = True)
+    workbook = load_workbook(filename = excelFileName, use_iterators = True)
     first_sheet = workbook.get_sheet_names()[0]
     worksheet = workbook.get_sheet_by_name(first_sheet)
 
     lostIndexFile = open("indexesNotAddedABSTRACTS.txt", 'w')
     abstractsBucket = s3Conn.get_bucket(ABSTRACT_BUCKET_NAME)
     abstractKey = Key(abstractsBucket)
-    rowIndex = 1
+    rowIndex = 0
 
     for row in worksheet.iter_rows():
-        # skip row with header info. Don't cast to iter to make sure we only read one row at a time into memory
+        rowIndex += 1
+        # skip row with header info. (Don't use iter to make sure we only read one row at a time into memory)
         if(rowIndex == 1):
-            rowIndex += 1
             continue
+        # put to sleep for a second so that we don't go over the throughput allowed
+        elif(rowIndex % WRITES_ALLOWED_PER_LOOP == 0):
+            time.sleep(1)
         try:
             #control number + presentation number
             hashKey = str(row[0].internal_value) + str(row[1].internal_value)
@@ -201,7 +229,7 @@ def addAbstracts(csvFileName):
                 logging.error("Unabled to add to papers table. Index not added: " + str(rowIndex))
             else:
                 abstractToPaperDict[hashKey] = dynamoPaperId
-                
+
         except Exception, e:
             lostIndexFile.write(str(rowIndex) + "\n")
             logging.error("Unknown abstract error. Index not added: " + str(rowIndex) + "\nErr: " + str(e))
