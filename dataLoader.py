@@ -30,6 +30,7 @@ from boto.s3.key import Key
 from boto.dynamodb2.table import Table
 from boto import s3
 from boto import dynamodb2
+from openpyxl import load_workbook
 
 SEQUENCER_TABLE_NAME = 'Sequencer'
 USER_TABLE_NAME = 'User'
@@ -57,6 +58,7 @@ def connectToAWS(authCSVFileName):
     global sequencerTable
     global usersTable
     global papersTable
+    global abstractToPaperDict
     # Practically every line could throw an exception so we use one try
     try:
     # Opens the credentials and then uses the first line. Using DictReader may be overkill
@@ -136,64 +138,75 @@ def addUsers(csvFileName):
         Warning: does not check for dupes
 '''
 def addAbstracts(csvFileName):
-    # Temporary for encode/decode bug
+    WRITES_ALLOWED_PER_LOOP = 32
+    abstractToPaperDict = {}
+
+    # Load the excel stuff. See http://pythonhosted.org/openpyxl/api.html#module-openpyxl-reader-iter-worksheet-optimized-reader
+    workbook = load_workbook(filename = csvFileName, use_iterators = True)
+    first_sheet = workbook.get_sheet_names()[0]
+    worksheet = workbook.get_sheet_by_name(first_sheet)
+
     lostIndexFile = open("indexesNotAddedABSTRACTS.txt", 'w')
-    # set up csv read and s3 upload
     abstractsBucket = s3Conn.get_bucket(ABSTRACT_BUCKET_NAME)
-    csvFile = open(csvFileName, 'rU') 
-    reader = csv.DictReader(csvFile) 
     abstractKey = Key(abstractsBucket)
     rowIndex = 1
-    # read each csv row
-    for row in reader:
-        rowIndex += 1 # Starts at 2 to mimic csv, used for logging
-        # This try being so large was out of laziness as multiple things could crash the script inside of it.
+
+    for row in worksheet.iter_rows():
+        # skip row with header info. Don't cast to iter to make sure we only read one row at a time into memory
+        if(rowIndex == 1):
+            rowIndex += 1
+            continue
         try:
-            # convert rows into json format, upload to s3
-            rowJSON = json.dumps(row, skipkeys=False, ensure_ascii=False, sort_keys=True)
+            #control number + presentation number
+            hashKey = str(row[0].internal_value) + str(row[1].internal_value)
+            s3Format = None
+            try:
+                s3Format = {"AbstractTitle": row[2].internal_value.encode('utf-8'),
+                    "Abstract": row[3].internal_value.encode('utf-8'),
+                    "Subclass": row[4].internal_value.encode('utf-8'),
+                    "Category-Subcat-Subclass": row[5].internal_value.encode('utf-8'),
+                    "Keyword1": row[6].internal_value.encode('utf-8'),
+                    "Keyword2": row[7].internal_value.encode('utf-8'),
+                    "Keyword3": row[8].internal_value.encode('utf-8'),
+                    "Keyword4": row[9].internal_value.encode('utf-8'),
+                    "SessionTitle": row[10].internal_value.encode('utf-8'),
+                    "PresenterFirstname": row[11].internal_value.encode('utf-8'),
+                    "PresenterLastname": row[12].internal_value.encode('utf-8'),
+                    "PresenterInstitution": row[13].internal_value.encode('utf-8'),
+                    "PresenterEmail": row[14].internal_value.encode('utf-8')}
+            except:
+                 lostIndexFile.write(str(rowIndex) + "\n")
+                 logging.error("S3Formatting failed. Index not added: " + str(rowIndex))
+                 continue
+
             sequenceNumber = getSequence()
             if (sequenceNumber == None):
                 lostIndexFile.write(str(rowIndex) + "\n")
                 logging.error("Unabled to sequence item. Index not added: " + str(rowIndex))
                 continue
-            print sequenceNumber
-            return;
-            abstractKey.key = 'Abstract' + sequenceNumber + '.json'
+
+            abstractKey.key = str(rowIndex) + 'Abstract' + str(rowIndex) + '.json'
             abstractKey.set_metadata("Content-Type", 'application/json')
-            abstractKey.set_contents_from_string(rowJSON)
+            abstractKey.set_contents_from_string(s3Format)
             abstractKey.make_public()
             abstractUrlLink = abstractKey.generate_url(0, query_auth=False, force_http=True)
-            # save attribute values to insert in dynamo Paper table
-            presentationNumber = row[PRESENTATION_NUM_EXCEL_FIELD]
-            firstName = row[FIRSTNAME_EXCEL_FIELD]
-            lastName = row[LASTNAME_EXCEL_FIELD]
 
-            # query User table for the presenter to link new Paper item to it
-            userQueryResults = usersTable.query(FirstName__eq=firstName, LastName__eq=lastName, index='FirstName-LastName-index')
-            listUserQueryResults = list(userQueryResults)
-            userId = ''
-            if len(listUserQueryResults) == 1:
-                userId = str(listUserQueryResults[0]['Id'])
-            # Insert new dynamo Paper item
-            sequenceNumber = getSequence()
-            dynamoPaperId = 'Paper' + sequenceNumber
-            attributesList = ['Id', 'Link', 'PresentationNumber', 'UserId']
-            valuesList = [dynamoPaperId, abstractUrlLink, int(presentationNumber), userId]
-            newItem = dict(map(None, attributesList, valuesList))
-            # Delete blank header
-            if '' in newItem:
-                del newItem['']
+            # Now link the S3 url to an entry in the dynamodb table
+            dynamoPaperId = 'PaperTEST' + str(rowIndex) # + sequenceNumber
+            newItem = {'Id': dynamoPaperId, 'Link': abstractUrlLink, 'Authors': set()}
             try:
                 papersTable.put_item(data=newItem)
-            except Exception, e:
+            except:
                 lostIndexFile.write(str(rowIndex) + "\n")
                 logging.error("Unabled to add to papers table. Index not added: " + str(rowIndex))
+            else:
+                abstractToPaperDict[hashKey] = dynamoPaperId
+                
         except Exception, e:
             lostIndexFile.write(str(rowIndex) + "\n")
-            logging.error("Unabled to make into json. Index not added: " + str(rowIndex))
-    # close csv file
-    csvFile.close()
-    lostIndexFile.close() # Temporary
+            logging.error("Unknown abstract error. Index not added: " + str(rowIndex) + "\nErr: " + str(e))
+
+    lostIndexFile.close()
 
 
 def main(argv=sys.argv):
