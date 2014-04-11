@@ -34,8 +34,8 @@ from boto import dynamodb2
 from openpyxl import load_workbook
 
 SEQUENCER_TABLE_NAME = 'Sequencer'
-USER_TABLE_NAME = 'User'
-PAPER_TABLE_NAME = 'Paper'
+USER_TABLE_NAME = 'User_Test'
+PAPER_TABLE_NAME = 'Paper_Test'
 ABSTRACT_BUCKET_NAME = 'sagebionetworks-interactome-abstracts'
 PRESENTATION_NUM_EXCEL_FIELD = 'PresentationNumber'
 LASTNAME_EXCEL_FIELD = 'LastName'
@@ -109,7 +109,7 @@ def addUsers(excelFileName):
     worksheet = workbook.get_sheet_by_name(first_sheet)
 
     lostIndexFile = open("indexesNotAddedUSERS.txt", 'w')
-]
+
     rowIndex = 0
 
     for row in worksheet.iter_rows():
@@ -135,7 +135,7 @@ def addUsers(excelFileName):
             listUserQueryResults = list(userQueryResults)
             # We check all results due to moving institutions, changing names, and such.
             for user in listUserQueryResults:
-                if(user['Institution'] == institution && user['LastName'] == lastname && user['FirstName'] == firstname):
+                if(user['Institution'] == institution and user['LastName'] == lastname and user['FirstName'] == firstname):
                     userId = user['Id']
                     break
             try:
@@ -153,16 +153,16 @@ def addUsers(excelFileName):
                         'LastName': lastname,
                         'FirstName': firstname,
                         'Email': email,
-                        'Institution': institution
+                        'Institution': institution,
                         'Papers': set()
                     }
                     usersTable.put_item(data=newItem)
-                elif(hashKey is in abstractToPaperDict):
+                elif(hashKey in abstractToPaperDict):
                     item = usersTable.get_item(hash_key=userId)
                     item['Papers'].append(abstractToPaperDict[hashKey])
                     item.save()
 
-                else
+                else:
                     lostIndexFile.write(str(rowIndex) + "\n")
                     logging.error("Unabled to find hashkey in dict. Index not added: " + str(rowIndex))
             except Exception, e:
@@ -203,7 +203,11 @@ def addAbstracts(excelFileName):
             time.sleep(1)
         try:
             #control number + presentation number
+            print row[0].internal_value
+            print row[1].internal_value
             hashKey = str(row[0].internal_value) + str(row[1].internal_value)
+            print hashKey
+            return
             s3Format = None
             try:
                 s3Format = {"AbstractTitle": row[2].internal_value.encode('utf-8'),
@@ -250,7 +254,8 @@ def addAbstracts(excelFileName):
         except Exception, e:
             lostIndexFile.write(str(rowIndex) + "\n")
             logging.error("Unknown abstract error. Index not added: " + str(rowIndex) + "\nErr: " + str(e))
-
+    print "abstractsToPapers! ------------------- \n"
+    print abstractToPaperDict
     lostIndexFile.close()
 
 
