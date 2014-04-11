@@ -153,19 +153,31 @@ def addUsers(excelFileName):
                         'LastName': lastname,
                         'FirstName': firstname,
                         'Email': email,
-                        'Institution': institution,
-                        'Papers': set()
+                        'Institution': institution
                     }
                     usersTable.put_item(data=newItem)
                 elif(hashKey in abstractToPaperDict):
-                    item = usersTable.get_item(hash_key=userId)
-                    item['Papers'].append(abstractToPaperDict[hashKey])
-                    item.save()
+                    # update user to have paperId
+                    dynamoPaperId = abstractToPaperDict[hashKey]
+                    userItem = usersTable.get_item(hash_key=userId)
+                    if('Papers' in userItem):
+                        userItem['Papers'].add(dynamoPaperId)
+                    else:
+                        userItem['Papers'] = set([dynamoPaperId])
+                    userItem.save()
+
+                    # Update paper to have author
+                    paperItem = paperTable.get_item(hash_key=dynamoPaperId)
+                    if('Authors' in paperItem):
+                        paperItem['Authors'].add(userId)
+                    else:
+                        paperItem['Authors'] = set([userId])
+                    paperItem.save()
 
                 else:
                     lostIndexFile.write(str(rowIndex) + "\n")
                     logging.error("Unabled to find hashkey in dict. Index not added: " + str(rowIndex))
-            except Exception, e:
+            except:
                 lostIndexFile.write(str(rowIndex) + "\n")
                 logging.error("Unabled to add to usersTable. Index not added: " + str(rowIndex))
         except Exception, e:
@@ -209,8 +221,10 @@ def addAbstracts(excelFileName):
             print hashKey
             return
             s3Format = None
+            abstractTitle = ""
             try:
-                s3Format = {"AbstractTitle": row[2].internal_value.encode('utf-8'),
+                abstractTitle = row[2].internal_value.encode('utf-8')
+                s3Format = {"AbstractTitle": abstractTitle,
                     "Abstract": row[3].internal_value.encode('utf-8'),
                     "Subclass": row[4].internal_value.encode('utf-8'),
                     "Category-Subcat-Subclass": row[5].internal_value.encode('utf-8'),
@@ -242,7 +256,7 @@ def addAbstracts(excelFileName):
 
             # Now link the S3 url to an entry in the dynamodb table
             dynamoPaperId = 'PaperTEST' + str(rowIndex) # + sequenceNumber
-            newItem = {'Id': dynamoPaperId, 'Link': abstractUrlLink, 'Authors': set()}
+            newItem = {'Id': dynamoPaperId, 'Link': abstractUrlLink, 'Title': abstractTitle}
             try:
                 papersTable.put_item(data=newItem)
             except:
