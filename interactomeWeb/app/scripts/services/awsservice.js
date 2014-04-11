@@ -96,7 +96,7 @@ app.provider('AwsService', function() {
                             }
                         }
                         topicsArray.sort(function(a,b) {
-                            return (a['Name'].localeCompare(b['Name'], 'kn', {numeric: true, usage: "sort"}) >= 0);
+                            return (a['Name'].localeCompare(b['Name'], 'kn', {numeric: true, caseFirst: "lower", usage: "sort"}) >= 0);
                         });
                         topicDefer.resolve(topicsArray);
                     }
