@@ -94,6 +94,8 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
         cleanupToken();
     });
 
+
+
 });
 
 app.controller('SearchCtrl', function($scope, $location, SearchService) {
@@ -109,8 +111,10 @@ app.controller('SearchCtrl', function($scope, $location, SearchService) {
 /*
     Controls the elements in the header (search bar, sign in).
 */
-app.controller('HeaderCtrl', function($scope, $rootScope, $location, UserService, AwsService) {
+app.controller('HeaderCtrl', function($scope, $rootScope, $timeout, $location, UserService, AwsService) {
+    
     $scope.userTopics = [];
+    $scope.newTopic = null;
 
     // This function sets the user authentication from googleSignin directive. 
     $scope.signedIn = function(oauth) {
@@ -133,11 +137,29 @@ app.controller('HeaderCtrl', function($scope, $rootScope, $location, UserService
             $scope.userTopics.length = 0;
             $scope.userTopics.push.apply($scope.userTopics, topics);
         }, function(reason) {
-            console.log(reason);
-            alert("Error: Cannot query topics");
+            alert(reason);
         });
     });
 
+    $scope.addTopic = function() {
+        var username = UserService.currentUsername();
+        var newTopic = {Name: $scope.newTopic};
+        var scope = $scope;
+        AwsService.addTopic(username, $scope.newTopic).then(
+            function() {
+                scope.userTopics.push(newTopic);
+                scope.userTopics.sort(function(a,b) {
+                    return (a['Name'].localeCompare(b['Name'], 'kn', {numeric: true, caseFirst: "lower", usage: "sort"}) >= 0);
+                });
+                console.log(scope.userTopics);
+            }, 
+            function(reason) {
+                alert(reason);
+            }
+        );
+        // reset to null
+        $scope.newTopic = null;
+    }
 
     $scope.$on("$destroy", function() {
         cleanupToken();
