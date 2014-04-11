@@ -122,32 +122,49 @@ def addUsers(excelFileName):
             time.sleep(1)
         try:
             #control number + presentation number
-            hashKey = str(row[0].internal_value) + str(row[1].internal_value)
-            sequenceNumber = getSequence()
-            if (sequenceNumber == None):
-                lostIndexFile.write(str(rowIndex) + "\n")
-                logging.error("Unabled to sequence item. Index not added: " + str(rowIndex))
-                continue
-
-            id = "User" + sequenceNumber
-            # row[PRESENTATION_NUM_EXCEL_FIELD] = int(row[PRESENTATION_NUM_EXCEL_FIELD])
-            # attributesList = ['Id'] + row.keys()
-            # valuesList = [id] + row.values()
-            # newItem = dict(map(None, attributesList, valuesList))
+            hashKey = str(row[2].internal_value) + str(row[3].internal_value)     
+            firstname = row[4].internal_value
+            lastname = row[5].internal_value
+            institution = row[6].internal_value
+            email = row[7].internal_value
+            
 
             # query to see if user was already added
             userId = ''
-            # userQueryResults = usersTable.query(email__eq=emailers, index='email-index')
-            # listUserQueryResults = list(userQueryResults)
-            # for user in listUserQueryResults:
-            #     if(user['FirstName'] == firstname && user['Institution'] == institution && )
-            #         userId = user['Id']
-            #         break
+            userQueryResults = usersTable.query_2(Email__eq=email, index='Email-index')
+            listUserQueryResults = list(userQueryResults)
+            # We check all results due to moving institutions, changing names, and such.
+            for user in listUserQueryResults:
+                if(user['Institution'] == institution && user['LastName'] == lastname && user['FirstName'] == firstname):
+                    userId = user['Id']
+                    break
             try:
-                if(userId == '')
+                if(userId == ''):
+
+                    sequenceNumber = getSequence()
+                    if (sequenceNumber == None):
+                        lostIndexFile.write(str(rowIndex) + "\n")
+                        logging.error("Unabled to sequence item. Index not added: " + str(rowIndex))
+                        continue
+                    userId = "User" + str(sequenceNumber)
+
+
+                    newItem = { 'Id': userId,
+                        'LastName': lastname,
+                        'FirstName': firstname,
+                        'Email': email,
+                        'Institution': institution
+                        'Papers': set()
+                    }
                     usersTable.put_item(data=newItem)
-                # else
-                #     usersTable.edit_item
+                elif(hashKey is in abstractToPaperDict):
+                    item = usersTable.get_item(hash_key=userId)
+                    item['Papers'].append(abstractToPaperDict[hashKey])
+                    item.save()
+
+                else
+                    lostIndexFile.write(str(rowIndex) + "\n")
+                    logging.error("Unabled to find hashkey in dict. Index not added: " + str(rowIndex))
             except Exception, e:
                 lostIndexFile.write(str(rowIndex) + "\n")
                 logging.error("Unabled to add to usersTable. Index not added: " + str(rowIndex))
