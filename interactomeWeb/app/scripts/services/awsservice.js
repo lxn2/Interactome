@@ -20,7 +20,6 @@ app.provider('AwsService', function() {
         if (region) AWS.config.region = region;
     }
 
-
     self.$get = function($q, $cacheFactory, $http, $rootScope) {
         var _TOKENBROADCAST = 'tokenSet@AwsService';
         var credentialsDefer = $q.defer();
@@ -65,7 +64,7 @@ app.provider('AwsService', function() {
                     Select: 'ALL_ATTRIBUTES',
                     IndexName: 'User-index',
                     KeyConditions: {
-                        'User': {
+                        User: {
                             ComparisonOperator: 'EQ',
                             AttributeValueList: [
                                 {
@@ -78,7 +77,8 @@ app.provider('AwsService', function() {
                 var topicsArray = []; // list of dictionaries
                 dynamodb.query(params, function(err, data) {
                     if (err) {
-                        topicDefer.reject(err, err.stack);
+                        console.log(err, err.stack);
+                        topicDefer.reject('Cannot query Topic table');
                     }
                     else {
                         for(var i = 0; i < data.Count; i++) { // loop through all Topic entrees
@@ -96,11 +96,128 @@ app.provider('AwsService', function() {
                             }
                         }
                         topicsArray.sort(function(a,b) {
-                            return a['Name'] > b['Name'];
+                            return (a['Name'].localeCompare(b['Name'], 'kn', {numeric: true, caseFirst: "lower", usage: "sort"}) >= 0);
                         });
                         topicDefer.resolve(topicsArray);
                     }
                 });
+                return topicDefer.promise;
+            },
+
+            // puts new Topic item into Dynamo
+            _putNewTopic: function(username, topicname) { // private
+                var defer = $q.defer();
+                var dynamodb = new AWS.DynamoDB();
+
+                // params to update & get new Sequence from Sequencer table
+                var sequenceParams = {
+                    TableName: 'Sequencer',
+                    AttributeUpdates: {
+                        Sequence: {
+                            Action: 'ADD',
+                            Value: {
+                                N: '1',
+                            },
+                        },
+                    },
+                    Key: {
+                        Id: {
+                            N: '1',
+                        }
+                    },
+                    ReturnValues: 'UPDATED_NEW',
+                };
+                var seq = "";
+
+                // call update to Sequencer
+                dynamodb.updateItem(sequenceParams, function(err, data) {
+                    if (err) {
+                        console.log(err, err.stack);
+                        defer.reject('Cannot update Sequencer');
+                    }
+                    else {
+                        seq = data.Attributes['Sequence']['N'];
+
+                        // params to put new item into Topics
+                        var putParams = {
+                            Item: {
+                                Id: {
+                                    S: 'Topic' + seq
+                                },
+                                Name: {
+                                    S: topicname
+                                },
+                                User: {
+                                    S: username
+                                }
+                            },
+                            TableName: 'Topic'
+                        };
+
+                        // call update to Topic
+                        dynamodb.putItem(putParams, function(err, data) {
+                            if (err) {
+                                console.log(err, err.stack);
+                                defer.reject('Cannot put Topic item');
+                            }
+                            else {
+                                defer.resolve();
+                            }
+                        });
+                    }
+                });
+                return defer.promise;
+            },
+
+            // Adds topic to Dynamo Topic table
+            addTopic: function(username, topicName) {
+                var topicDefer = $q.defer();
+                var dynamodb = new AWS.DynamoDB();
+                var self = this;
+
+                // params for query table for existing topic
+                var params = {
+                    TableName: 'Topic',
+                    IndexName: 'User-index',
+                    Select: 'COUNT',
+                    KeyConditions: {
+                        User: {
+                            ComparisonOperator: 'EQ',
+                            AttributeValueList: [
+                                {
+                                    'S': username,
+                                }
+                            ],
+                        },
+                        Name: {
+                            ComparisonOperator: 'EQ',
+                            AttributeValueList: [
+                                {
+                                    'S': topicName,
+                                },
+                            ],
+                        }
+                    },
+                };
+
+                dynamodb.query(params, function(err, data) {
+                    if (err) { // query error
+                        console.log(err, err.stack);
+                        topicDefer.reject('Cannot query Topic table');
+                    }
+                    else if (data.Count == 0) { // if topic doesn't exist, add it
+                        self._putNewTopic(username,topicName).then(function() {
+                            topicDefer.resolve();
+                        }, function(reason) {
+                            topicDefer.reject(reason);
+                        });
+                        
+                    }
+                    else { // if exists, don't add
+                        topicDefer.reject("Topic already exists");
+                    }
+                });
+
                 return topicDefer.promise;
             },
 
