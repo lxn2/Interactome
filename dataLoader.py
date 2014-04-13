@@ -1,6 +1,6 @@
 '''
-This script is used to upload the abstracts to s3, and users and abstract links to dynamodb.
-    Note: Some unicode characters will come out escaped or encoded. E.G., dash (u'2013') comes out as its utf-8 hex code and ≥ will be escaped as &#8805;
+This script is used to upload the abstracts to s3 in JSON, and users and abstract links to dynamodb.
+    Note: Some characters will come out as mojibake (seemingly random stuff...). It's extremely difficult to fix from here.
 
 This script will most likely require changing for using with different spreadsheets of data. 
 The WRITES_ALLOWED_PER_LOOP constant in the functions will need to be changed based on dynamodb tables' throughputs.
@@ -164,7 +164,10 @@ def addUsers(excelFileName):
                 elif(hashKey in abstractToPaperDict):
                     userItem = usersTable.get_item(Id=userId)
                     if('Papers' in userItem):
-                        userItem['Papers'].add(dynamoPaperId)
+                        # Fix to this issue https://github.com/boto/boto/issues/1565
+                        papersCopy = userItem['Papers']
+                        papersCopy.add(dynamoPaperId)
+                        userItem['Papers'] = papersCopy
                     else:
                         userItem['Papers'] = set([dynamoPaperId])
                     userItem.save()
@@ -175,10 +178,11 @@ def addUsers(excelFileName):
                     continue
                 # Update paper to have author
                 if(dynamoPaperId != ""):
-                    print "dynamopaperid isnt empty" + str(rowIndex)
                     paperItem = papersTable.get_item(Id=dynamoPaperId)
                     if('Authors' in paperItem):
-                        paperItem['Authors'].add(userId)
+                        authorCopy = paperItem['Authors']
+                        authorCopy.add(userId)
+                        paperItem['Authors'] = authorCopy
                     else:
                         paperItem['Authors'] = set([userId])
                     paperItem.save()
@@ -269,7 +273,8 @@ def addAbstracts(excelFileName):
 
             abstractKey.key = 'Abstract' + sequenceNumber +'.json'
             abstractKey.set_metadata("Content-Type", 'application/json')
-            abstractKey.set_contents_from_string(s3Format)
+            rowJSON = json.dumps(s3Format, skipkeys=False, ensure_ascii=False, sort_keys=True)
+            abstractKey.set_contents_from_string(rowJSON)
             abstractKey.make_public()
             abstractUrlLink = abstractKey.generate_url(0, query_auth=False, force_http=True)
 
