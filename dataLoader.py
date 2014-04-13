@@ -75,12 +75,13 @@ def connectToAWS(authCSVFileName):
         sequencerTable = Table(SEQUENCER_TABLE_NAME, connection=dynamoConn)
         usersTable = Table(USER_TABLE_NAME, connection=dynamoConn)
         papersTable = Table(PAPER_TABLE_NAME, connection=dynamoConn)
+        abstractToPaperDict = {}
     except Exception, e:
         print(e)
         sys.exit(1)
 
 '''
-    Grabs the sequence from the sequence table. If it fails, it will return None.
+    Grabs the sequence from the sequence table. If it fails, it will return None. Will return a string of the number on success.
         Note: This should retry if failing for an access reason. If it fails for some other weird reason it will return None.
 '''
 def getSequence():
@@ -93,6 +94,7 @@ def getSequence():
                                     return_values="UPDATED_NEW", 
                                     return_consumed_capacity=None, 
                                     return_item_collection_metrics=None)['Attributes']['Sequence']['N']
+      sequenceNumber = str(sequenceNumber)
     except Exception, e:
         print(e)
     return sequenceNumber
@@ -121,8 +123,9 @@ def addUsers(excelFileName):
         elif(rowIndex % WRITES_ALLOWED_PER_LOOP == 0):
             time.sleep(1)
         try:
-            #control number + presentation number
-            hashKey = str(row[2].internal_value) + str(row[3].internal_value)     
+            ctrlNum = "" if (row[2].internal_value is None) else str(row[2].internal_value)
+            presNum = "" if (row[3].internal_value is None) else str(row[3].internal_value)
+            hashKey = (ctrlNum + presNum).replace(".0", "")
             firstname = row[4].internal_value
             lastname = row[5].internal_value
             institution = row[6].internal_value
@@ -131,13 +134,14 @@ def addUsers(excelFileName):
 
             # query to see if user was already added
             userId = ''
-            userQueryResults = usersTable.query_2(Email__eq=email, index='Email-index')
+            userQueryResults = usersTable.query(Email__eq=email, index='Email-index')
             listUserQueryResults = list(userQueryResults)
             # We check all results due to moving institutions, changing names, and such.
             for user in listUserQueryResults:
                 if(user['Institution'] == institution and user['LastName'] == lastname and user['FirstName'] == firstname):
                     userId = user['Id']
                     break
+            dynamoPaperId = abstractToPaperDict[hashKey] if (hashKey in abstractToPaperDict) else ""
             try:
                 if(userId == ''):
 
@@ -146,40 +150,43 @@ def addUsers(excelFileName):
                         lostIndexFile.write(str(rowIndex) + "\n")
                         logging.error("Unabled to sequence item. Index not added: " + str(rowIndex))
                         continue
-                    userId = "User" + str(sequenceNumber)
-
+                    userId = "User" + sequenceNumber
 
                     newItem = { 'Id': userId,
                         'LastName': lastname,
                         'FirstName': firstname,
                         'Email': email,
-                        'Institution': institution
+                        'Institution': institution,
                     }
+                    if(dynamoPaperId != ""):
+                        newItem['Papers'] = set([dynamoPaperId])
                     usersTable.put_item(data=newItem)
                 elif(hashKey in abstractToPaperDict):
                     # update user to have paperId
-                    dynamoPaperId = abstractToPaperDict[hashKey]
-                    userItem = usersTable.get_item(hash_key=userId)
+                    userItem = usersTable.get_item(Id=userId)
                     if('Papers' in userItem):
                         userItem['Papers'].add(dynamoPaperId)
                     else:
                         userItem['Papers'] = set([dynamoPaperId])
                     userItem.save()
-
-                    # Update paper to have author
-                    paperItem = paperTable.get_item(hash_key=dynamoPaperId)
+                else:
+                    lostIndexFile.write(str(rowIndex) + "\n")
+                    logging.error("Unabled to find hashkey in dict. Index not added: " + str(rowIndex))
+                    continue
+                # Update paper to have author
+                if(dynamoPaperId != ""):
+                    print "dynamopaperid isnt empty" + str(rowIndex)
+                    paperItem = papersTable.get_item(Id=dynamoPaperId)
                     if('Authors' in paperItem):
                         paperItem['Authors'].add(userId)
                     else:
                         paperItem['Authors'] = set([userId])
                     paperItem.save()
-
                 else:
-                    lostIndexFile.write(str(rowIndex) + "\n")
-                    logging.error("Unabled to find hashkey in dict. Index not added: " + str(rowIndex))
-            except:
+                    logging.error("Unable to find dynamopaperid. Index not added: " + str(rowIndex))
+            except Exception, e:
                 lostIndexFile.write(str(rowIndex) + "\n")
-                logging.error("Unabled to add to usersTable. Index not added: " + str(rowIndex))
+                logging.error("Unable to add to usersTable. Index not added: " + str(rowIndex) + "\nError: " + str(e))
         except Exception, e:
             lostIndexFile.write(str(rowIndex) + "\n")
             logging.error("Unknown abstract error. Index not added: " + str(rowIndex) + "\nErr: " + str(e))
@@ -193,7 +200,6 @@ def addUsers(excelFileName):
 '''
 def addAbstracts(excelFileName):
     WRITES_ALLOWED_PER_LOOP = 32
-    abstractToPaperDict = {}
 
     # Load the excel stuff. See http://pythonhosted.org/openpyxl/api.html#module-openpyxl-reader-iter-worksheet-optimized-reader
     workbook = load_workbook(filename = excelFileName, use_iterators = True)
@@ -215,28 +221,42 @@ def addAbstracts(excelFileName):
             time.sleep(1)
         try:
             #control number + presentation number
-            print row[0].internal_value
-            print row[1].internal_value
-            hashKey = str(row[0].internal_value) + str(row[1].internal_value)
-            print hashKey
-            return
+            ctrlNum = "" if (row[0].internal_value is None) else str(row[0].internal_value)
+            presNum = "" if (row[1].internal_value is None) else str(row[1].internal_value)
+            # Bad conversions sometimes add a .0 to the values
+            hashKey = (ctrlNum + presNum).replace(".0", "")
+
             s3Format = None
             abstractTitle = ""
             try:
                 abstractTitle = row[2].internal_value.encode('utf-8')
+
+                # If the cell is empty we replace it with a blank string.
+                subclass = "" if(row[4].internal_value is None) else row[4].internal_value.encode('utf-8')
+                catSubcatSubclass = "" if(row[5].internal_value is None) else row[5].internal_value.encode('utf-8')
+                keyword1 = "" if (row[6].internal_value is None) else row[6].internal_value.encode('utf-8')
+                keyword2 = "" if (row[7].internal_value is None) else row[7].internal_value.encode('utf-8')
+                keyword3 = "" if (row[8].internal_value is None) else row[8].internal_value.encode('utf-8')
+                keyword4 = "" if (row[9].internal_value is None) else row[9].internal_value.encode('utf-8')
+                sessionTitle = "" if (row[10].internal_value is None) else row[10].internal_value.encode('utf-8')
+                presenterFirstname = "" if (row[11].internal_value is None) else row[11].internal_value.encode('utf-8')
+                presenterLastname = "" if (row[12].internal_value is None) else row[12].internal_value.encode('utf-8')
+                presenterInstitution = "" if (row[13].internal_value is None) else row[13].internal_value.encode('utf-8')
+                presenterEmail = "" if (row[14].internal_value is None) else row[14].internal_value.encode('utf-8')
+
                 s3Format = {"AbstractTitle": abstractTitle,
                     "Abstract": row[3].internal_value.encode('utf-8'),
-                    "Subclass": row[4].internal_value.encode('utf-8'),
-                    "Category-Subcat-Subclass": row[5].internal_value.encode('utf-8'),
-                    "Keyword1": row[6].internal_value.encode('utf-8'),
-                    "Keyword2": row[7].internal_value.encode('utf-8'),
-                    "Keyword3": row[8].internal_value.encode('utf-8'),
-                    "Keyword4": row[9].internal_value.encode('utf-8'),
-                    "SessionTitle": row[10].internal_value.encode('utf-8'),
-                    "PresenterFirstname": row[11].internal_value.encode('utf-8'),
-                    "PresenterLastname": row[12].internal_value.encode('utf-8'),
-                    "PresenterInstitution": row[13].internal_value.encode('utf-8'),
-                    "PresenterEmail": row[14].internal_value.encode('utf-8')}
+                    "Subclass": subclass,
+                    "Category-Subcat-Subclass": catSubcatSubclass,
+                    "Keyword1": keyword1,
+                    "Keyword2": keyword2,
+                    "Keyword3": keyword3,
+                    "Keyword4": keyword4,
+                    "SessionTitle": sessionTitle,
+                    "PresenterFirstname": presenterFirstname,
+                    "PresenterLastname": presenterLastname,
+                    "PresenterInstitution": presenterInstitution,
+                    "PresenterEmail": presenterEmail }
             except:
                  lostIndexFile.write(str(rowIndex) + "\n")
                  logging.error("S3Formatting failed. Index not added: " + str(rowIndex))
@@ -255,7 +275,7 @@ def addAbstracts(excelFileName):
             abstractUrlLink = abstractKey.generate_url(0, query_auth=False, force_http=True)
 
             # Now link the S3 url to an entry in the dynamodb table
-            dynamoPaperId = 'PaperTEST' + str(rowIndex) # + sequenceNumber
+            dynamoPaperId = 'PaperTEST'+ sequenceNumber
             newItem = {'Id': dynamoPaperId, 'Link': abstractUrlLink, 'Title': abstractTitle}
             try:
                 papersTable.put_item(data=newItem)
@@ -268,8 +288,8 @@ def addAbstracts(excelFileName):
         except Exception, e:
             lostIndexFile.write(str(rowIndex) + "\n")
             logging.error("Unknown abstract error. Index not added: " + str(rowIndex) + "\nErr: " + str(e))
-    print "abstractsToPapers! ------------------- \n"
-    print abstractToPaperDict
+    # print "abstractsToPapers! ------------------- \n"
+    # print abstractToPaperDict
     lostIndexFile.close()
 
 
@@ -285,11 +305,9 @@ def main(argv=sys.argv):
 
     connectToAWS(options.usersAuth)
 
-    if hasattr(options, 'usersPath'):
-        addUsers(options.usersPath)
-    
-    if hasattr(options, 'abstractsPath'):
+    if hasattr(options, 'usersPath') and hasattr(options, 'abstractsPath'):
         addAbstracts(options.abstractsPath)
+        addUsers(options.usersPath)
         
 
 if __name__ == "__main__":
