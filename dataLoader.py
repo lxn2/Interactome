@@ -134,7 +134,7 @@ def addUsers(excelFileName):
 
             # query to see if user was already added
             userId = ''
-            userQueryResults = usersTable.query(Email__eq=email, index='Email-index')
+            userQueryResults = usersTable.query(Email__eq=email, index='Email-index') # READ 1-3 USERS
             listUserQueryResults = list(userQueryResults)
             # We check all results due to moving institutions, changing names, and such.
             for user in listUserQueryResults:
@@ -160,15 +160,15 @@ def addUsers(excelFileName):
                     }
                     if(dynamoPaperId != ""):
                         newItem['Papers'] = set([dynamoPaperId])
-                    usersTable.put_item(data=newItem)
+                    usersTable.put_item(data=newItem) # WRITE USER
                 elif(hashKey in abstractToPaperDict):
                     # update user to have paperId
-                    userItem = usersTable.get_item(Id=userId)
+                    userItem = usersTable.get_item(Id=userId) # READ User
                     if('Papers' in userItem):
                         userItem['Papers'].add(dynamoPaperId)
                     else:
                         userItem['Papers'] = set([dynamoPaperId])
-                    userItem.save()
+                    userItem.save() # WRITE USER
                 else:
                     lostIndexFile.write(str(rowIndex) + "\n")
                     logging.error("Unabled to find hashkey in dict. Index not added: " + str(rowIndex))
@@ -176,12 +176,12 @@ def addUsers(excelFileName):
                 # Update paper to have author
                 if(dynamoPaperId != ""):
                     print "dynamopaperid isnt empty" + str(rowIndex)
-                    paperItem = papersTable.get_item(Id=dynamoPaperId)
+                    paperItem = papersTable.get_item(Id=dynamoPaperId) # READ PAPER
                     if('Authors' in paperItem):
                         paperItem['Authors'].add(userId)
                     else:
                         paperItem['Authors'] = set([userId])
-                    paperItem.save()
+                    paperItem.save() # WRITE PAPER
                 else:
                     logging.error("Unable to find dynamopaperid. Index not added: " + str(rowIndex))
             except Exception, e:
@@ -268,7 +268,7 @@ def addAbstracts(excelFileName):
                 logging.error("Unabled to sequence item. Index not added: " + str(rowIndex))
                 continue
 
-            abstractKey.key = str(rowIndex) + 'Abstract' + str(rowIndex) + '.json'
+            abstractKey.key = str(rowIndex % 32) + 'Abstract' + '.json'
             abstractKey.set_metadata("Content-Type", 'application/json')
             abstractKey.set_contents_from_string(s3Format)
             abstractKey.make_public()
@@ -299,8 +299,8 @@ def main(argv=sys.argv):
     AUTH_HELP_TEXT = "path to credential csv file from Amazon. This will not be stored. CSV fieldnames must be \"" \
                         + SECRET_KEY_EXCEL_FIELD + "\" for secret key and \"" + ACCESS_KEY_EXCEL_FIELD +"\" for access key"
     parser.add_argument('--auth', dest='usersAuth', help=AUTH_HELP_TEXT, required=True)
-    parser.add_argument('--users', dest='usersPath', help='path to users csv file', default=argparse.SUPPRESS)
-    parser.add_argument('--abstracts', dest='abstractsPath', help='path to abstracts csv file', default=argparse.SUPPRESS)
+    parser.add_argument('--users', dest='usersPath', help='path to users csv file', default=argparse.SUPPRESS, required=True)
+    parser.add_argument('--abstracts', dest='abstractsPath', help='path to abstracts csv file', default=argparse.SUPPRESS, required=True)
     options = parser.parse_args(argv[1:])
 
     connectToAWS(options.usersAuth)
