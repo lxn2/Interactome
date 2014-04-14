@@ -8,7 +8,7 @@ angular.module('interactomeApp')
     return {	
       	restrict: 'E',
       	scope: {      	
-          localDeleteTopic: '&deleteTopic',
+          localDeleteTopic: '&delete',
       		topicName: '@',
           itemId: '@',
           papersList: '@'
@@ -16,8 +16,10 @@ angular.module('interactomeApp')
 		    controller: ['$scope', 'AwsService', function($scope, AwsService) {          
           $scope.scopePapersList = [];
 
-          $scope.deleteTopic = function() {
+          $scope.delete = function() {
             console.log('in topic del topic', $scope.scopePapersList[0]);
+
+            var scope = $scope;
             if($scope.scopePapersList.length > 1 || $scope.scopePapersList.length == 1 && $scope.scopePapersList[0] != "No abstracts added") { // contains saved papers
 
               var al = 'There are ' + $scope.scopePapersList.length + ' abstracts in "' + $scope.topicName +
@@ -25,7 +27,6 @@ angular.module('interactomeApp')
 
               var confirmation = confirm(al);
               if (confirmation == true) {
-                var scope = $scope;
                 AwsService.deleteTopic($scope.itemId).then(function() {
                   scope.localDeleteTopic({topicId: scope.itemId});
                 }, function(reason) {
@@ -34,7 +35,11 @@ angular.module('interactomeApp')
               }
             }
             else { // no papers
-              AwsService.deleteTopic($scope.itemId);
+              AwsService.deleteTopic($scope.itemId).then(function() {
+                scope.localDeleteTopic({topicId: scope.itemId});
+              }, function(reason) {
+                alert(reason);
+              });
             }
           }
     	}],
@@ -45,8 +50,8 @@ angular.module('interactomeApp')
                         '<span class="caret"></span>' +
                       '</button>' +
                       '<ul class="dropdown-menu">' +
-                        '<li><a href="#">Rename</a></li>' +
-                        '<li ng-click="deleteTopic()">Delete</li>' +
+                        '<li ng-click="renameTopic()">Rename</li>' +
+                        '<li ng-click="delete()">Delete</li>' +
                       '</ul>' +
                     '</div>' +
                     '{{topicName}}' +

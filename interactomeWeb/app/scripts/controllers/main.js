@@ -162,8 +162,8 @@ app.controller('HeaderCtrl', function($scope, $rootScope, $timeout, $location, U
         $scope.newTopic = null;
     }
 
-    /*$scope.deleteTopic = function(topicid) {
-        alert("in main js deleteTopic");
+    $scope.deleteTopic = function(topicid) {
+        //alert("in main js deleteTopic");
         var i = 0;
         var curLength = $scope.userTopics.length;
         while(i < curLength) { // find the correct element
@@ -179,7 +179,7 @@ app.controller('HeaderCtrl', function($scope, $rootScope, $timeout, $location, U
             $scope.userTopics.splice(i, 1);
             console.log('deleted in main js');
         }
-    }*/
+    }
 
     $scope.$on("$destroy", function() {
         cleanupToken();

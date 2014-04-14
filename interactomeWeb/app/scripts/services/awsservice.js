@@ -109,7 +109,7 @@ app.provider('AwsService', function() {
             deleteTopic: function(topicid) {
                 console.log("in deletetopic", topicid);
                 var defer = $q.defer();
-                var dynamodb = new AWS.DynamoDB();
+                var dynamodbB = new AWS.DynamoDB();
 
                 var deleteParams = {
                     Key: {
@@ -120,7 +120,7 @@ app.provider('AwsService', function() {
                     TableName: 'Topic',
 
                 };
-                dynamodb.deleteItem(deleteParams, function(err, data) {
+                dynamodbB.deleteItem(deleteParams, function(err, data) {
                     if (err) {
                         console.log(err, err.stack);
                         defer.reject('Could not delete topic');
@@ -129,7 +129,7 @@ app.provider('AwsService', function() {
                         defer.resolve();
                     }
                 });
-                return defer.promise();
+                return defer.promise;
             },
 
             // puts new Topic item into Dynamo
