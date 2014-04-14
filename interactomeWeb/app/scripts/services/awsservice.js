@@ -106,24 +106,32 @@ app.provider('AwsService', function() {
                 return topicDefer.promise;
             },
 
-            deleteTopic: function(topicid) {
-                console.log("in deletetopic", topicid);
+            renameTopic: function(topicid, topicname) {
+                console.log("in rename", topicid);
                 var defer = $q.defer();
                 var dynamodb = new AWS.DynamoDB();
 
-                var deleteParams = {
+                var renameParams = {
                     Key: {
                         Id: {
                             S: topicid,
                         },
                     },
                     TableName: 'Topic',
+                    AttributeUpdates: {
+                        Name: {
+                            Action: 'PUT',
+                            Value: {
+                                S: topicname
+                            }
+                        },
+                    }
 
                 };
-                dynamodb.deleteItem(deleteParams, function(err, data) {
+                dynamodb.updateItem(deleteParams, function(err, data) {
                     if (err) {
                         console.log(err, err.stack);
-                        defer.reject('Could not delete topic');
+                        defer.reject('Could not rename topic');
                     }
                     else {
                         defer.resolve();
