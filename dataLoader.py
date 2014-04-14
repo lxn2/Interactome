@@ -26,6 +26,7 @@ import csv
 import json 
 import argparse
 import time
+import pysolr
 from boto.s3.key import Key
 from boto.dynamodb2.table import Table
 from boto import s3
@@ -33,9 +34,9 @@ from boto import dynamodb2
 from openpyxl import load_workbook
 
 SEQUENCER_TABLE_NAME = 'Sequencer'
-USER_TABLE_NAME = 'User'
-PAPER_TABLE_NAME = 'Paper'
-ABSTRACT_BUCKET_NAME = 'sagebionetworks-interactome-abstracts'
+USER_TABLE_NAME = 'User_Test'
+PAPER_TABLE_NAME = 'Paper_Test'
+ABSTRACT_BUCKET_NAME = 'sageinteractome-test-bucket'
 PRESENTATION_NUM_EXCEL_FIELD = 'PresentationNumber'
 LASTNAME_EXCEL_FIELD = 'LastName'
 FIRSTNAME_EXCEL_FIELD = 'FirstName'
@@ -44,6 +45,9 @@ SECRET_KEY_EXCEL_FIELD = 'Secret Access Key'
 ACCESS_KEY_EXCEL_FIELD = 'Access Key Id'
 # Tells how to format the logging and what file to store it in
 logging.basicConfig(filename='dataLoader.log', level=logging.INFO, format='%(asctime)s -- %(levelname)s: %(message)s')
+
+# connect to solr
+solr = pysolr.Solr('http://localhost:8983/solr/', timeout=10)
 
 ''' 
     Parses the csv file for ACCESS_KEY_EXCEL_FIELD and SECRET_KEY_EXCEL_FIELD.
@@ -289,11 +293,21 @@ def addAbstracts(excelFileName):
                 # This is how we link Authors to their papers and vice versa.
                 abstractToPaperDict[hashKey] = dynamoPaperId
 
+                # Add the solr document into the solr index
+                solr.add([
+                    {
+                        "id": dynamoPaperId,
+                        "Title": abstractTitle,
+                        "AbstractText": row[3].internal_value.encode('utf-8')
+                    }])
+
+
         except Exception, e:
             logging.error("Unknown abstract error. Index not added: " + str(rowIndex) + "\nErr: " + str(e))
 
 
 def main(argv=sys.argv):
+
     parser = argparse.ArgumentParser(description='Process optional download flags')
 
     AUTH_HELP_TEXT = "path to credential csv file from Amazon. This will not be stored. CSV fieldnames must be \"" \
