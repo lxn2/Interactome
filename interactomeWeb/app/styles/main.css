@@ -111,3 +111,12 @@ div.affix {
   height: 500px;
 }
 
+.topic-dropdown-btn {
+  background-color: #EEEEEE;
+  border: 0px;
+}
+
+.float-left {
+  float: left;
+}
+

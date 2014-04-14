@@ -86,12 +86,14 @@ app.provider('AwsService', function() {
                                 var papersArray = data.Items[i]['List']['SS'];
                                 topicsArray.push({
                                     Name: data.Items[i]['Name']['S'],
+                                    Id: data.Items[i]['Id']['S'],
                                     PapersList: papersArray
                                 });
                             }
                             else {
                                 topicsArray.push({
-                                    Name: data.Items[i]['Name']['S'] 
+                                    Name: data.Items[i]['Name']['S'],
+                                    Id: data.Items[i]['Id']['S']
                                 });
                             }
                         }
@@ -102,6 +104,32 @@ app.provider('AwsService', function() {
                     }
                 });
                 return topicDefer.promise;
+            },
+
+            deleteTopic: function(topicid) {
+                console.log("in deletetopic", topicid);
+                var defer = $q.defer();
+                var dynamodb = new AWS.DynamoDB();
+
+                var deleteParams = {
+                    Key: {
+                        Id: {
+                            S: topicid,
+                        },
+                    },
+                    TableName: 'Topic',
+
+                };
+                dynamodb.deleteItem(deleteParams, function(err, data) {
+                    if (err) {
+                        console.log(err, err.stack);
+                        defer.reject('Could not delete topic');
+                    }
+                    else {
+                        defer.resolve();
+                    }
+                });
+                return defer.promise();
             },
 
             // puts new Topic item into Dynamo
@@ -137,12 +165,13 @@ app.provider('AwsService', function() {
                     }
                     else {
                         seq = data.Attributes['Sequence']['N'];
+                        var topicId = 'Topic' + seq;
 
                         // params to put new item into Topics
                         var putParams = {
                             Item: {
                                 Id: {
-                                    S: 'Topic' + seq
+                                    S: topicId
                                 },
                                 Name: {
                                     S: topicname
@@ -161,7 +190,7 @@ app.provider('AwsService', function() {
                                 defer.reject('Cannot put Topic item');
                             }
                             else {
-                                defer.resolve();
+                                defer.resolve(topicId);
                             }
                         });
                     }
@@ -206,8 +235,8 @@ app.provider('AwsService', function() {
                         topicDefer.reject('Cannot query Topic table');
                     }
                     else if (data.Count == 0) { // if topic doesn't exist, add it
-                        self._putNewTopic(username,topicName).then(function() {
-                            topicDefer.resolve();
+                        self._putNewTopic(username,topicName).then(function(topicId) {
+                            topicDefer.resolve(topicId);
                         }, function(reason) {
                             topicDefer.reject(reason);
                         });
