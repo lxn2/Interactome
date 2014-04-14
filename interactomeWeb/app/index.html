@@ -1,7 +1,7 @@
 <!doctype html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]> <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]> <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!-->
 <html class="no-js">
 <!--<![endif]-->
@@ -26,8 +26,8 @@
 <!-- We do not use ng-app here because we bootstrap our app in app.js -->
 <body>
     <!--[if lt IE 7]>
-      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-    <![endif]-->
+<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
 
     <!-- Add your site or application content here -->
     <div class="container-fluid" ng-controller="HeaderCtrl">
@@ -56,9 +56,13 @@
                 </div>
             </div>
             <div class="col-md-4 topicMasterAccordionSize" id="topics-bar-wrapper">
-                <div id="topicsbar" data-spy="affix" data-offset-top="5" data-offset-bottom="5" class="fill">
+                <div id="topicsbar" data-spy="affix" data-offset-top="0" data-offset-bottom="0" class="fill">
                     <h3>Topics</h3>
                     <div>
+                        <form ng-submit="addTopic()">
+                            <input type="text" ng-model="newTopic" placeholder="New topic name..." name="text" />
+                            <input type="submit" id="submit" value="Add" />
+                        </form>
                         <div ng-repeat="topic in userTopics">
                             <topic-panel-item topic-name={{topic['Name']}} papers-list={{topic['PapersList']}}></topic-panel-item>
                         </div>
@@ -91,7 +95,6 @@
         s.parentNode.insertBefore(po, s);
     })();
     </script>
-
     <!-- End of Henry's super cute manually added libraries, i love kitties --> 
 
     <!--[if lt IE 9]>
