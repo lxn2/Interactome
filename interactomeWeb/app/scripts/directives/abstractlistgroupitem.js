@@ -21,16 +21,7 @@ angular.module('interactomeApp')
       	},
 		    controller: ['$scope', '$http', 'AwsService', 'UserService', function($scope, $http, AwsService, UserService) {
       		$scope.getS3Data = function() {
-      			$http.get($scope.paper.Link).success(function(data){
-      				$scope.s3Data = data;
-              $scope.noError = true;
-      			}).error(function() {
-              $scope.noError = false;
-              // Could add more logic here to customize the error message.
-              // This error message also makes it so that the listgroupitem doesn't display error
-              // before being completely loaded.
-              $scope.errorMsg = "ERROR. Could not find abstract.";
-            })
+      			
       		};
 
           $scope.getNames = function() {
@@ -62,17 +53,31 @@ angular.module('interactomeApp')
           };
 
           $scope.viewAbstract = function() {
-            $scope.localOnView({
-              abTitle: $scope.s3Data.AbstractTitle,
-              abFirst: $scope.s3Data.PresenterFirstname,
-              abLast: $scope.s3Data.PresenterLastname,
-              abText: $scope.s3Data.Abstract});
+            // Only grabs from s3 once
+            if ($scope.s3Data === undefined) {
+              $http.get($scope.paper.Link).success(function(data) {
+                $scope.s3Data = data;
+
+                $scope.localOnView({
+                abTitle: $scope.s3Data.AbstractTitle,
+                abAuthor: $scope.authorData,
+                abText: $scope.s3Data.Abstract});
+
+              }).error(function() {
+                $scope.localOnView({ abTitle: "ERROR", abText: "Could not find abstract."});
+              })
+
+            } else {
+              $scope.localOnView({
+                abTitle: $scope.s3Data.AbstractTitle,
+                abAuthor: $scope.authorData,
+                abText: $scope.s3Data.Abstract});
+            }
           };
 
     	}],
     	template: '<li class="list-group-item">' +
-                  '<h4 class="list-group-item-heading" ng-show="!noError"> {{errorMsg}} </h4>' +
-                  '<div ng-show="noError">' +
+                  '<div>' +
                   '<div class="btn-group" data-toggle="buttons">' +
                     '<label class="btn btn-primary liked" ng-click="likeClick()">' +
                       '<input type="radio" name="likeBtn" > <span class="glyphicon glyphicon-thumbs-up"></span>' +
@@ -92,7 +97,6 @@ angular.module('interactomeApp')
               	'</li>',
 
       link: function ($scope, element, attrs) {
-        $scope.getS3Data();
         $scope.getNames();
 
         // Changed scope variable to $scope to allow me to access likes and dislikes
