@@ -54,8 +54,8 @@ angular.module('interactomeApp')
           $scope.viewAbstract = function() {
             $scope.localOnView({
               abTitle: $scope.s3Data.AbstractTitle,
-              abFirst: $scope.s3Data.FirstName[0],
-              abLast: $scope.s3Data.LastName,
+              abFirst: $scope.s3Data.PresenterFirstname,
+              abLast: $scope.s3Data.PresenterLastname,
               abText: $scope.s3Data.Abstract});
           };
 
@@ -77,7 +77,7 @@ angular.module('interactomeApp')
                   '<p>{{likeMsg}}</p>' +
         	        '<h4 class="list-group-item-heading"> {{s3Data.AbstractTitle}} </h4>' +
             	    '<input type="checkbox" class="pull-right abstractChck" value="{{paper.Id}}">' +
-                	'<p class="list-group-item-text"> Author: {{s3Data.FirstName[0] + ". " + s3Data.LastName}} </p>' +
+                	'<p class="list-group-item-text"> Author: {{s3Data.PresenterFirstname + " " + s3Data.PresenterLastname}} </p>' +
                   '</div>' +
               	'</li>',
 
