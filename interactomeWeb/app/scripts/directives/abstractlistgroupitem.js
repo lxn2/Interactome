@@ -33,6 +33,16 @@ angular.module('interactomeApp')
             })
       		};
 
+          $scope.getNames = function() {
+            var temp = ""
+            AwsService.getBatchUser($scope.paper.Authors).then(function(names) {
+              for(var i = 0; i < names.length; i++){
+                temp += (names[i].FirstName + " " + names[i].LastName + ", ");
+              }
+               $scope.authorData = temp.slice(0, -2);
+            });
+          };
+
           $scope.likeClick = function() {
             if($scope.likeStatus != true) { // will be undefined on first click which is ok
               $scope.likeMsg = " Liked abstract recommendation. ID = " + $scope.paper.Id;
@@ -75,14 +85,15 @@ angular.module('interactomeApp')
                       '<span class="glyphicon glyphicon-search"></span>' +
                   '</button>' +
                   '<p>{{likeMsg}}</p>' +
-        	        '<h4 class="list-group-item-heading"> {{s3Data.AbstractTitle}} </h4>' +
+        	        '<h4 class="list-group-item-heading" ng-bind-html="paper.Title"></h4>' +
             	    '<input type="checkbox" class="pull-right abstractChck" value="{{paper.Id}}">' +
-                	'<p class="list-group-item-text"> Author: {{s3Data.PresenterFirstname + " " + s3Data.PresenterLastname}} </p>' +
+                	'<p class="list-group-item-text"> {{authorData}} </p>' +
                   '</div>' +
               	'</li>',
 
       link: function ($scope, element, attrs) {
         $scope.getS3Data();
+        $scope.getNames();
 
         // Changed scope variable to $scope to allow me to access likes and dislikes
 
