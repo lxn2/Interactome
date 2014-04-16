@@ -15,12 +15,14 @@ angular.module('interactomeApp')
       	},
 		    controller: ['$scope', 'AwsService', function($scope, AwsService) {          
           $scope.scopePapersList = [];
+          $scope.placeHolder = 'No abstracts added';
+
 
           $scope.delete = function() {
             console.log('in topic del topic', $scope.scopePapersList[0]);
 
             var scope = $scope;
-            if($scope.scopePapersList.length > 1 || $scope.scopePapersList.length == 1 && $scope.scopePapersList[0] != "No abstracts added") { // contains saved papers
+            if($scope.scopePapersList.length > 1 || $scope.scopePapersList.length == 1 && $scope.scopePapersList[0] != $scope.placeHolder) { // contains saved papers
 
               var al = 'There are ' + $scope.scopePapersList.length + ' abstracts in "' + $scope.topicName +
               '". Deleting this topic will also delete the abstracts. Confirm deletion.';
@@ -47,10 +49,9 @@ angular.module('interactomeApp')
                   '<div class="accordion-heading accordion-toggle" ng-click="isOpen = !isOpen">' +
                     '<div class="btn-group btn-group-xs">' +
                       '<button type="button" class="btn btn-default dropdown-toggle topic-dropdown-btn" data-toggle="dropdown">' +
-                        '<span class="caret"></span>' +
+                        '<span class="glyphicon glyphicon-th-list"></span>' +
                       '</button>' +
                       '<ul class="dropdown-menu">' +
-                        '<li ng-click="renameTopic()">Rename</li>' +
                         '<li ng-click="delete()">Delete</li>' +
                       '</ul>' +
                     '</div>' +
@@ -70,7 +71,7 @@ angular.module('interactomeApp')
         scope.itemId = attrs.itemId;
         scope.scopePapersList = ((attrs.papersList).replace(/['"\[\]]/gi,'')).split(','); // removes quotations and brackets, converts string into array
         if(scope.scopePapersList.length == 1 && scope.scopePapersList[0] == "") { // inserts a message if no abstracts
-          scope.scopePapersList = ["No abstracts added"];
+          scope.scopePapersList = [scope.placeHolder];
         }
         else {
           scope.scopePapersList.sort();
@@ -78,16 +79,3 @@ angular.module('interactomeApp')
       }
     };
   });
-
-/*
-'{{topicName}}' +
-                    '<div class="btn-group btn-group-xs">' +
-                      '<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">' +
-                        '<span class="caret"></span>' +
-                      '</button>' +
-                      '<ul class="dropdown-menu">' +
-                        '<li><a href="#">Dropdown link</a></li>' +
-                        '<li><a href="#">Dropdown link</a></li>' +
-                      '</ul>' +
-                    '</div>' +
-                    */

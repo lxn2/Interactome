@@ -111,7 +111,7 @@ app.controller('SearchCtrl', function($scope, $location, SearchService) {
 /*
     Controls the elements in the header (search bar, sign in).
 */
-app.controller('HeaderCtrl', function($scope, $rootScope, $timeout, $location, UserService, AwsService) {
+app.controller('HeaderCtrl', function($scope, $rootScope, $location, UserService, AwsService) {
     
     $scope.userTopics = [];
     $scope.newTopic = null;
@@ -163,7 +163,6 @@ app.controller('HeaderCtrl', function($scope, $rootScope, $timeout, $location, U
     }
 
     $scope.deleteTopic = function(topicid) {
-        //alert("in main js deleteTopic");
         var i = 0;
         var curLength = $scope.userTopics.length;
         while(i < curLength) { // find the correct element

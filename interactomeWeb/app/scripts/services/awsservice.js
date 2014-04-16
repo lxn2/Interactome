@@ -107,7 +107,6 @@ app.provider('AwsService', function() {
             },
 
             deleteTopic: function(topicid) {
-                console.log("in deletetopic", topicid);
                 var defer = $q.defer();
                 var dynamodbB = new AWS.DynamoDB();
 
