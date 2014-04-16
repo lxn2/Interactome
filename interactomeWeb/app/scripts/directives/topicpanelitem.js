@@ -9,7 +9,8 @@ angular.module('interactomeApp')
     return {	
       	restrict: 'E',
       	scope: {      	
-          localDeleteTopic: '&deleteTopic',
+          localCheckTopic: '&checkTopic',
+          localRenameTopic: '&renameTopic',
       		topicName: '@',
           itemId: '@',
           papersList: '@'
@@ -18,55 +19,7 @@ angular.module('interactomeApp')
 		    controller: ['$scope', 'AwsService', function($scope, AwsService) {          
           $scope.scopePapersList = [];
           $scope.editorEnabled = false;
-
-          var inputTemplate = '<form>' +
-                                '<input type="text" placeholder="New topic name..." name="text" />' +
-                                '<input type="submit" id="submit" value="Add" />' +
-                              '</form>';
-          var defaultTemplate = 
-                '<div class="accordion-group topic-accordion-size">' + 
-                  '<div class="accordion-heading accordion-toggle" ng-click="isOpen = !isOpen">' +
-                    '<div class="btn-group btn-group-xs">' +
-                      '<button type="button" class="btn btn-default dropdown-toggle topic-dropdown-btn" data-toggle="dropdown">' +
-                        '<span class="caret"></span>' +
-                      '</button>' +
-                      '<ul class="dropdown-menu">' +
-                        '<li ng-click="getTemplate()">Rename</li>' +
-                        '<li ng-click="deleteTopic()">Delete</li>' +
-                      '</ul>' +
-                    '</div>' +
-                    '{{topicName}}' +
-                  '</div>' +
-                  '<div class="accordion-body" collapse="!isOpen" ng-class="{smallScrollDiv:isOpen}">' +
-                    '<div class="accordion-inner">' +
-                      '<li ng-repeat="paper in scopePapersList track by $index">' + // track by $index solves ng-repeat duplicate error: http://stackoverflow.com/questions/16296670/angular-ng-repeat-error-duplicates-in-a-repeater-are-not-allowed
-                        '{{paper}}' +
-                      '</li>' +
-                    '</div>' +
-                  '</div>' +
-                '</div>';
-
-          $scope.deleteTopic = function() {
-            console.log('in topic del topic', $scope.scopePapersList[0]);
-            if($scope.scopePapersList.length > 1 || $scope.scopePapersList.length == 1 && $scope.scopePapersList[0] != "No abstracts added") { // contains saved papers
-
-              var al = 'There are ' + $scope.scopePapersList.length + ' abstracts in "' + $scope.topicName +
-              '". Deleting this topic will also delete the abstracts. Confirm deletion.';
-
-              var confirmation = confirm(al);
-              if (confirmation == true) {
-                var scope = $scope;
-                AwsService.deleteTopic($scope.itemId).then(function() {
-                  scope.localDeleteTopic({topicId: scope.itemId});
-                }, function(reason) {
-                  alert(reason);
-                });
-              }
-            }
-            else { // no papers
-              AwsService.deleteTopic($scope.itemId);
-            }
-          };
+          $scope.editableValue = $scope.topicName;
 
           $scope.enableEdit = function() {
             $scope.editorEnabled = true;
@@ -74,7 +27,24 @@ angular.module('interactomeApp')
           };
 
           $scope.disableEdit = function() {
+            $scope.editableValue = $scope.topicName;
             $scope.editorEnabled = false;
+          };
+
+          $scope.save = function() {
+            if(!$scope.localCheckTopic({topicName: $scope.editableValue})) { // check if topicname already exists
+              AwsService.renameTopic($scope.itemId, $scope.editableValue).then(function() { // updateItem
+                $scope.topicName = $scope.editableValue; // change view
+                $scope.localRenameTopic({topicId: $scope.itemId, topicName: $scope.editableValue});
+                $scope.disableEdit();
+              }, function(reason) {
+                alert(reason);
+              });
+            }
+            else {
+              alert('Topic already exists');
+            }
+            
           };
     	}],
     	template: '<div class="accordion-group topic-accordion-size">' + 
@@ -86,7 +56,6 @@ angular.module('interactomeApp')
                         '</button>' +
                         '<ul class="dropdown-menu">' +
                           '<li ng-click="enableEdit()">Rename</li>' +
-                          '<li ng-click="deleteTopic()">Delete</li>' +
                         '</ul>' +
                       '</div>' +
                       '{{topicName}}' +
@@ -101,8 +70,9 @@ angular.module('interactomeApp')
                   '</div>' +
                   '<div ng-show="editorEnabled">' +
                     '<div>' +
-                        '<input ng-model="topicName">' +
-                        '<a ng-click="disableEdit()">cancel</a>' +
+                        '<input ng-model="editableValue">' +
+                        '<button ng-click="save()">save</button>' +
+                        '<button ng-click="disableEdit()">cancel</button>' +
                     '</div>' +
                   '</div>' +
                 '</div>'
@@ -120,16 +90,3 @@ angular.module('interactomeApp')
       }
     };
   });
-
-/*
-'{{topicName}}' +
-                    '<div class="btn-group btn-group-xs">' +
-                      '<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">' +
-                        '<span class="caret"></span>' +
-                      '</button>' +
-                      '<ul class="dropdown-menu">' +
-                        '<li><a href="#">Dropdown link</a></li>' +
-                        '<li><a href="#">Dropdown link</a></li>' +
-                      '</ul>' +
-                    '</div>' +
-                    */

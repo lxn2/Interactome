@@ -128,7 +128,7 @@ app.provider('AwsService', function() {
                     }
 
                 };
-                dynamodb.updateItem(deleteParams, function(err, data) {
+                dynamodb.updateItem(renameParams, function(err, data) {
                     if (err) {
                         console.log(err, err.stack);
                         defer.reject('Could not rename topic');
@@ -137,7 +137,7 @@ app.provider('AwsService', function() {
                         defer.resolve();
                     }
                 });
-                return defer.promise();
+                return defer.promise;
             },
 
             // puts new Topic item into Dynamo

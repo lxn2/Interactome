@@ -160,7 +160,47 @@ app.controller('HeaderCtrl', function($scope, $rootScope, $timeout, $location, U
         );
         // reset to null
         $scope.newTopic = null;
-    }
+    };
+
+    $scope.hasTopicName = function(topicname) {
+        console.log("in hasTopicName")
+        var returnVal = true;
+        var i = 0;
+        var curLength = $scope.userTopics.length;
+        while(i < curLength) { // find the correct element
+            if ($scope.userTopics[i].Name == topicname) {
+                console.log($scope.userTopics[i].Name);
+                break;
+            }
+            else{
+                i++;
+            }
+        }
+        if (i < curLength) {// return true if element found
+            returnVal = true;
+        }
+        else {
+            returnVal = false;
+        }
+        console.log(returnVal);
+        return returnVal;
+    };
+
+    $scope.renameTopic = function(topicid, topicname) {
+        var i = 0;
+        var curLength = $scope.userTopics.length;
+        while(i < curLength) { // find the correct element
+            if ($scope.userTopics[i].Id == topicid) {
+                break;
+            }
+            else{
+                i++;
+            }
+        }
+        if (i < curLength) {// delete element if found
+            $scope.userTopics[i].Name = topicname;
+        }
+    };
 
     /*$scope.deleteTopic = function(topicid) {
         alert("in main js deleteTopic");
