@@ -63,10 +63,9 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
     };
 
     // updates abstract information for modal view
-    $scope.showAbstract = function(abTitle, firstName, lastName, abText) {
+    $scope.showAbstract = function(abTitle, abAuthor, abText) {
         $scope.modalTitle = abTitle;
-        $scope.modalFirstName = firstName;
-        $scope.modalLastName = lastName;
+        $scope.modalAuthor = abAuthor;
         $scope.modalText = abText;
         $('#abstractViewModal').modal('show'); // open modal
     }

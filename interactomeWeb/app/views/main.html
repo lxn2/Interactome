@@ -4,12 +4,10 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="myModalLabel">{{modalTitle}}</h4>
-                <h5 class="modal-title" id="myModalAuthor">{{modalFirstName}} {{modalLastName}}</h5>
+                <h4 class="modal-title" id="myModalLabel" ng-bind-html="modalTitle"></h4>
+                <h5 class="modal-title" id="myModalAuthor">{{modalAuthor}}</h5>
             </div>
-            <div class="modal-body">
-                {{modalText}}
-            </div>
+            <div class="modal-body" ng-bind-html="modalText"></div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
@@ -20,7 +18,7 @@
 <!-- see main.js and abstractlistgroupitem.js -->
 <ul id="objects" class="list-group">
     <div ng-repeat="paper in filteredPapers">
-        <abstract-list-group-item paper="paper" likes="likes" dislikes="dislikes" on-view="showAbstract(abTitle,abFirst,abLast,abText)"></abstract-list-group-item>
+        <abstract-list-group-item paper="paper" likes="likes" dislikes="dislikes" on-view="showAbstract(abTitle, abAuthor, abText)"></abstract-list-group-item>
 
     </div>
 </ul>
