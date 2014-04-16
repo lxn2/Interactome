@@ -1,4 +1,5 @@
 'use strict';
+
 /**
   Lists collapsible panels of user topics
 **/
@@ -13,8 +14,37 @@ angular.module('interactomeApp')
           itemId: '@',
           papersList: '@'
       	},
+
 		    controller: ['$scope', 'AwsService', function($scope, AwsService) {          
           $scope.scopePapersList = [];
+          $scope.editorEnabled = false;
+
+          var inputTemplate = '<form>' +
+                                '<input type="text" placeholder="New topic name..." name="text" />' +
+                                '<input type="submit" id="submit" value="Add" />' +
+                              '</form>';
+          var defaultTemplate = 
+                '<div class="accordion-group topic-accordion-size">' + 
+                  '<div class="accordion-heading accordion-toggle" ng-click="isOpen = !isOpen">' +
+                    '<div class="btn-group btn-group-xs">' +
+                      '<button type="button" class="btn btn-default dropdown-toggle topic-dropdown-btn" data-toggle="dropdown">' +
+                        '<span class="caret"></span>' +
+                      '</button>' +
+                      '<ul class="dropdown-menu">' +
+                        '<li ng-click="getTemplate()">Rename</li>' +
+                        '<li ng-click="deleteTopic()">Delete</li>' +
+                      '</ul>' +
+                    '</div>' +
+                    '{{topicName}}' +
+                  '</div>' +
+                  '<div class="accordion-body" collapse="!isOpen" ng-class="{smallScrollDiv:isOpen}">' +
+                    '<div class="accordion-inner">' +
+                      '<li ng-repeat="paper in scopePapersList track by $index">' + // track by $index solves ng-repeat duplicate error: http://stackoverflow.com/questions/16296670/angular-ng-repeat-error-duplicates-in-a-repeater-are-not-allowed
+                        '{{paper}}' +
+                      '</li>' +
+                    '</div>' +
+                  '</div>' +
+                '</div>';
 
           $scope.deleteTopic = function() {
             console.log('in topic del topic', $scope.scopePapersList[0]);
@@ -36,26 +66,43 @@ angular.module('interactomeApp')
             else { // no papers
               AwsService.deleteTopic($scope.itemId);
             }
-          }
+          };
+
+          $scope.enableEdit = function() {
+            $scope.editorEnabled = true;
+            //$scope.view.editableValue = $scope.value;
+          };
+
+          $scope.disableEdit = function() {
+            $scope.editorEnabled = false;
+          };
     	}],
     	template: '<div class="accordion-group topic-accordion-size">' + 
-                  '<div class="accordion-heading accordion-toggle" ng-click="isOpen = !isOpen">' +
-                    '<div class="btn-group btn-group-xs">' +
-                      '<button type="button" class="btn btn-default dropdown-toggle topic-dropdown-btn" data-toggle="dropdown">' +
-                        '<span class="caret"></span>' +
-                      '</button>' +
-                      '<ul class="dropdown-menu">' +
-                        '<li><a href="#">Rename</a></li>' +
-                        '<li ng-click="deleteTopic()">Delete</li>' +
-                      '</ul>' +
+                  '<div ng-hide="editorEnabled">' +
+                    '<div class="accordion-heading accordion-toggle" ng-click="isOpen = !isOpen">' +
+                      '<div class="btn-group btn-group-xs">' +
+                        '<button type="button" class="btn btn-default dropdown-toggle topic-dropdown-btn" data-toggle="dropdown">' +
+                          '<span class="caret"></span>' +
+                        '</button>' +
+                        '<ul class="dropdown-menu">' +
+                          '<li ng-click="enableEdit()">Rename</li>' +
+                          '<li ng-click="deleteTopic()">Delete</li>' +
+                        '</ul>' +
+                      '</div>' +
+                      '{{topicName}}' +
                     '</div>' +
-                    '{{topicName}}' +
+                    '<div class="accordion-body" collapse="!isOpen" ng-class="{smallScrollDiv:isOpen}">' +
+                      '<div class="accordion-inner">' +
+                        '<li ng-repeat="paper in scopePapersList track by $index">' + // track by $index solves ng-repeat duplicate error: http://stackoverflow.com/questions/16296670/angular-ng-repeat-error-duplicates-in-a-repeater-are-not-allowed
+                          '{{paper}}' +
+                        '</li>' +
+                      '</div>' +
+                    '</div>' +
                   '</div>' +
-                  '<div class="accordion-body" collapse="!isOpen" ng-class="{smallScrollDiv:isOpen}">' +
-                    '<div class="accordion-inner">' +
-                      '<li ng-repeat="paper in scopePapersList track by $index">' + // track by $index solves ng-repeat duplicate error: http://stackoverflow.com/questions/16296670/angular-ng-repeat-error-duplicates-in-a-repeater-are-not-allowed
-                        '{{paper}}' +
-                      '</li>' +
+                  '<div ng-show="editorEnabled">' +
+                    '<div>' +
+                        '<input ng-model="topicName">' +
+                        '<a ng-click="disableEdit()">cancel</a>' +
                     '</div>' +
                   '</div>' +
                 '</div>'
