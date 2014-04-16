@@ -99,12 +99,35 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
 });
 
 app.controller('SearchCtrl', function($scope, $location, SearchService) {
-    var institution = ($location.search()).search;
-    $scope.institutions = [];
-    // once promise is made, then set the scope 
-    SearchService.showResults(institution).then(function(userData) {
-        $scope.institutions.push.apply($scope.institutions, userData);
-    });
+    $scope.query = ($location.search()).search;
+    $scope.results = [];
+    // once promise is made, then set the scope
+    $.ajax({
+        url: "http://localhost:8983/solr/select",
+        data: {
+            "q": $scope.query,
+            "wt": "json",
+            "rows":100
+        },
+        traditional: true,
+        cache: true,
+        async: true,
+        dataType: 'jsonp',
+        success: function (data) {
+            //and when we get the query back we 
+            //stick the results in the scope
+            $scope.$apply(function () {
+                $scope.results = data.response.docs;
+            });
+        },
+        jsonp: 'json.wrf'
+    }); 
+
+    console.log($scope.results);
+
+    //SearchService.showResults(institution).then(function(userData) {
+      //  $scope.institutions.push.apply($scope.institutions, userData);
+    //});
 
 });
 
@@ -126,9 +149,9 @@ app.controller('HeaderCtrl', function($scope, $rootScope, $timeout, $location, U
     };
 
     $scope.searchSubmit = function() {
-        if ($scope.searchByInstitution && $scope.searchByInstitution.length > 0) {
+        if ($scope.searchByText && $scope.searchByText.length > 0) {
             var url = "/searchView";
-            $location.search('search', $scope.searchByInstitution).path(url);
+            $location.search('search', $scope.searchByText).path(url);
         }
     };
     // Listen for broadcasts of a token changing (this means AWS resources are available)

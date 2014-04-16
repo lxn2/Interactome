@@ -286,21 +286,21 @@ def addAbstracts(excelFileName):
             dynamoPaperId = 'Paper'+ sequenceNumber
             newItem = {'Id': dynamoPaperId, 'Link': abstractUrlLink, 'Title': abstractTitle}
             try:
-                papersTable.put_item(data=newItem)
+                #papersTable.put_item(data=newItem)
+
+                #Add the solr document into the solr index
+                solr.add([
+                    {
+                        'id': dynamoPaperId,
+                        'title': abstractTitle,
+                        'text': row[3].internal_value.encode('utf-8')
+                    }])
+
             except:
                 logging.error("Unabled to add to papers table. Index not added: " + str(rowIndex))
             else:
                 # This is how we link Authors to their papers and vice versa.
                 abstractToPaperDict[hashKey] = dynamoPaperId
-
-                # Add the solr document into the solr index
-                solr.add([
-                    {
-                        "id": dynamoPaperId,
-                        "Title": abstractTitle,
-                        "AbstractText": row[3].internal_value.encode('utf-8')
-                    }])
-
 
         except Exception, e:
             logging.error("Unknown abstract error. Index not added: " + str(rowIndex) + "\nErr: " + str(e))
@@ -321,7 +321,10 @@ def main(argv=sys.argv):
 
     # Abstracts MUST come before users.
     addAbstracts(options.abstractsPath)
-    addUsers(options.usersPath)
-        
+    #addUsers(options.usersPath)
+
+    results = solr.search('cancer')
+    print results
+
 if __name__ == "__main__":
     sys.exit(main())

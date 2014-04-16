@@ -48,7 +48,7 @@
                     <div id="jumbotronBanner" class="jumbotron">
                         <!--searchBar code -->
                         <form ng-submit="searchSubmit()">
-                            <input id="searchBar" type="text" ng-model="searchByInstitution" placeholder="Search i.e. author, title, keywords" />
+                            <input id="searchBar" type="text" ng-model="searchByText" placeholder="Search i.e. author, title, keywords" />
                             <!--searchButton -->
                             <button id="searchButton" type="submit" class="btn btn-primary">Search</button>
                         </form>
@@ -112,6 +112,7 @@
     <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
     <script src="bower_components/angular-route/angular-route.js"></script>
     <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="bower_components/jquery-ui/ui/jquery-ui.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
