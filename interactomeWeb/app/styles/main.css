@@ -111,3 +111,13 @@ div.affix {
   height: 500px;
 }
 
+.row {
+  /* Since we use a fluid container, the default margins make it too far to the left. */
+  margin-right: 0px;
+  margin-left: 0px;
+}
+
+.header-no-col{
+  /* Same padding as column to align better*/
+  padding-left: 15px;
+}
