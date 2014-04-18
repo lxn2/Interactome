@@ -119,11 +119,13 @@ app.controller('SearchCtrl', function($scope, $location, SearchService) {
             $scope.$apply(function () {
                 $scope.results = data.response.docs;
             });
+            
+            for(var i = 0; i < $scope.results.length; i++)
+                console.log($scope.results[i].id);
         },
         jsonp: 'json.wrf'
     }); 
 
-    console.log($scope.results);
 
     //SearchService.showResults(institution).then(function(userData) {
       //  $scope.institutions.push.apply($scope.institutions, userData);
