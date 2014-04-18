@@ -111,7 +111,6 @@ app.controller('HeaderCtrl', function($scope, $rootScope, $location, UserService
     
     $scope.userTopics = [];
     $scope.newTopic = null;
-
     // This function sets the user authentication from googleSignin directive. 
     $scope.signedIn = function(oauth) {
         // Google authentication passed into userService to hold onto and track user.
