@@ -117,11 +117,6 @@ body {
   padding-left: 15px;
 }
 
-#header-row{
-  height: 200px;
-  overflow-y: hidden;
-}
-
 #topicsbar {
   top: 5px;
   width: 400px;
