@@ -107,7 +107,7 @@ app.controller('SearchCtrl', function($scope, $location, SearchService) {
 /*
     Controls the elements in the header (search bar, sign in).
 */
-app.controller('HeaderCtrl', function($scope, $rootScope, $timeout, $location, UserService, AwsService) {
+app.controller('HeaderCtrl', function($scope, $rootScope, $location, UserService, AwsService) {
     
     $scope.userTopics = [];
     $scope.newTopic = null;
@@ -141,7 +141,8 @@ app.controller('HeaderCtrl', function($scope, $rootScope, $timeout, $location, U
         var newTopic = {Name: $scope.newTopic};
         var scope = $scope;
         AwsService.addTopic(username, $scope.newTopic).then(
-            function() {
+            function(topicId) {
+                newTopic.Id = topicId;
                 scope.userTopics.push(newTopic);
                 scope.userTopics.sort(function(a,b) {
                     return (a['Name'].localeCompare(b['Name'], 'kn', {numeric: true, caseFirst: "lower", usage: "sort"}) >= 0);
@@ -154,6 +155,22 @@ app.controller('HeaderCtrl', function($scope, $rootScope, $timeout, $location, U
         );
         // reset to null
         $scope.newTopic = null;
+    }
+
+    $scope.deleteTopic = function(topicid) {
+        var i = 0;
+        var curLength = $scope.userTopics.length;
+        while(i < curLength) { // find the correct element
+            if ($scope.userTopics[i].Id == topicid) {
+                break;
+            }
+            else{
+                i++;
+            }
+        }
+        if (i < curLength) {// delete element if found
+            $scope.userTopics.splice(i, 1);
+        }
     }
 
     $scope.$on("$destroy", function() {

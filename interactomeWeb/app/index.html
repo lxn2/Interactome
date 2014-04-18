@@ -79,7 +79,7 @@
                                     <input type="submit" id="submit" value="Add" />
                                 </form>
                                 <div ng-repeat="topic in userTopics">
-                                    <topic-panel-item topic-name={{topic['Name']}} papers-list={{topic['PapersList']}}></topic-panel-item>
+                                    <topic-panel-item topic-name={{topic['Name']}} item-id={{topic['Id']}} papers-list={{topic['PapersList']}}  delete="deleteTopic(topicId)"></topic-panel-item>
                                 </div>
                             </div>
                         </div>
