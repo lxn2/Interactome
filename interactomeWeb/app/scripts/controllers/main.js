@@ -173,9 +173,7 @@ app.controller('HeaderCtrl', function($scope, $rootScope, $location, UserService
             }
         }
         if (i < curLength) {// delete element if found
-            delete $scope.userTopics[i];
             $scope.userTopics.splice(i, 1);
-            console.log('deleted in main js');
         }
     }
 

@@ -19,8 +19,6 @@ angular.module('interactomeApp')
 
 
           $scope.delete = function() {
-            console.log('in topic del topic', $scope.scopePapersList[0]);
-
             var scope = $scope;
             if($scope.scopePapersList.length > 1 || $scope.scopePapersList.length == 1 && $scope.scopePapersList[0] != $scope.placeHolder) { // contains saved papers
 
