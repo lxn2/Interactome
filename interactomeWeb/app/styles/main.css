@@ -92,11 +92,6 @@ body {
   border-width: 1px;
 }
 
-div.affix {
-  width: 400px;
-  position: fixed;
-}
-
 .smallScrollDiv {
   max-height: 100px;
   overflow-y: scroll;
@@ -120,4 +115,15 @@ div.affix {
 .header-no-col{
   /* Same padding as column to align better*/
   padding-left: 15px;
+}
+
+#header-row{
+  height: 200px;
+  overflow-y: hidden;
+}
+
+#topicsbar {
+  top: 5px;
+  width: 400px;
+  position: fixed;
 }
