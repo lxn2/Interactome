@@ -51,9 +51,13 @@
                         <div id="jumbotronBanner" class="jumbotron">
                             <!--searchBar code -->
                             <form ng-submit="searchSubmit()">
-                                <input id="searchBar" type="text" ng-model="searchByInstitution" placeholder="Search i.e. author, title, keywords" />
-                                <!--searchButton -->
-                                <button id="searchButton" type="submit" class="btn btn-primary">Search</button>
+                                <div class="input-group input-group-lg">
+                                    <input id="searchBar" type="text" ng-model="searchByInstitution" placeholder="Search i.e. author, title, keywords" class="form-control" />
+                                    <!--searchButton -->
+                                    <span class="input-group-btn">
+                                      <button id="searchButton" type="submit" class="btn btn-primary">Search</button>
+                                    </span>
+                                </div>
                             </form>
                         </div>
                     </div>
