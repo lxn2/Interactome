@@ -25,6 +25,7 @@
 
 <!-- We do not use ng-app here because we bootstrap our app in app.js -->
 <body>
+
     <!--[if lt IE 7]>
 <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
 <![endif]-->
@@ -89,19 +90,6 @@
         </div>
     </div>
 
-    <!-- Google+ Signin button library, note this had to be also loaded in google+ directive to ensure it showed up-->
-    <script type="text/javascript">
-    (function() {
-        var po = document.createElement('script');
-        po.type = 'text/javascript';
-        po.async = true;
-        po.src = 'https://apis.google.com/js/client:plusone.js?onload=onLoadCallback';
-        var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(po, s);
-    })();
-    </script>
-    <!-- End of Henry's super cute manually added libraries, i love kitties --> 
-
     <!--[if lt IE 9]>
     <script src="bower_components/es5-shim/es5-shim.js"></script>
     <script src="bower_components/json3/lib/json3.min.js"></script>
@@ -140,6 +128,17 @@
         $(function() {
             $("#topicsbar").accordion({collapsible: true, heightStyle: "fill"});
         });
+    </script>
+    <!-- Google+ Signin button library, note this had to be also loaded in google+ directive to ensure it showed up-->
+    <script type="text/javascript">
+    (function() {
+        var po = document.createElement('script');
+        po.type = 'text/javascript';
+        po.async = true;
+        po.src = 'https://apis.google.com/js/client:plusone.js?onload=onLoadCallback';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(po, s);
+    })();
     </script>
     <!-- endbuild -->
 </body>
