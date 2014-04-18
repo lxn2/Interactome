@@ -92,11 +92,6 @@ body {
   border-width: 1px;
 }
 
-div.affix {
-  width: 400px;
-  position: fixed;
-}
-
 .smallScrollDiv {
   max-height: 100px;
   overflow-y: scroll;
@@ -111,3 +106,19 @@ div.affix {
   height: 500px;
 }
 
+.row {
+  /* Since we use a fluid container, the default margins make it too far to the left. */
+  margin-right: 0px;
+  margin-left: 0px;
+}
+
+.header-no-col{
+  /* Same padding as column to align better*/
+  padding-left: 15px;
+}
+
+#topicsbar {
+  top: 5px;
+  width: 400px;
+  position: fixed;
+}

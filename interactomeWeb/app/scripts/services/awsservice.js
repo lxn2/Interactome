@@ -245,7 +245,9 @@ app.provider('AwsService', function() {
                         for (var i = 0; i < data.Items.length; i++) {
                             papers.push({
                                 Id: data.Items[i].Id.S,
-                                Link: data.Items[i].Link.S
+                                Link: data.Items[i].Link.S,
+                                Title: data.Items[i].Title.S,
+                                Authors: data.Items[i].Authors.SS
                             });
 
                         }
@@ -255,6 +257,44 @@ app.provider('AwsService', function() {
                 });
 
                 return paperDefer.promise;
+            },
+
+            // Get users by a list of their Ids.
+            getBatchUser: function(Ids) {
+                var batchUserDefer = $q.defer();
+                var names = [];
+                var dynamodb = new AWS.DynamoDB();
+                // Since batchGets can do multiple tables the syntax is a bit weird.
+                var batchParams = {
+                    RequestItems:
+                    {
+                        User: {
+                            AttributesToGet: ['FirstName','LastName'],
+                            Keys: []
+                        }
+                    }
+                };
+
+                for(var i = 0; i < Ids.length; i++){
+                    batchParams.RequestItems.User.Keys.push({"Id": {"S": Ids[i]}});
+                }
+
+                dynamodb.batchGetItem(batchParams, function(err, data) {
+                    if (err) { // query error
+                        console.log(err, err.stack);
+                        topicDefer.reject('Cannot query Topic table');
+                    } else{
+                        for (var i = 0; i < data.Responses.User.length; i++) {
+                            names.push({ 
+                                FirstName: data.Responses.User[i].FirstName.S, 
+                                LastName: data.Responses.User[i].LastName.S});
+                        }
+                        batchUserDefer.resolve(names);
+                    }
+                });
+
+                return batchUserDefer.promise;
+
             },
 
             // General way to post a msg to a topic.
