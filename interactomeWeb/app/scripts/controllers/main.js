@@ -158,7 +158,6 @@ app.controller('HeaderCtrl', function($scope, $rootScope, $location, UserService
     };
 
     $scope.hasTopicName = function(topicname) {
-        console.log("in hasTopicName")
         var returnVal = true;
         var i = 0;
         var curLength = $scope.userTopics.length;
