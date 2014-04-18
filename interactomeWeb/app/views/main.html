@@ -3,31 +3,30 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </button>
                 <h4 class="modal-title" id="myModalLabel" ng-bind-html="modalTitle"></h4>
                 <h5 class="modal-title" id="myModalAuthor">{{modalAuthor}}</h5>
             </div>
             <div class="modal-body" ng-bind-html="modalText"></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default btn-lg btn-block" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
 
 <!-- see main.js and abstractlistgroupitem.js -->
-<ul id="objects" class="list-group">
+<ul id="abstracts" class="list-group">
     <div ng-repeat="paper in filteredPapers">
         <abstract-list-group-item paper="paper" likes="likes" dislikes="dislikes" on-view="showAbstract(abTitle, abAuthor, abText)"></abstract-list-group-item>
-
     </div>
 </ul>
 
 <button id="testSelection" type="button" ng-click="abstractsRec()" class="btn btn-primary">Get Recs</button>
 {{absRecd}}
 <br></br>
-<ul id="abstracts">
-</ul>
 
 <!-- Page Pagination -->
 <div> 
