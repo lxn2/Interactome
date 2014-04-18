@@ -99,7 +99,7 @@ app.controller('SearchCtrl', function($scope, $location, SearchService) {
     $scope.results = [];
     // once promise is made, then set the scope
     $.ajax({
-        url: "http://localhost:8983/solr/select",
+        url: "http://ec2-54-201-190-162.us-west-2.compute.amazonaws.com/solr/select",
         data: {
             "q": $scope.query,
             "wt": "json",
