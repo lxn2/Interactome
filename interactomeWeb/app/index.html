@@ -25,6 +25,7 @@
 
 <!-- We do not use ng-app here because we bootstrap our app in app.js -->
 <body>
+
     <!--[if lt IE 7]>
 <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
 <![endif]-->
@@ -79,7 +80,7 @@
                                     <input type="submit" id="submit" value="Add" />
                                 </form>
                                 <div ng-repeat="topic in userTopics">
-                                    <topic-panel-item topic-name={{topic['Name']}} papers-list={{topic['PapersList']}}></topic-panel-item>
+                                    <topic-panel-item topic-name={{topic['Name']}} item-id={{topic['Id']}} papers-list={{topic['PapersList']}}  delete="deleteTopic(topicId)"></topic-panel-item>
                                 </div>
                             </div>
                         </div>
@@ -88,19 +89,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Google+ Signin button library, note this had to be also loaded in google+ directive to ensure it showed up-->
-    <script type="text/javascript">
-    (function() {
-        var po = document.createElement('script');
-        po.type = 'text/javascript';
-        po.async = true;
-        po.src = 'https://apis.google.com/js/client:plusone.js?onload=onLoadCallback';
-        var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(po, s);
-    })();
-    </script>
-    <!-- End of Henry's super cute manually added libraries, i love kitties --> 
 
     <!--[if lt IE 9]>
     <script src="bower_components/es5-shim/es5-shim.js"></script>
@@ -112,13 +100,13 @@
     <!-- bower:js -->
     <script src="bower_components/jquery/jquery.js"></script>
     <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/jquery-ui/ui/jquery-ui.js"></script>
     <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script src="bower_components/angular-resource/angular-resource.js"></script>
     <script src="bower_components/angular-cookies/angular-cookies.js"></script>
     <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
     <script src="bower_components/angular-route/angular-route.js"></script>
     <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-    <script src="bower_components/jquery-ui/ui/jquery-ui.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
@@ -140,6 +128,17 @@
         $(function() {
             $("#topicsbar").accordion({collapsible: true, heightStyle: "fill"});
         });
+    </script>
+    <!-- Google+ Signin button library, note this had to be also loaded in google+ directive to ensure it showed up-->
+    <script type="text/javascript">
+    (function() {
+        var po = document.createElement('script');
+        po.type = 'text/javascript';
+        po.async = true;
+        po.src = 'https://apis.google.com/js/client:plusone.js?onload=onLoadCallback';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(po, s);
+    })();
     </script>
     <!-- endbuild -->
 </body>

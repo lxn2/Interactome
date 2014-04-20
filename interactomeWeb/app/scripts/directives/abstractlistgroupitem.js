@@ -77,7 +77,6 @@ angular.module('interactomeApp')
 
     	}],
     	template: '<li class="list-group-item">' +
-                  '<div>' +
                   '<div class="btn-group" data-toggle="buttons">' +
                     '<label class="btn btn-primary liked" ng-click="likeClick()">' +
                       '<input type="radio" name="likeBtn" > <span class="glyphicon glyphicon-thumbs-up"></span>' +
@@ -93,7 +92,6 @@ angular.module('interactomeApp')
         	        '<h4 class="list-group-item-heading" ng-bind-html="paper.Title"></h4>' +
             	    '<input type="checkbox" class="pull-right abstractChck" value="{{paper.Id}}">' +
                 	'<p class="list-group-item-text"> {{authorData}} </p>' +
-                  '</div>' +
               	'</li>',
 
       link: function ($scope, element, attrs) {
