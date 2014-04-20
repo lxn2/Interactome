@@ -97,9 +97,12 @@ app.controller('MainCtrl', function($scope, $rootScope, UserService, AwsService,
 app.controller('SearchCtrl', function($scope, $location, SearchService) {
     $scope.query = ($location.search()).search;
     $scope.results = [];
-    // once promise is made, then set the scope
+
+    //Setup a request to solr via EC2. I grabbed this code from 
+    //http://www.opensourceconnections.com/2013/08/11/creating-a-search-html-element-with-angularjs/
+    
     $.ajax({
-        url: "http://ec2-54-201-190-162.us-west-2.compute.amazonaws.com/solr/select",
+        url: "http://ec2-54-201-190-162.us-west-2.compute.amazonaws.com:8983/solr/select",
         data: {
             "q": $scope.query,
             "wt": "json",
@@ -115,17 +118,10 @@ app.controller('SearchCtrl', function($scope, $location, SearchService) {
             $scope.$apply(function () {
                 $scope.results = data.response.docs;
             });
-            
-            for(var i = 0; i < $scope.results.length; i++)
-                console.log($scope.results[i].id);
         },
         jsonp: 'json.wrf'
     }); 
 
-
-    //SearchService.showResults(institution).then(function(userData) {
-      //  $scope.institutions.push.apply($scope.institutions, userData);
-    //});
 
 });
 
