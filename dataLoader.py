@@ -181,10 +181,10 @@ def addUsers(excelFileName):
                     paperItem = papersTable.get_item(Id=dynamoPaperId)
                     if('Authors' in paperItem):
                         authorCopy = paperItem['Authors']
-                        authorCopy.add(userId)
+                        authorCopy += "," + userId
                         paperItem['Authors'] = authorCopy
                     else:
-                        paperItem['Authors'] = set([userId])
+                        paperItem['Authors'] = userId
                     paperItem.save()
                 else:
                     logging.error("Unable to find dynamopaperid. Index not added: " + str(rowIndex))
