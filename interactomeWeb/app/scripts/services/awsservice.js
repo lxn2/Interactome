@@ -275,7 +275,7 @@ app.provider('AwsService', function() {
                                 Id: data.Items[i].Id.S,
                                 Link: data.Items[i].Link.S,
                                 Title: data.Items[i].Title.S,
-                                Authors: data.Items[i].Authors.SS
+                                Authors: (data.Items[i].Authors.S).split(',')
                             });
 
                         }
