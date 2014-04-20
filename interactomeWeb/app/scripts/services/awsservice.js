@@ -297,7 +297,7 @@ app.provider('AwsService', function() {
                     RequestItems:
                     {
                         User: {
-                            AttributesToGet: ['FirstName','LastName'],
+                            AttributesToGet: ['Id','FirstName','LastName'],
                             Keys: []
                         }
                     }
@@ -314,6 +314,7 @@ app.provider('AwsService', function() {
                     } else{
                         for (var i = 0; i < data.Responses.User.length; i++) {
                             names.push({ 
+                                Id: data.Responses.User[i].Id.S,
                                 FirstName: data.Responses.User[i].FirstName.S, 
                                 LastName: data.Responses.User[i].LastName.S});
                         }
