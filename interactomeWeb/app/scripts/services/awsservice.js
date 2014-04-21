@@ -20,19 +20,17 @@ app.provider('AwsService', function() {
         if (region) AWS.config.region = region;
     }
 
-    self.$get = function($q, $cacheFactory, $http, $rootScope) {
-        var _TOKENBROADCAST = 'tokenSet@AwsService';
+    self.$get = function($q, $cacheFactory, $http) {
         var credentialsDefer = $q.defer();
         var credentialsPromise = credentialsDefer.promise;
         var DynamoTopics = [];
         var _SNSTopics = {};
         return {
 
-            // Simple getters / constants
+            // Use for this thread: AwsService.credentials().then...
             credentials: function() {
                 return credentialsPromise;
             },
-            tokenSetBroadcast: _TOKENBROADCAST,
 
             setToken: function(token) {
                 var config = {
@@ -43,15 +41,10 @@ app.provider('AwsService', function() {
                 }
 
                 self.config = config;
-                AWS.config.credentials =
-                    new AWS.WebIdentityCredentials(config);
-                credentialsDefer
-                    .resolve(AWS.config.credentials);
+                AWS.config.credentials = new AWS.WebIdentityCredentials(config);
+                credentialsDefer.resolve(AWS.config.credentials);
 
-
-                // Let anyone listening that AWS resources can now be used
                 self._lastEvalKey = null;
-                $rootScope.$broadcast(_TOKENBROADCAST);
             }, // end of setToken func 
 
             // Gets topics from dynamo table, currently paper Id's
@@ -331,7 +324,7 @@ app.provider('AwsService', function() {
                     RequestItems:
                     {
                         User: {
-                            AttributesToGet: ['FirstName','LastName'],
+                            AttributesToGet: ['Id','FirstName','LastName'],
                             Keys: []
                         }
                     }
@@ -348,6 +341,7 @@ app.provider('AwsService', function() {
                     } else{
                         for (var i = 0; i < data.Responses.User.length; i++) {
                             names.push({ 
+                                Id: data.Responses.User[i].Id.S,
                                 FirstName: data.Responses.User[i].FirstName.S, 
                                 LastName: data.Responses.User[i].LastName.S});
                         }
