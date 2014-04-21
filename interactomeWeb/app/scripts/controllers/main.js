@@ -163,7 +163,6 @@ app.controller('HeaderCtrl', function($scope, $rootScope, $location, UserService
         var curLength = $scope.userTopics.length;
         while(i < curLength) { // find the correct element
             if ($scope.userTopics[i].Name == topicname) {
-                console.log($scope.userTopics[i].Name);
                 break;
             }
             else{
@@ -176,7 +175,6 @@ app.controller('HeaderCtrl', function($scope, $rootScope, $location, UserService
         else {
             returnVal = false;
         }
-        console.log(returnVal);
         return returnVal;
     };
 
