@@ -25,12 +25,19 @@ angular.module('interactomeApp')
       		};
 
           $scope.getNames = function() {
-            var temp = ""
+            var temp = "";
             AwsService.getBatchUser($scope.paper.Authors).then(function(names) {
-              for(var i = 0; i < names.length; i++){
-                temp += (names[i].FirstName + " " + names[i].LastName + ", ");
+              // Ensure the correct order by adding one at a time to the string to display
+              // Authors will be in order and we can't trust AWS to give us the correct order.
+              for(var j = 0; j < $scope.paper.Authors.length; j++) {
+                for(var i = 0; i < names.length; i++) {
+
+                  if ($scope.paper.Authors[j] == names[i].Id) {
+                    temp += (names[i].FirstName + " " + names[i].LastName + ", ");
+                  }
+                }
               }
-               $scope.authorData = temp.slice(0, -2);
+              $scope.authorData = temp.slice(0, -2);
             });
           };
 
