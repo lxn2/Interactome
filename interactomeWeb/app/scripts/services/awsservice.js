@@ -347,197 +347,85 @@ app.provider('AwsService', function() {
             
             updateDynamoPref: function(paperId, liked, username) {
                 var recLikesTable = new AWS.DynamoDB({
+                    params: { TableName: 'Recommendation_Likes' }
+                });
+                // Used for the hashkey in the table
+                var key = {
+                        "User": { "S": username },
+                        "Context": { "S": 'GeneralThread' }
+                };
+             
+                var addAttr;
+                var removeAttr;
+                if (liked) {
+                    addAttr = "Likes";
+                    removeAttr = "Dislikes";
+                } else {
+                    addAttr = "Dislikes";
+                    removeAttr = "Likes";
+                }
+
+                // Update the SS for the add column(attribute)
+                var updateAdd = {
+                    Key: key,
+                    AttributeUpdates: {}
+                };
+                updateAdd.AttributeUpdates[addAttr] = {
+                    "Action": "ADD",
+                    "Value": { "SS": [paperId] }
+                }
+
+                // Update the SS for the remove column(attribute)
+                var updateRemove = {
+                    Key: key,
+                    AttributeUpdates: {}
+                };
+                updateRemove.AttributeUpdates[removeAttr] = {
+                    "Action": "DELETE",
+                    "Value": { "SS": [paperId] }
+                }
+
+                // Removes paperId from removeAttr SS if dynamo finds it.
+                recLikesTable.updateItem(updateRemove, function(err, data){
+                    if(err)
+                        console.log(err);
+                });
+
+                // Adds paperId to opposite SS
+                recLikesTable.updateItem(updateAdd, function(err, data) {
+                    if(err)
+                        console.log(err);
+                });
+            }, // end of dynamoPref
+            getDynamoPref: function(username) {
+                var defered = $q.defer();
+
+                var prefTable = new AWS.DynamoDB({
                     params: {
                         TableName: 'Recommendation_Likes'
                     }
                 });
 
-                //To hold the bool to determine if abstract exists in the opposite attribute (Likes/Dislikes)
-                var exists;
-
-                if (liked) {
-                    // To hold get parameters
-                    var getParams = {
-                        AttributesToGet: [
-                        'Dislikes'
-                        ],
-                        Key: {
-                            "User": {
-                                "S": username
-                            },
-                            "Context": {
-                                "S": 'GeneralThread'
-                            }
-                        }
-                    }
-
-                    // For adding abstract to Likes
-                    var updateAdd = {
-                        Key: {
-                            "User": {
-                                "S": username
-                            },
-                            "Context": {
-                                "S": 'GeneralThread'
-                            }
+                var getParams = {
+                    Key: {
+                        "User": {
+                            "S": username
                         },
-                        AttributeUpdates: {
-                            "Likes": {
-                                "Action": "ADD",
-                                "Value": {
-                                    "SS": [paperId]
-                                }
-                            }
+                        "Context": {
+                            "S": 'GeneralThread'
                         }
                     }
-
-                    // For removing abstract from Dislikes 
-                    var updateRemove = {
-                        Key: {
-                            "User": {
-                                "S": username
-                            },
-                            "Context": {
-                                "S": 'GeneralThread'
-                            }
-                        },
-                        AttributeUpdates: {
-                            "Dislikes": {
-                                "Action": "DELETE",
-                                "Value": {
-                                    "SS": [paperId]
-                                }
-                            }
-                        }
-                    }
-
-                    // Function returns true if it found the Id in Dislikes
-                    exists = recLikesTable.getItem(getParams, function(err, data){
-                        if (err)
-                            console.log("Error: " + err);
-                        else {
-                            var i = 0;
-                            console.log(data.Item.Dislikes.SS)
-                            while(i < data.Item.Dislikes.SS.length && paperId != data.Item.Dislikes.SS[i])
-                                i++;
-                            if(i < data.Item.Dislikes.SS.length){
-                                console.log("It's in Dislikes!");
-                                exists = true;      
-                            }
-                        }
-                        return exists;
-                    });
-
-                    // If found remove from Dislikes
-                    if(exists){
-                        recLikesTable.updateItem(updateRemove, function(err, data){
-                            if(err)
-                                console.log(err);
-                            else
-                                console.log(paperId + " was removed!");
-                        });
-                    }
-
-                    // Add Id to Likes
-                    recLikesTable.updateItem(updateAdd, function(err, data){
-                        if(err)
-                            console.log(err);
-                        else
-                            console.log(paperId + " was added!");
-                    });
-
-                } else {
-                    // almost identical to likes
-                    var getParams = {
-                        AttributesToGet: [
-                        'Likes'
-                        ],
-                        Key: {
-                            "User": {
-                                "S": username
-                            },
-                            "Context": {
-                                "S": 'GeneralThread'
-                            }
-                        }
-                    }
-
-                    var updateAdd = {
-                        Key: {
-                            "User": {
-                                "S": username
-                            },
-                            "Context": {
-                                "S": 'GeneralThread'
-                            }
-                        },
-                        AttributeUpdates: {
-                            "Dislikes": {
-                                "Action": "ADD",
-                                "Value": {
-                                    "SS": [paperId]
-                                }
-                            }
-                        }
-                    }
-
-                    var updateRemove = {
-                        Key: {
-                            "User": {
-                                "S": username
-                            },
-                            "Context": {
-                                "S": 'GeneralThread'
-                            }
-                        },
-                        AttributeUpdates: {
-                            "Likes": {
-                                "Action": 'DELETE',
-                                "Value": {
-                                    "SS": [paperId]
-                                }
-                            }
-                        }
-                    }
-                    exists = recLikesTable.getItem(getParams, function(err, data){
-                        if (err)
-                            console.log("Error: " + err);
-                        else {
-                            var i = 0;
-                            while(i < data.Item.Likes.SS.length && paperId != data.Item.Likes.SS[i])
-                                i++;
-                            if(i < data.Item.Likes.SS.length){
-                                console.log( paperId + " is in Likes!");
-                                exists = true;      
-                            }
-                        }
-                        return exists;
-                    });
-
-                    console.log(exists);
-
-                    if(exists){
-                        recLikesTable.updateItem(updateRemove, function(err, data){
-                            if(err)
-                                console.log(err);
-                            else{
-                                console.log(paperId + " was removed!");
-                                console.log(data);
-                            }
-                        });
-                    }
-
-                    recLikesTable.updateItem(updateAdd, function(err, data){
-                        if(err)
-                            console.log(err);
-                        else
-                            console.log(paperId + " was added!");
-                    });
                 }
+                
+                prefTable.getItem(getParams, function(err, data){
+                    if(err)
+                        console.log(err);
+                    else
+                        defered.resolve(data);
+                });
 
+                return defered.promise;
             }
-
-
 
         } // end of return 
     }
@@ -594,15 +482,3 @@ app.factory('SearchService', function($q) {
     };
 });
 
-
-
-
-
-
-
-
-/* Yo build came with this, commented it out. 
-.service('Awsservice', function Awsservice() {
-    // AngularJS will instantiate a singleton by calling "new" on this function
-});
-*/
