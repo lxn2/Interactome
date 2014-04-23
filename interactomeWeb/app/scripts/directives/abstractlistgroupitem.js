@@ -82,6 +82,12 @@ angular.module('interactomeApp')
             }
           };
 
+          $scope.bookmark = function() {
+            $scope.onBookmark({
+              abId: $scope.
+            })
+          }
+
     	}],
     	template: '<li class="list-group-item">' +
                   '<div class="btn-group" data-toggle="buttons">' +
@@ -94,6 +100,9 @@ angular.module('interactomeApp')
                   '</div>' +
                   '<button type="button" class="btn btn-primary" name="viewBtn" ng-click="viewAbstract()">' +
                       '<span class="glyphicon glyphicon-search"></span>' +
+                  '</button>' +
+                  '<button type="button" class="btn btn-primary" name="bookmarkBtn" ng-click="bookmark()">' +
+                      '<span class="glyphicon glyphicon-bookmark"></span>' +
                   '</button>' +
                   '<p>{{likeMsg}}</p>' +
         	        '<h4 class="list-group-item-heading" ng-bind-html="paper.Title"></h4>' +
