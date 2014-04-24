@@ -69,7 +69,7 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
     // Setup by using AWS credentials
     AwsService.credentials().then(function() {
         var uName = UserService.currentUsername();
-        UserService.getDynamoPref(uName).then(function(dbItem){
+        AwsService.getDynamoPref(uName).then(function(dbItem){
             for(var i = 0; i < dbItem.Item.Likes.SS.length; i++){
                 $scope.likes[i] = dbItem.Item.Likes.SS[i];
             }
