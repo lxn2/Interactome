@@ -242,7 +242,7 @@ app.provider('AwsService', function() {
                 return topicDefer.promise;
             },
 
-            saveTopicPaper: function(topcid, paperid) {
+            /*saveTopicPaper: function(topcid, paperid) {
                 var savePaperDefer = $q.defer();
                 var dynamodb = new AWS.DynamoDB();
 
@@ -272,7 +272,7 @@ app.provider('AwsService', function() {
                         savePaperDefer.resolve();
                     }
                 })
-            },
+            },*/
 
             // Gets the next limit number of papers from dynamo
             // This will eventually be done using the rec service (instead of scanning)

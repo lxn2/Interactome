@@ -81,13 +81,6 @@ angular.module('interactomeApp')
                 abText: $scope.s3Data.Abstract});
             }
           };
-
-          $scope.bookmark = function() {
-            $scope.onBookmark({
-              abId: $scope.
-            })
-          }
-
     	}],
     	template: '<li class="list-group-item">' +
                   '<div class="btn-group" data-toggle="buttons">' +
@@ -101,9 +94,6 @@ angular.module('interactomeApp')
                   '<button type="button" class="btn btn-primary" name="viewBtn" ng-click="viewAbstract()">' +
                       '<span class="glyphicon glyphicon-search"></span>' +
                   '</button>' +
-                  '<button type="button" class="btn btn-primary" name="bookmarkBtn" ng-click="bookmark()">' +
-                      '<span class="glyphicon glyphicon-bookmark"></span>' +
-                  '</button>' +
                   '<p>{{likeMsg}}</p>' +
         	        '<h4 class="list-group-item-heading" ng-bind-html="paper.Title"></h4>' +
             	    '<input type="checkbox" class="pull-right abstractChck" value="{{paper.Id}}">' +
@@ -112,7 +102,8 @@ angular.module('interactomeApp')
 
       link: function ($scope, element, attrs) {
         $scope.getNames();
-
+        element.draggable({revert: true, appendTo: 'body', helper: 'clone', zIndex: 5000})
+          .data("abId", $scope.paper.Id);
         // Changed scope variable to $scope to allow me to access likes and dislikes
 
         for(var i = 0; i < $scope.likes.length; i++){

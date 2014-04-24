@@ -7,6 +7,7 @@ angular.module('interactomeApp')
   .directive('topicPanelItem', function () {
     return {	
       	restrict: 'E',
+        replace: true,
       	scope: {      	
           localDeleteTopic: '&delete',
       		topicName: '@',
@@ -41,6 +42,10 @@ angular.module('interactomeApp')
                 alert(reason);
               });
             }
+          },
+
+          $scope.addPaper = function(paperid) {
+            console.log("in addPaper", paperid);
           }
     	}],
     	template: '<div class="accordion-group topic-accordion-size">' + 
@@ -74,6 +79,15 @@ angular.module('interactomeApp')
         else {
           scope.scopePapersList.sort();
         }
+
+        element.droppable(
+        {
+          drop: function(event, ui) {
+            scope.addPaper($(ui.draggable).data("abId"));
+            console.log($(ui.draggable).data("abId"));}, ///angular.element(ui.draggable)
+          hoverClass: "ui-state-hover", 
+
+        });// http://codepen.io/m-e-conroy/pen/gwbqG shows that all I really had to add was replace!
       }
     };
-  });
+  }); 
