@@ -132,19 +132,24 @@ app.controller('HeaderCtrl', function($scope, $location, UserService, AwsService
         var username = UserService.currentUsername();
         var newTopic = {Name: $scope.newTopic};
         var scope = $scope;
-        AwsService.addTopic(username, $scope.newTopic).then(
-            function(topicId) {
-                newTopic.Id = topicId;
-                scope.userTopics.push(newTopic);
-                scope.userTopics.sort(function(a,b) {
-                    return (a['Name'].localeCompare(b['Name'], 'kn', {numeric: true, caseFirst: "lower", usage: "sort"}) >= 0);
-                });
-                console.log(scope.userTopics);
-            }, 
-            function(reason) {
-                alert(reason);
-            }
-        );
+        if($scope.newTopic == "" || $scope.newTopic === null) {
+            alert("Topic name must not be empty");
+        }
+        else{
+            AwsService.addTopic(username, $scope.newTopic).then(
+                function(topicId) {
+                    newTopic.Id = topicId;
+                    scope.userTopics.push(newTopic);
+                    scope.userTopics.sort(function(a,b) {
+                        return (a['Name'].localeCompare(b['Name'], 'kn', {numeric: true, caseFirst: "lower", usage: "sort"}) >= 0);
+                    });
+                    console.log(scope.userTopics);
+                }, 
+                function(reason) {
+                    alert(reason);
+                }
+            );
+        }
         // reset to null
         $scope.newTopic = null;
     };
