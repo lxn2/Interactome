@@ -39,37 +39,8 @@ angular.module('interactomeApp.Userservice', [])
 
         currentUsername: function () {
             return service._username; 
-        },
-
-        getDynamoPref: function(username) {
-            var defered = $q.defer();
-
-            var prefTable = new AWS.DynamoDB({
-                params: {
-                    TableName: 'Recommendation_Likes'
-                }
-            });
-
-            var getParams = {
-                Key: {
-                    "User": {
-                        "S": username
-                    },
-                    "Context": {
-                        "S": 'GeneralThread'
-                    }
-                }
-            }
-            
-            prefTable.getItem(getParams, function(err, data){
-                if(err)
-                    console.log(err);
-                else
-                    defered.resolve(data);
-            });
-
-            return defered.promise;
         }
+        
     };
     return service;
 });
