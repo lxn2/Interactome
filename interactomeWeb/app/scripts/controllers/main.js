@@ -132,7 +132,7 @@ app.controller('HeaderCtrl', function($scope, $location, UserService, AwsService
         var username = UserService.currentUsername();
         var newTopic = {Name: $scope.newTopic};
         var scope = $scope;
-        if($scope.newTopic == "" || $scope.newTopic == null) {
+        if($scope.newTopic == "" || $scope.newTopic === null) {
             alert("Topic name must not be empty");
         }
         else{
