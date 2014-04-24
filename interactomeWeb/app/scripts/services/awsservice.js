@@ -99,6 +99,7 @@ app.provider('AwsService', function() {
                 return topicDefer.promise;
             },
 
+
             deleteTopic: function(topicid) {
                 var defer = $q.defer();
                 var dynamodbB = new AWS.DynamoDB();
@@ -116,6 +117,39 @@ app.provider('AwsService', function() {
                     if (err) {
                         console.log(err, err.stack);
                         defer.reject('Could not delete topic');
+                    }
+                    else {
+                        defer.resolve();
+                    }
+                });
+                return defer.promise;
+            },
+
+            renameTopic: function(topicid, topicname) {
+                var defer = $q.defer();
+                var dynamodb = new AWS.DynamoDB();
+
+                var renameParams = {
+                    Key: {
+                        Id: {
+                            S: topicid,
+                        },
+                    },
+                    TableName: 'Topic',
+                    AttributeUpdates: {
+                        Name: {
+                            Action: 'PUT',
+                            Value: {
+                                S: topicname
+                            }
+                        },
+                    }
+
+                };
+                dynamodb.updateItem(renameParams, function(err, data) {
+                    if (err) {
+                        console.log(err, err.stack);
+                        defer.reject('Could not rename topic');
                     }
                     else {
                         defer.resolve();

@@ -147,7 +147,44 @@ app.controller('HeaderCtrl', function($scope, $location, UserService, AwsService
         );
         // reset to null
         $scope.newTopic = null;
-    }
+    };
+
+    $scope.hasTopicName = function(topicname) {
+        var returnVal = true;
+        var i = 0;
+        var curLength = $scope.userTopics.length;
+        while(i < curLength) { // find the correct element
+            if ($scope.userTopics[i].Name == topicname) {
+                break;
+            }
+            else{
+                i++;
+            }
+        }
+        if (i < curLength) {// return true if element found
+            returnVal = true;
+        }
+        else {
+            returnVal = false;
+        }
+        return returnVal;
+    };
+
+    $scope.renameTopic = function(topicid, topicname) {
+        var i = 0;
+        var curLength = $scope.userTopics.length;
+        while(i < curLength) { // find the correct element
+            if ($scope.userTopics[i].Id == topicid) {
+                break;
+            }
+            else{
+                i++;
+            }
+        }
+        if (i < curLength) {// delete element if found
+            $scope.userTopics[i].Name = topicname;
+        }
+    };
 
     $scope.deleteTopic = function(topicid) {
         var i = 0;
