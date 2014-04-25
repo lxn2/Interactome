@@ -1,0 +1,16 @@
+<li class="list-group-item">
+    <div class="btn-group" data-toggle="buttons">
+        <label class="btn btn-primary" ng-class="{active: likeStatus}" ng-click="likeClick()">
+            <input type="radio" name="likeBtn" > <span class="glyphicon glyphicon-thumbs-up"></span>
+        </label>
+        <label class="btn btn-primary" ng-class="{active: likeStatus == false}"  ng-click="dislikeClick()">
+            <input type="radio" name="dislikeBtn" > <span class="glyphicon glyphicon-thumbs-down"></span>
+        </label>
+    </div>
+    <button type="button" class="btn btn-primary" name="viewBtn" ng-click="viewAbstract()">
+        <span class="glyphicon glyphicon-search"></span>
+    </button>
+    <h4 class="list-group-item-heading" ng-bind-html="paper.Title"></h4>
+    <input type="checkbox" class="pull-right abstractChck" value="{{paper.Id}}">
+    <p class="list-group-item-text"> {{authorData}} </p>
+</li>
