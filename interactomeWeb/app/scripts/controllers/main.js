@@ -97,6 +97,7 @@ app.controller('SearchCtrl', function($scope, $location, SearchService) {
         url: "http://ec2-54-201-190-162.us-west-2.compute.amazonaws.com:8983/solr/select",
         data: {
             "q": $scope.query,
+            "qf": "title", "text",
             "wt": "json",
             "rows":100
         },
