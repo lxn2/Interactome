@@ -10,6 +10,7 @@ angular.module('interactomeApp')
         replace: true,
       	scope: {      	
           localDeleteTopic: '&delete',
+          localAddPaper: '&addPaper',
       		topicName: '@',
           itemId: '@',
           papersList: '@'
@@ -45,7 +46,18 @@ angular.module('interactomeApp')
           },
 
           $scope.addPaper = function(paperid) {
-            console.log("in addPaper", paperid);
+            var scope = $scope;
+            AwsService.saveTopicPaper($scope.itemId, paperid).then(function() {
+              scope.localAddPaper({topicId: scope.itemId, paperId: paperid}); // update in parent scope
+              if(scope.scopePapersList[0] == scope.placeHolder) { // update for directive view
+                scope.scopePapersList = [paperid];
+              }
+              else {
+                scope.scopePapersList.push(paperid);
+              }
+            }, function(reason) {
+              alert(reason);
+            });
           }
     	}],
     	template: '<div class="accordion-group topic-accordion-size">' + 
@@ -73,6 +85,7 @@ angular.module('interactomeApp')
         scope.topicName = attrs.topicName;
         scope.itemId = attrs.itemId;
         scope.scopePapersList = ((attrs.papersList).replace(/['"\[\]]/gi,'')).split(','); // removes quotations and brackets, converts string into array
+        console.log('reload topics', scope.scopePapersList);
         if(scope.scopePapersList.length == 1 && scope.scopePapersList[0] == "") { // inserts a message if no abstracts
           scope.scopePapersList = [scope.placeHolder];
         }

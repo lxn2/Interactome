@@ -139,7 +139,6 @@ app.controller('HeaderCtrl', function($scope, $location, UserService, AwsService
                 scope.userTopics.sort(function(a,b) {
                     return (a['Name'].localeCompare(b['Name'], 'kn', {numeric: true, caseFirst: "lower", usage: "sort"}) >= 0);
                 });
-                console.log(scope.userTopics);
             }, 
             function(reason) {
                 alert(reason);
@@ -162,6 +161,35 @@ app.controller('HeaderCtrl', function($scope, $location, UserService, AwsService
         }
         if (i < curLength) {// delete element if found
             $scope.userTopics.splice(i, 1);
+        }
+    }
+
+    $scope.savePaper = function(topicid, paperid) {
+        var i = 0;
+        var tCurLength = $scope.userTopics.length;
+        for(i = 0; i < tCurLength; i++) {
+            if ($scope.userTopics[i].Id == topicid) {
+                break;
+            }
+        }
+        if (i < tCurLength) {
+            if('PapersList' in $scope.userTopics[i]) {
+                var hasPaper = false, pCurLength = $scope.userTopics[i].PapersList;
+                for(var j = 0; j < pCurLength; j++) {
+                    if($scope.userTopics[i].PapersList[j] == paperid) {
+                        hasPaper = true;
+                        break;
+                    }
+                }
+                if(!hasPaper) {
+                    $scope.userTopics[i].PapersList.push(paperid).apply();
+                    console.log('adding', paperid);
+                }
+            }
+            else {
+                $scope.userTopics[i].PapersList = [paperid];
+                console.log('new array, adding', $scope.userTopics[i]);
+            }
         }
     }
 });

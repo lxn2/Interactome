@@ -242,18 +242,18 @@ app.provider('AwsService', function() {
                 return topicDefer.promise;
             },
 
-            /*saveTopicPaper: function(topcid, paperid) {
+            saveTopicPaper: function(topicid, paperid) {
                 var savePaperDefer = $q.defer();
                 var dynamodb = new AWS.DynamoDB();
 
                 var updateParams = {
                     Key: {
                         Id: {
-                            S: topicid.
+                            S: topicid
                         },
                     },
                     TableName: 'Topic',
-                    AttrbuteUpdates: {
+                    AttributeUpdates: {
                         List: {
                             Action: 'ADD',
                             Value: {
@@ -261,7 +261,7 @@ app.provider('AwsService', function() {
                             }
                         }
                     }
-                }
+                };
 
                 dynamodb.updateItem(updateParams, function(err, data) {
                     if (err) {
@@ -271,8 +271,10 @@ app.provider('AwsService', function() {
                     else {
                         savePaperDefer.resolve();
                     }
-                })
-            },*/
+                });
+
+                return savePaperDefer.promise;
+            },
 
             // Gets the next limit number of papers from dynamo
             // This will eventually be done using the rec service (instead of scanning)
