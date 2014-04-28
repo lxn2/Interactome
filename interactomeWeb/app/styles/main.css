@@ -127,3 +127,9 @@ body {
   width: 400px;
   position: fixed;
 }
+
+.abstractDrag {
+  max-height: 40px;
+  text-align: center;
+  overflow: hidden;
+}

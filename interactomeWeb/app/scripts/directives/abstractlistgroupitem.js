@@ -102,8 +102,15 @@ angular.module('interactomeApp')
 
       link: function ($scope, element, attrs) {
         $scope.getNames();
-        element.draggable({revert: true, appendTo: 'body', helper: 'clone', zIndex: 5000})
-          .data("abId", $scope.paper.Id);
+        element.draggable({
+          revert: true, 
+          appendTo: 'body', 
+          zIndex: 5000, 
+          cursor: "move",
+          helper: function() {
+            return $("<div class='abstractDrag list-group-item'><span class='badge'>dragging</span>" + $scope.paper.Title.substring(0, 40) + "...</div>");//.css({border: "1px solid #CCCCCC"});;
+          }
+        }).data("abId", $scope.paper.Id);
         // Changed scope variable to $scope to allow me to access likes and dislikes
 
         for(var i = 0; i < $scope.likes.length; i++){

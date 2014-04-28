@@ -85,7 +85,6 @@ angular.module('interactomeApp')
         scope.topicName = attrs.topicName;
         scope.itemId = attrs.itemId;
         scope.scopePapersList = ((attrs.papersList).replace(/['"\[\]]/gi,'')).split(','); // removes quotations and brackets, converts string into array
-        console.log('reload topics', scope.scopePapersList);
         if(scope.scopePapersList.length == 1 && scope.scopePapersList[0] == "") { // inserts a message if no abstracts
           scope.scopePapersList = [scope.placeHolder];
         }
@@ -98,7 +97,7 @@ angular.module('interactomeApp')
           drop: function(event, ui) {
             scope.addPaper($(ui.draggable).data("abId"));
             console.log($(ui.draggable).data("abId"));}, ///angular.element(ui.draggable)
-          hoverClass: "ui-state-hover", 
+          hoverClass: "ui-state-highlight", 
 
         });// http://codepen.io/m-e-conroy/pen/gwbqG shows that all I really had to add was replace!
       }
