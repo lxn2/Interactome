@@ -19,7 +19,7 @@ angular.module('interactomeApp')
           $scope.scopePapersList = [];
           $scope.placeHolder = 'No abstracts added';
 
-
+          // delete this topic
           $scope.delete = function() {
             var scope = $scope;
             if($scope.scopePapersList.length > 1 || $scope.scopePapersList.length == 1 && $scope.scopePapersList[0] != $scope.placeHolder) { // contains saved papers
@@ -47,14 +47,44 @@ angular.module('interactomeApp')
 
           $scope.addPaper = function(paperid) {
             var scope = $scope;
-            AwsService.saveTopicPaper($scope.itemId, paperid).then(function() {
-              scope.localAddPaper({topicId: scope.itemId, paperId: paperid}); // update in parent scope
-              if(scope.scopePapersList[0] == scope.placeHolder) { // update for directive view
-                scope.scopePapersList = [paperid];
+            var exists = false;
+
+            // check if already added
+            var curLength = scope.scopePapersList.length;
+            var i = 0;
+            for(i = 0; i < curLength; i++) {
+              if (scope.scopePapersList[i] == paperid) {
+                exists = true;
+                break;
               }
-              else {
-                scope.scopePapersList.push(paperid);
+            }
+            if(!exists) {
+              AwsService.saveTopicPaper($scope.itemId, paperid).then(function() {
+                scope.localAddPaper({topicId: scope.itemId, paperId: paperid}); // update in parent scope
+                if(scope.scopePapersList[0] == scope.placeHolder) { // update for directive view
+                  scope.scopePapersList = [paperid];
+                }
+                else {
+                  scope.scopePapersList.push(paperid);
+                }
+              }, function(reason) {
+                alert(reason);
+              });
+            }
+          },
+
+          $scope.deletePaper = function(paperid, index) {
+            var scope = $scope;
+            AwsService.deleteTopicPaper($scope.itemId, paperid).then(function() {
+              //scope.localDeletePaper();
+              var curLength = scope.scopePapersList.length;
+              if(curLength == 1) { // this is the only saved paper
+                scope.scopePapersList[0] = scope.placeHolder
               }
+              else { 
+                scope.scopePapersList.splice(index, 1);
+              }
+
             }, function(reason) {
               alert(reason);
             });
@@ -76,6 +106,7 @@ angular.module('interactomeApp')
                     '<div class="accordion-inner">' +
                       '<li ng-repeat="paper in scopePapersList track by $index">' + // track by $index solves ng-repeat duplicate error: http://stackoverflow.com/questions/16296670/angular-ng-repeat-error-duplicates-in-a-repeater-are-not-allowed
                         '{{paper}}' +
+                        '<button type="button" class="close" aria-hidden="true" alt="delete" title="delete" ng-click="deletePaper(paper, $index)">&times;</button>' +
                       '</li>' +
                     '</div>' +
                   '</div>' +

@@ -182,7 +182,7 @@ app.controller('HeaderCtrl', function($scope, $location, UserService, AwsService
                     }
                 }
                 if(!hasPaper) {
-                    $scope.userTopics[i].PapersList.push(paperid).apply();
+                    $scope.userTopics[i].PapersList.push(paperid);
                     console.log('adding', paperid);
                 }
             }
