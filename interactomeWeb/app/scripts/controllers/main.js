@@ -20,8 +20,8 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
     $scope.maxSize = 5;
     $scope.filteredPapers = [];
 
-    $scope.likes = [];
-    $scope.dislikes = [];
+    // Hash for like status, true == liked and false == disliked. Not in the hash means neither.
+    $scope.paperLikeStatus = {};
 
 
     $scope.$watch('currentPage + numPerPage + papers', function() {
@@ -69,12 +69,13 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
     // Setup by using AWS credentials
     AwsService.credentials().then(function() {
         var uName = UserService.currentUsername();
-        UserService.getDynamoPref(uName).then(function(dbItem){
-            for(var i = 0; i < dbItem.Item.Likes.SS.length; i++){
-                $scope.likes[i] = dbItem.Item.Likes.SS[i];
+        AwsService.getDynamoPref(uName).then(function(dbItem) {
+
+            for(var i = 0; i < dbItem.Item.Likes.SS.length; i++) {
+                $scope.paperLikeStatus[dbItem.Item.Likes.SS[i]] = true;
             }
-            for(var i = 0; i < dbItem.Item.Dislikes.SS.length; i++){
-                $scope.dislikes[i] = dbItem.Item.Dislikes.SS[i];
+            for(var i = 0; i < dbItem.Item.Dislikes.SS.length; i++) {
+                $scope.paperLikeStatus[dbItem.Item.Dislikes.SS[i]] = false;
             }
 
             AwsService.getPapers(100).then(function(paperList) {

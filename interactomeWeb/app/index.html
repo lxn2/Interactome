@@ -80,8 +80,7 @@
                                     <input type="submit" id="submit" value="Add" />
                                 </form>
                                 <div ng-repeat="topic in userTopics">
-                                    <!--<topic-panel-item topic-name={{topic['Name']}} item-id={{topic['Id']}} papers-list={{topic['PapersList']}}  delete="deleteTopic(topicId)" add-paper="savePaper(topicId, paperId)"></topic-panel-item>-->
-                                    <topic-panel-item topic-name={{topic.Name}} item-id={{topic.Id}} papers-list={{topic.PapersList}}  delete="deleteTopic(topicId)" add-paper="savePaper(topicId, paperId)"></topic-panel-item>
+                                    <topic-panel-item topic-name={{topic.Name}} item-id={{topic.Id}} papers-list={{topic.PapersList}} check-topic="hasTopicName(topicName)" rename-topic="renameTopic(topicId, topicName)" delete="deleteTopic(topicId)" add-paper="savePaper(topicId, paperId)"></topic-panel-item>
                                 </div>
                             </div>
                         </div>
@@ -117,6 +116,8 @@
     <!-- Manually added (changes here will stay) -->
     <script src="scripts/app.js"></script>
     <script src="scripts/controllers/main.js"></script>
+    <script src="scripts/controllers/search.js"></script>
+    <script src="scripts/controllers/header.js"></script>
     <script src="scripts/directives/googlesignin.js"></script>
     <script src="scripts/services/userservice.js"></script>
     <script src="scripts/services/awsservice.js"></script>
@@ -141,6 +142,7 @@
         s.parentNode.insertBefore(po, s);
     })();
     </script>
+    
     <!-- endbuild -->
 </body>
 

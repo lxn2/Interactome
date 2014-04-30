@@ -20,7 +20,7 @@
 <!-- see main.js and abstractlistgroupitem.js -->
 <ul id="abstracts" class="list-group">
     <div ng-repeat="paper in filteredPapers">
-        <abstract-list-group-item paper="paper" likes="likes" dislikes="dislikes" on-view="showAbstract(abTitle, abAuthor, abText)"></abstract-list-group-item>
+        <abstract-list-group-item paper="paper" like-status="paperLikeStatus[paper.Id]" on-view="showAbstract(abTitle, abAuthor, abText)"></abstract-list-group-item>
     </div>
 </ul>
 
