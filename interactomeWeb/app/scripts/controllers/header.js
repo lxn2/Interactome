@@ -49,7 +49,6 @@ angular.module('interactomeApp')
                     scope.userTopics.sort(function(a,b) {
                         return (a['Name'].localeCompare(b['Name'], 'kn', {numeric: true, caseFirst: "lower", usage: "sort"}) >= 0);
                     });
-                    console.log(scope.userTopics);
                 }, 
                 function(reason) {
                     alert(reason);
@@ -110,6 +109,54 @@ angular.module('interactomeApp')
         }
         if (i < curLength) {// delete element if found
             $scope.userTopics.splice(i, 1);
+        }
+    };
+
+     $scope.savePaper = function(topicid, paperid) {
+        var i = 0;
+        var tCurLength = $scope.userTopics.length;
+        for(i = 0; i < tCurLength; i++) { // find the topic
+            if ($scope.userTopics[i].Id == topicid) {
+                break;
+            }
+        }
+        if (i < tCurLength) { // found the right topic 
+            if('PapersList' in $scope.userTopics[i]) { // check if topic has list of papers 
+                var hasPaper = false, pCurLength = $scope.userTopics[i].PapersList;
+                for(var j = 0; j < pCurLength; j++) { // search for paper 
+                    if($scope.userTopics[i].PapersList[j] == paperid) {
+                        hasPaper = true;
+                        break;
+                    }
+                }
+                if(!hasPaper) { // does not have paper 
+                    $scope.userTopics[i].PapersList.push(paperid);
+                }
+            }
+            else { // no list of papers yet 
+                $scope.userTopics[i].PapersList = [paperid];
+            }
+        }
+    }
+
+    $scope.deletePaper = function(topicid, paperid) {
+        var i = 0;
+        var tCurLength = $scope.userTopics.length;
+        for(i = 0; i < tCurLength; i++) { // find the topic
+            if ($scope.userTopics[i].Id == topicid) {
+                break;
+            }
+        }
+        if(i < tCurLength) { // found topic
+            if('PapersList' in $scope.userTopics[i]) { // check if topic has list of papers
+                var pCurLength = $scope.userTopics[i].PapersList.length;
+                for(var j = 0; j < pCurLength; j++) {
+                    if($scope.userTopics[i].PapersList[j] == paperid) { // found paper, delete
+                        $scope.userTopics[i].PapersList.splice(j, 1);
+                        break;
+                    }
+                }
+            }
         }
     }
 });

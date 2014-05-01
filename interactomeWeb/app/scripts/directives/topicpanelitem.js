@@ -14,6 +14,7 @@ angular.module('interactomeApp')
           localRenameTopic: '&renameTopic',
           localDeleteTopic: '&delete',
           localAddPaper: '&addPaper',
+          localDeletePaper: '&deletePaper',
       		topicName: '@',
           itemId: '@',
           papersList: '@'
@@ -40,7 +41,7 @@ angular.module('interactomeApp')
             if(!$scope.localCheckTopic({topicName: $scope.editableValue})) { // check if topicname already exists
               AwsService.renameTopic($scope.itemId, $scope.editableValue).then(function() { // updateItem
                 $scope.topicName = $scope.editableValue; // change view
-                $scope.localRenameTopic({topicId: $scope.itemId, topicName: $scope.editableValue});
+                $scope.localRenameTopic({topicId: $scope.itemId, topicName: $scope.editableValue}); // save in parent scope
                 $scope.disableEdit();
               }, function(reason) {
                 alert(reason);
@@ -55,6 +56,7 @@ angular.module('interactomeApp')
           // delete a topic
           $scope.delete = function() {
             var scope = $scope;
+            $scope.localDeleteTopic({topicId: scope.itemId});
             if($scope.scopePapersList.length > 1 || $scope.scopePapersList.length == 1 && $scope.scopePapersList[0] != $scope.placeHolder) { // contains saved papers
 
               var al = 'There are ' + $scope.scopePapersList.length + ' abstracts in "' + $scope.topicName +
@@ -62,16 +64,16 @@ angular.module('interactomeApp')
 
               var confirmation = confirm(al);
               if (confirmation == true) {
-                AwsService.deleteTopic($scope.itemId).then(function() {
-                  scope.localDeleteTopic({topicId: scope.itemId});
+                AwsService.deleteTopic($scope.itemId).then(function() { // delete in dynamo
+                  scope.localDeleteTopic({topicId: scope.itemId}); // delete in parent scope
                 }, function(reason) {
                   alert(reason);
                 });
               }
             }
             else { // no papers
-              AwsService.deleteTopic($scope.itemId).then(function() {
-                scope.localDeleteTopic({topicId: scope.itemId});
+              AwsService.deleteTopic($scope.itemId).then(function() {// delete in dynamo
+                scope.localDeleteTopic({topicId: scope.itemId}); // delete in parent scope
               }, function(reason) {
                 alert(reason);
               });
@@ -85,14 +87,15 @@ angular.module('interactomeApp')
 
             var curLength = scope.scopePapersList.length;
             
-            for(var i = 0; i < curLength; i++) {
+            for(var i = 0; i < curLength; i++) { // see if paper already exists
               if (scope.scopePapersList[i] == paperid) {
                 exists = true;
                 break;
               }
             }
-            if(!exists) {
-              AwsService.saveTopicPaper($scope.itemId, paperid).then(function() {
+            if(!exists) { // found paper
+              AwsService.saveTopicPaper($scope.itemId, paperid).then(function() { // call to dynamo
+                scope.localAddPaper({topicId: scope.itemId, paperId: paperid}); // update parent scope
                 if(curLength == 0) {
                   scope.scopePapersList = [paperid];
                 }
@@ -111,59 +114,26 @@ angular.module('interactomeApp')
           // delete a paper from a topic
           $scope.deletePaper = function(paperid, index) {
             var scope = $scope;
-            AwsService.deleteTopicPaper($scope.itemId, paperid).then(function() {
+            AwsService.deleteTopicPaper($scope.itemId, paperid).then(function() { // call to dynamo
+              scope.localDeletePaper({topicId: scope.itemId, paperId: paperid}); // update in parent scope
               scope.scopePapersList.splice(index, 1);
               var curLength = scope.scopePapersList.length;
-              if(curLength == 0) { // this is the only saved paper
+              if(curLength == 0) { // this was the only saved paper
                 scope.noAbstracts = true;
               }
             }, function(reason) {
               alert(reason);
             });
-          };
+          }
+          
     	}],
-      templateUrl: 'scripts/directives/topicpanelitem.html'
-    	/*template: '<div class="accordion-group topic-accordion-size">' + 
-                  '<div ng-hide="editorEnabled">' +
-                    '<div class="accordion-heading accordion-toggle" ng-click="isOpen = !isOpen">' +
-                      '<div class="btn-group btn-group-xs">' +
-                        '<button type="button" class="btn btn-default dropdown-toggle topic-dropdown-btn" data-toggle="dropdown">' +
-                          '<span class="glyphicon glyphicon-th-list"></span>' +
-                        '</button>' +
-                        '<ul class="dropdown-menu">' +
-                          '<li ng-click="enableEdit()">Rename</li>' +
-                          '<li ng-click="delete()">Delete</li>' +
-                        '</ul>' +
-                      '</div>' +
-                      '{{topicName}}' +
-                    '</div>' +
-                    '<div class="accordion-body" collapse="!isOpen" ng-class="{smallScrollDiv:isOpen}">' +
-                      '<div ng-hide="noAbstracts" class="accordion-inner">' +
-                        '<li ng-repeat="paper in scopePapersList track by $index">' + // track by $index solves ng-repeat duplicate error: http://stackoverflow.com/questions/16296670/angular-ng-repeat-error-duplicates-in-a-repeater-are-not-allowed
-                          '{{paper}}' +
-                          '<button type="button" class="close" aria-hidden="true" alt="delete" title="delete" ng-click="deletePaper(paper, $index)">&times;</button>' +
-                        '</li>' +
-                      '</div>' +
-                      '<div ng-show="noAbstracts" class="accordion-inner">' +
-                        '{{placeHolder}}' +
-                      '</div>' +
-                    '</div>' +
-                  '</div>' +
-                  '<div ng-show="editorEnabled">' +
-                    '<div>' +
-                        '<input ng-model="editableValue">' +
-                        '<button ng-click="save()">save</button>' +
-                        '<button ng-click="disableEdit()">cancel</button>' +
-                    '</div>' +
-                  '</div>' +
-                '</div>'*/
-      ,
+      templateUrl: 'scripts/directives/topicpanelitem.html',
       link: function (scope, element, attrs) {
         scope.topicName = attrs.topicName;
         scope.itemId = attrs.itemId;
         scope.scopePapersList = ((attrs.papersList).replace(/['"\[\]]/gi,'')).split(','); // removes quotations and brackets, converts string into array
         if(scope.scopePapersList.length == 1 && scope.scopePapersList[0] == "") { // inserts a message if no abstracts
-          scope.scopePapersList = []; 
+          scope.scopePapersList = []; // first value is "", so empty the array
           scope.noAbstracts = true;
         }
         else {
