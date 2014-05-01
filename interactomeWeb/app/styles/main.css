@@ -78,7 +78,7 @@ body {
   }
 }
 
-.pagination {
+.clickable-pointer {
   cursor: pointer;
 }
 
@@ -132,4 +132,8 @@ body {
   max-height: 40px;
   text-align: center;
   overflow: hidden;
+}
+
+.abstract-selected {
+  background-color: #96EB96;
 }

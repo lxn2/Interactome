@@ -8,13 +8,13 @@ var app = angular.module('interactomeApp');
 app.controller('MainCtrl', function($scope, UserService, AwsService, RecommendationService) {
     $scope.papers = [];
 
-    $scope.absRecd = null;
     $scope.modalTitle = null;
     $scope.modalFirstName = null;
     $scope.modalLastName = null;
     $scope.modalText = null;
 
-    $scope.paginationTotalItems = 100;
+    $scope.paginationTotalItems = 0;
+    $scope.moreThanOnePage = false;
     $scope.numPerPage = 10;
     $scope.currentPage = 1;
     $scope.maxSize = 5;
@@ -22,38 +22,34 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
 
     // Hash for like status, true == liked and false == disliked. Not in the hash means neither.
     $scope.paperLikeStatus = {};
+    $scope.selectedAbstracts = [];
 
+    
 
-    $scope.$watch('currentPage + numPerPage + papers', function() {
+    $scope.paginate = function() {
         // Setting currentPage to 0 is a hack to get the recs working on page 1.
-        // $watching papers only works for having papers go from null to an array.
         if ($scope.currentPage == 0)
             $scope.currentPage = 1;
         var begin = (($scope.currentPage - 1) * $scope.numPerPage);
         var end = begin + $scope.numPerPage;
         $scope.filteredPapers = $scope.papers.slice(begin, end);
-    });
+    };
+    $scope.$watch('currentPage', $scope.paginate);
+    $scope.$watch('numPerPage', $scope.paginate);
 
     // Determines what happens after one or more abstract is selected
     $scope.abstractsRec = function() {
-        var abstractsChecked = ''
-        var absCount = 0;
-        var abstracts = []
-        $("input:checked").each(function() {
-            abstractsChecked += $(this).val() + ",";
-            $(this).click(); // uncheck it
-            absCount++;
-            abstracts.push($(this).val());
-        });
-        if (abstractsChecked != '') {
-            abstractsChecked = abstractsChecked.slice(0, -1) // Remove last comma
+        if ($scope.selectedAbstracts.length > 0) {
+            //var abstractsChecked = $scope.selectedAbstracts.join();
             //AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_req', abstractsChecked);
-            $scope.absRecd = "Number of abstracts used to get recommendations: " + absCount; // this is just to show off functionality
-            RecommendationService.getRecs(abstracts).then(function(paperList) {
+            RecommendationService.getRecs($scope.selectedAbstracts).then(function(paperList) {
+                $scope.selectedAbstracts.length = 0;
                 $scope.papers.length = 0;
                 $scope.papers.push.apply($scope.papers, paperList);
+                //Pagination
                 $scope.currentPage = 0;
                 $scope.paginationTotalItems = $scope.papers.length;
+                $scope.moreThanOnePage = ($scope.numPerPage < $scope.paginationTotalItems);
             });
         }
     };
@@ -81,6 +77,9 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
             AwsService.getPapers(100).then(function(paperList) {
                 $scope.papers.length = 0;
                 $scope.papers.push.apply($scope.papers, paperList);
+                $scope.currentPage = 0;
+                $scope.paginationTotalItems = $scope.papers.length;
+                $scope.moreThanOnePage = ($scope.numPerPage < $scope.paginationTotalItems);
             });
         });
         

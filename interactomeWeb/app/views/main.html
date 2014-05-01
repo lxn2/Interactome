@@ -20,18 +20,13 @@
 <!-- see main.js and abstractlistgroupitem.js -->
 <ul id="abstracts" class="list-group">
     <div ng-repeat="paper in filteredPapers">
-        <abstract-list-group-item paper="paper" like-status="paperLikeStatus[paper.Id]" on-view="showAbstract(abTitle, abAuthor, abText)"></abstract-list-group-item>
+        <abstract-list-group-item paper="paper" like-status="paperLikeStatus[paper.Id]" on-view="showAbstract(abTitle, abAuthor, abText)" selected-abstracts="selectedAbstracts"></abstract-list-group-item>
     </div>
 </ul>
 
 <button id="testSelection" type="button" ng-click="abstractsRec()" class="btn btn-primary">Get Recs</button>
-{{absRecd}}
-<br></br>
+</br>
 
 <!-- Page Pagination -->
-<div> 
-<tfoot>
-<Pagination total-items="paginationTotalItems" items-per-page="numPerPage" page="currentPage" max-size="maxSize" boundary-links="true">
-    </pagination>
-</tfoot>
-</div> 
+<Pagination class="clickable-pointer" total-items="paginationTotalItems" items-per-page="numPerPage" page="currentPage" max-size="maxSize" boundary-links="true" ng-show="moreThanOnePage">
+</pagination>
