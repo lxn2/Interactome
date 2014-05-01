@@ -14,7 +14,8 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
     $scope.modalLastName = null;
     $scope.modalText = null;
 
-    $scope.paginationTotalItems = 100;
+    $scope.paginationTotalItems = 0;
+    $scope.moreThanOnePage = false;
     $scope.numPerPage = 10;
     $scope.currentPage = 1;
     $scope.maxSize = 5;
@@ -24,15 +25,18 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
     $scope.paperLikeStatus = {};
 
 
-    $scope.$watch('currentPage + numPerPage + papers', function() {
+    
+
+    $scope.paginate = function() {
         // Setting currentPage to 0 is a hack to get the recs working on page 1.
-        // $watching papers only works for having papers go from null to an array.
         if ($scope.currentPage == 0)
             $scope.currentPage = 1;
         var begin = (($scope.currentPage - 1) * $scope.numPerPage);
         var end = begin + $scope.numPerPage;
         $scope.filteredPapers = $scope.papers.slice(begin, end);
-    });
+    };
+    $scope.$watch('currentPage', $scope.paginate);
+    $scope.$watch('numPerPage', $scope.paginate);
 
     // Determines what happens after one or more abstract is selected
     $scope.abstractsRec = function() {
@@ -52,8 +56,10 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
             RecommendationService.getRecs(abstracts).then(function(paperList) {
                 $scope.papers.length = 0;
                 $scope.papers.push.apply($scope.papers, paperList);
+                //Pagination
                 $scope.currentPage = 0;
                 $scope.paginationTotalItems = $scope.papers.length;
+                $scope.moreThanOnePage = ($scope.numPerPage < $scope.paginationTotalItems);
             });
         }
     };
@@ -81,6 +87,9 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
             AwsService.getPapers(100).then(function(paperList) {
                 $scope.papers.length = 0;
                 $scope.papers.push.apply($scope.papers, paperList);
+                $scope.currentPage = 0;
+                $scope.paginationTotalItems = $scope.papers.length;
+                $scope.moreThanOnePage = ($scope.numPerPage < $scope.paginationTotalItems);
             });
         });
         

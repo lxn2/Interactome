@@ -29,9 +29,5 @@
 <br></br>
 
 <!-- Page Pagination -->
-<div> 
-<tfoot>
-<Pagination total-items="paginationTotalItems" items-per-page="numPerPage" page="currentPage" max-size="maxSize" boundary-links="true">
-    </pagination>
-</tfoot>
-</div> 
+<Pagination class="clickable-pointer" total-items="paginationTotalItems" items-per-page="numPerPage" page="currentPage" max-size="maxSize" boundary-links="true" ng-show="moreThanOnePage">
+</pagination>
