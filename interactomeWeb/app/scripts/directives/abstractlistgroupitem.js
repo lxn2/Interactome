@@ -15,9 +15,11 @@ angular.module('interactomeApp')
       	scope: {      	
           localOnView: '&onView',
           paper: '=',
-          likeStatus: '='
+          likeStatus: '=',
+          selectedAbstracts: '='
       	},
 		    controller: ['$scope', '$http', 'AwsService', 'UserService', function($scope, $http, AwsService, UserService) {
+          $scope.selected = false;
 
           $scope.getNames = function() {
             var temp = "";
@@ -73,6 +75,17 @@ angular.module('interactomeApp')
             }
           };
 
+          $scope.$watch('selected', function() {
+          if($scope.selected)
+            $scope.selectedAbstracts.push($scope.paper.Id);
+          else {
+            var index = $scope.selectedAbstracts.indexOf($scope.paper.Id);
+            if (index > -1)
+              $scope.selectedAbstracts.splice(index, 1);
+          }
+        }, true);
+
+          
     	}],
     	templateUrl: 'scripts/directives/abstractlistgroupitem.html',
 

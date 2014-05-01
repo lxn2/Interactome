@@ -78,7 +78,7 @@ body {
   }
 }
 
-.pagination {
+.clickable-pointer {
   cursor: pointer;
 }
 
@@ -126,4 +126,9 @@ body {
   top: 5px;
   width: 400px;
   position: fixed;
+}
+
+
+.abstract-selected {
+  background-color: #96EB96;
 }
