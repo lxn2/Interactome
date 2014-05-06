@@ -94,7 +94,7 @@ angular.module('interactomeApp')
           zIndex: 5000, 
           cursor: "move",
           helper: function() {
-            return $("<div class='abstractDrag list-group-item'><span class='badge'>dragging</span>" + $scope.paper.Title.substring(0, 40) + "...</div>");//.css({border: "1px solid #CCCCCC"});;
+            return $("<div class='abstractDrag list-group-item'><span class='badge'>dragging</span>" + $scope.paper.Title.substring(0, 40) + "...</div>");
           }
         }).data("abId", $scope.paper.Id);
       }

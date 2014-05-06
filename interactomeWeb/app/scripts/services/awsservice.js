@@ -280,8 +280,6 @@ app.provider('AwsService', function() {
                 var savePaperDefer = $q.defer();
                 var dynamodb = new AWS.DynamoDB();
 
-                console.log(topicid);
-
                 var updateParams = {
                     Key: {
                         Id: {

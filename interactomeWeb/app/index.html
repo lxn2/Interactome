@@ -80,7 +80,6 @@
                                     <input type="submit" id="submit" value="Add" />
                                 </form>
                                 <div ng-repeat="topic in userTopics">
-                                    <!--<topic-panel-item topic-name={{topic.Name}} item-id={{topic.Id}} papers-list={{topic.PapersList}} check-topic="hasTopicName(topicName)" rename-topic="renameTopic(topicId, topicName)" delete="deleteTopic(topicId)" add-paper="savePaper(topicId, paperId)" delete-paper="deletePaper(topicId, paperId)" get-recs="abstractsRec()"></topic-panel-item>-->
                                     <topic-panel-item topic="topic" check-topic="hasTopicName(topicName)" rename-topic="renameTopic(topicId, topicName)" delete="deleteTopic(topicId)"></topic-panel-item>
                                 </div>
                             </div>
