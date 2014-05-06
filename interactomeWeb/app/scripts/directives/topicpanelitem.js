@@ -13,18 +13,14 @@ angular.module('interactomeApp')
           localCheckTopic: '&checkTopic',
           localRenameTopic: '&renameTopic',
           localDeleteTopic: '&delete',
-          localAddPaper: '&addPaper',
-          localDeletePaper: '&deletePaper',
-      		topicName: '@',
-          itemId: '@',
-          papersList: '@'
+      		topic: '='
       	},
 
 		    controller: ['$scope', 'AwsService', function($scope, AwsService) {          
           $scope.scopePapersList = [];
           $scope.editorEnabled = false;
           $scope.noAbstracts = null;
-          $scope.editableValue = $scope.topicName;          
+          $scope.editableValue = $scope.topic.Name;          
           $scope.placeHolder = 'No abstracts added';
 
           $scope.enableEdit = function() {
@@ -32,16 +28,16 @@ angular.module('interactomeApp')
           };
 
           $scope.disableEdit = function() {
-            $scope.editableValue = $scope.topicName;
+            $scope.editableValue = $scope.topic.Name;
             $scope.editorEnabled = false;
           };
 
           // save a topic's new name
           $scope.save = function() {
             if(!$scope.localCheckTopic({topicName: $scope.editableValue})) { // check if topicname already exists
-              AwsService.renameTopic($scope.itemId, $scope.editableValue).then(function() { // updateItem
-                $scope.topicName = $scope.editableValue; // change view
-                $scope.localRenameTopic({topicId: $scope.itemId, topicName: $scope.editableValue}); // save in parent scope
+              AwsService.renameTopic($scope.topic.Id, $scope.editableValue).then(function() { // updateItem
+                $scope.topic.Name = $scope.editableValue; // change view
+                $scope.localRenameTopic({topicId: $scope.topic.Id, topicName: $scope.editableValue}); // save in parent scope
                 $scope.disableEdit();
               }, function(reason) {
                 alert(reason);
@@ -56,24 +52,24 @@ angular.module('interactomeApp')
           // delete a topic
           $scope.delete = function() {
             var scope = $scope;
-            $scope.localDeleteTopic({topicId: scope.itemId});
+            $scope.localDeleteTopic({topicId: scope.topic.Id});
             if($scope.scopePapersList.length > 1 || $scope.scopePapersList.length == 1 && $scope.scopePapersList[0] != $scope.placeHolder) { // contains saved papers
 
-              var al = 'There are ' + $scope.scopePapersList.length + ' abstracts in "' + $scope.topicName +
+              var al = 'There are ' + $scope.scopePapersList.length + ' abstracts in "' + scope.topic.Name +
               '". Deleting this topic will also delete the abstracts. Confirm deletion.';
 
               var confirmation = confirm(al);
               if (confirmation == true) {
-                AwsService.deleteTopic($scope.itemId).then(function() { // delete in dynamo
-                  scope.localDeleteTopic({topicId: scope.itemId}); // delete in parent scope
+                AwsService.deleteTopic($scope.topic.Id).then(function() { // delete in dynamo
+                  scope.localDeleteTopic({topicId: scope.topic.Id}); // delete in parent scope
                 }, function(reason) {
                   alert(reason);
                 });
               }
             }
             else { // no papers
-              AwsService.deleteTopic($scope.itemId).then(function() {// delete in dynamo
-                scope.localDeleteTopic({topicId: scope.itemId}); // delete in parent scope
+              AwsService.deleteTopic($scope.topic.Id).then(function() {// delete in dynamo
+                scope.localDeleteTopic({topicId: scope.topic.Id}); // delete in parent scope
               }, function(reason) {
                 alert(reason);
               });
@@ -94,8 +90,7 @@ angular.module('interactomeApp')
               }
             }
             if(!exists) { // found paper
-              AwsService.saveTopicPaper($scope.itemId, paperid).then(function() { // call to dynamo
-                scope.localAddPaper({topicId: scope.itemId, paperId: paperid}); // update parent scope
+              AwsService.saveTopicPaper($scope.topic.Id, paperid).then(function() { // call to dynamo
                 if(curLength == 0) {
                   scope.scopePapersList = [paperid];
                 }
@@ -114,8 +109,7 @@ angular.module('interactomeApp')
           // delete a paper from a topic
           $scope.deletePaper = function(paperid, index) {
             var scope = $scope;
-            AwsService.deleteTopicPaper($scope.itemId, paperid).then(function() { // call to dynamo
-              scope.localDeletePaper({topicId: scope.itemId, paperId: paperid}); // update in parent scope
+            AwsService.deleteTopicPaper($scope.topic.Id, paperid).then(function() { // call to dynamo
               scope.scopePapersList.splice(index, 1);
               var curLength = scope.scopePapersList.length;
               if(curLength == 0) { // this was the only saved paper
@@ -124,21 +118,18 @@ angular.module('interactomeApp')
             }, function(reason) {
               alert(reason);
             });
-          }
-          
+          };
     	}],
       templateUrl: 'scripts/directives/topicpanelitem.html',
       link: function (scope, element, attrs) {
-        scope.topicName = attrs.topicName;
-        scope.itemId = attrs.itemId;
-        scope.scopePapersList = ((attrs.papersList).replace(/['"\[\]]/gi,'')).split(','); // removes quotations and brackets, converts string into array
-        if(scope.scopePapersList.length == 1 && scope.scopePapersList[0] == "") { // inserts a message if no abstracts
-          scope.scopePapersList = []; // first value is "", so empty the array
-          scope.noAbstracts = true;
-        }
-        else {
+        if('PapersList' in scope.topic) {
+          scope.scopePapersList = scope.topic.PapersList;
           scope.scopePapersList.sort();
           scope.noAbstracts = false;
+        }
+        else {
+          scope.scopePapersList = [];
+          scope.noAbstracts = true;
         }
 
         element.droppable(
