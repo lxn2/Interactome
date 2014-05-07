@@ -111,4 +111,9 @@ angular.module('interactomeApp')
             $scope.userTopics.splice(i, 1);
         }
     };
+
+    $scope.getRecs = function(paperslist) {
+        console.log("headerctrl getRecs", paperslist);
+        $scope.$broadcast('GET_TOPICS_RECS', paperslist);
+    };
 });

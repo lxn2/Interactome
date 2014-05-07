@@ -13,6 +13,7 @@ angular.module('interactomeApp')
           localCheckTopic: '&checkTopic',
           localRenameTopic: '&renameTopic',
           localDeleteTopic: '&delete',
+          localGetRecs: '&getRecs',
       		topic: '='
       	},
 
@@ -118,6 +119,11 @@ angular.module('interactomeApp')
             }, function(reason) {
               alert(reason);
             });
+          };
+
+          $scope.getRecs = function() {
+            console.log('in topicpanelitem getRecs', $scope.topic.PapersList);
+            $scope.localGetRecs({paperslist: $scope.topic.PapersList});
           };
     	}],
       templateUrl: 'scripts/directives/topicpanelitem.html',
