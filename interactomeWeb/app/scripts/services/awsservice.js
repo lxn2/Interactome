@@ -276,6 +276,74 @@ app.provider('AwsService', function() {
                 return topicDefer.promise;
             },
 
+            saveTopicPaper: function(topicid, paperid) {
+                var savePaperDefer = $q.defer();
+                var dynamodb = new AWS.DynamoDB();
+
+                var updateParams = {
+                    Key: {
+                        Id: {
+                            S: topicid
+                        },
+                    },
+                    TableName: 'Topic',
+                    AttributeUpdates: {
+                        List: {
+                            Action: 'ADD',
+                            Value: {
+                                SS: [paperid],
+                            }
+                        }
+                    }
+                };
+
+                dynamodb.updateItem(updateParams, function(err, data) {
+                    if (err) {
+                        console.log(err, err.stack);
+                        savePaperDefer.reject('Cannot update Topic table');
+                    }
+                    else {
+                        savePaperDefer.resolve();
+                    }
+                });
+
+                return savePaperDefer.promise;
+            },
+
+            deleteTopicPaper: function(topicid, paperid) {
+                var deletePaperDefer = $q.defer();
+                var dynamodb = new AWS.DynamoDB();
+
+                var deleteParams = {
+                    Key: {
+                        Id: {
+                            S: topicid
+                        },
+                    },
+                    TableName: 'Topic',
+                    AttributeUpdates: {
+                        List: {
+                            Action: 'DELETE',
+                            Value: {
+                                SS: [paperid],
+                            }
+                        }
+                    }
+                };
+
+                dynamodb.updateItem(deleteParams, function(err,data) {
+                    if (err) {
+                        console.log(err, err.stack);
+                        deletePaperDefer.reject('Cannot update Topic table');
+                    }
+                    else {
+                        deletePaperDefer.resolve();
+                    }
+                })
+
+                return deletePaperDefer.promise;
+            },
+
             // Gets the next limit number of papers from dynamo
             // This will eventually be done using the rec service (instead of scanning)
             getPapers: function(limit) {

@@ -8,19 +8,19 @@ angular.module('interactomeApp')
   .directive('topicPanelItem', function () {
     return {	
       	restrict: 'E',
+        replace: true,
       	scope: { 
           localCheckTopic: '&checkTopic',
           localRenameTopic: '&renameTopic',
           localDeleteTopic: '&delete',
-      		topicName: '@',
-          itemId: '@',
-          papersList: '@'
+      		topic: '='
       	},
 
 		    controller: ['$scope', 'AwsService', function($scope, AwsService) {          
           $scope.scopePapersList = [];
           $scope.editorEnabled = false;
-          $scope.editableValue = $scope.topicName;          
+          $scope.noAbstracts = null;
+          $scope.editableValue = $scope.topic.Name;          
           $scope.placeHolder = 'No abstracts added';
 
           $scope.enableEdit = function() {
@@ -28,15 +28,16 @@ angular.module('interactomeApp')
           };
 
           $scope.disableEdit = function() {
-            $scope.editableValue = $scope.topicName;
+            $scope.editableValue = $scope.topic.Name;
             $scope.editorEnabled = false;
           };
 
+          // save a topic's new name
           $scope.save = function() {
             if(!$scope.localCheckTopic({topicName: $scope.editableValue})) { // check if topicname already exists
-              AwsService.renameTopic($scope.itemId, $scope.editableValue).then(function() { // updateItem
-                $scope.topicName = $scope.editableValue; // change view
-                $scope.localRenameTopic({topicId: $scope.itemId, topicName: $scope.editableValue});
+              AwsService.renameTopic($scope.topic.Id, $scope.editableValue).then(function() { // updateItem
+                $scope.topic.Name = $scope.editableValue; // change view
+                $scope.localRenameTopic({topicId: $scope.topic.Id, topicName: $scope.editableValue}); // save in parent scope
                 $scope.disableEdit();
               }, function(reason) {
                 alert(reason);
@@ -48,72 +49,97 @@ angular.module('interactomeApp')
             
           };
 
+          // delete a topic
           $scope.delete = function() {
             var scope = $scope;
+            $scope.localDeleteTopic({topicId: scope.topic.Id});
             if($scope.scopePapersList.length > 1 || $scope.scopePapersList.length == 1 && $scope.scopePapersList[0] != $scope.placeHolder) { // contains saved papers
 
-              var al = 'There are ' + $scope.scopePapersList.length + ' abstracts in "' + $scope.topicName +
+              var al = 'There are ' + $scope.scopePapersList.length + ' abstracts in "' + scope.topic.Name +
               '". Deleting this topic will also delete the abstracts. Confirm deletion.';
 
               var confirmation = confirm(al);
               if (confirmation == true) {
-                AwsService.deleteTopic($scope.itemId).then(function() {
-                  scope.localDeleteTopic({topicId: scope.itemId});
+                AwsService.deleteTopic($scope.topic.Id).then(function() { // delete in dynamo
+                  scope.localDeleteTopic({topicId: scope.topic.Id}); // delete in parent scope
                 }, function(reason) {
                   alert(reason);
                 });
               }
             }
             else { // no papers
-              AwsService.deleteTopic($scope.itemId).then(function() {
-                scope.localDeleteTopic({topicId: scope.itemId});
+              AwsService.deleteTopic($scope.topic.Id).then(function() {// delete in dynamo
+                scope.localDeleteTopic({topicId: scope.topic.Id}); // delete in parent scope
               }, function(reason) {
                 alert(reason);
               });
             }
           };
+
+          // adding paper to topic
+          $scope.addPaper = function(paperid) {
+            var scope = $scope;
+            var exists = false;
+
+            var curLength = scope.scopePapersList.length;
+            
+            for(var i = 0; i < curLength; i++) { // see if paper already exists
+              if (scope.scopePapersList[i] == paperid) {
+                exists = true;
+                break;
+              }
+            }
+            if(!exists) { // found paper
+              AwsService.saveTopicPaper($scope.topic.Id, paperid).then(function() { // call to dynamo
+                if(curLength == 0) {
+                  scope.scopePapersList = [paperid];
+                }
+                else {
+                  scope.scopePapersList.push(paperid);
+                }
+              }, function(reason) {
+                alert(reason);
+              });
+            }
+
+            $scope.noAbstracts = false;
+            $scope.$apply();
+          };
+
+          // delete a paper from a topic
+          $scope.deletePaper = function(paperid, index) {
+            var scope = $scope;
+            AwsService.deleteTopicPaper($scope.topic.Id, paperid).then(function() { // call to dynamo
+              scope.scopePapersList.splice(index, 1);
+              var curLength = scope.scopePapersList.length;
+              if(curLength == 0) { // this was the only saved paper
+                scope.noAbstracts = true;
+              }
+            }, function(reason) {
+              alert(reason);
+            });
+          };
     	}],
-    	template: '<div class="accordion-group topic-accordion-size">' + 
-                  '<div ng-hide="editorEnabled">' +
-                    '<div class="accordion-heading accordion-toggle" ng-click="isOpen = !isOpen">' +
-                      '<div class="btn-group btn-group-xs">' +
-                        '<button type="button" class="btn btn-default dropdown-toggle topic-dropdown-btn" data-toggle="dropdown">' +
-                          '<span class="glyphicon glyphicon-th-list"></span>' +
-                        '</button>' +
-                        '<ul class="dropdown-menu">' +
-                          '<li ng-click="enableEdit()">Rename</li>' +
-                          '<li ng-click="delete()">Delete</li>' +
-                        '</ul>' +
-                      '</div>' +
-                      '{{topicName}}' +
-                    '</div>' +
-                    '<div class="accordion-body" collapse="!isOpen" ng-class="{smallScrollDiv:isOpen}">' +
-                      '<div class="accordion-inner">' +
-                        '<li ng-repeat="paper in scopePapersList track by $index">' + // track by $index solves ng-repeat duplicate error: http://stackoverflow.com/questions/16296670/angular-ng-repeat-error-duplicates-in-a-repeater-are-not-allowed
-                          '{{paper}}' +
-                        '</li>' +
-                      '</div>' +
-                    '</div>' +
-                  '</div>' +
-                  '<div ng-show="editorEnabled">' +
-                    '<div>' +
-                        '<input ng-model="editableValue">' +
-                        '<button ng-click="save()">save</button>' +
-                        '<button ng-click="disableEdit()">cancel</button>' +
-                    '</div>' +
-                  '</div>' +
-                '</div>'
-      ,
+      templateUrl: 'scripts/directives/topicpanelitem.html',
       link: function (scope, element, attrs) {
-        scope.topicName = attrs.topicName;
-        scope.itemId = attrs.itemId;
-        scope.scopePapersList = ((attrs.papersList).replace(/['"\[\]]/gi,'')).split(','); // removes quotations and brackets, converts string into array
-        if(scope.scopePapersList.length == 1 && scope.scopePapersList[0] == "") { // inserts a message if no abstracts
-          scope.scopePapersList = [scope.placeHolder];
+        if('PapersList' in scope.topic) {
+          scope.scopePapersList = scope.topic.PapersList;
+          scope.scopePapersList.sort();
+          scope.noAbstracts = false;
         }
         else {
-          scope.scopePapersList.sort();
+          scope.scopePapersList = [];
+          scope.noAbstracts = true;
         }
+
+        element.droppable(
+        {
+          drop: function(event, ui) {
+            scope.addPaper($(ui.draggable).data("abId"));
+          },
+          hoverClass: "ui-state-highlight", 
+
+        });// http://codepen.io/m-e-conroy/pen/gwbqG shows that all I really had to add was replace!
       }
     };
-  });
+  }); 

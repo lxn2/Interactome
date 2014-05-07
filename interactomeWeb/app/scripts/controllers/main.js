@@ -85,4 +85,3 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
         
     });
 });
-

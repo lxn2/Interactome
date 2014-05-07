@@ -1,0 +1,34 @@
+<div class="accordion-group topic-accordion-size"> 
+  <div ng-hide="editorEnabled">
+    <div class="accordion-heading accordion-toggle" ng-click="isOpen = !isOpen">
+      <div class="btn-group btn-group-xs">
+        <button type="button" class="btn btn-default dropdown-toggle topic-dropdown-btn" data-toggle="dropdown">
+          <span class="glyphicon glyphicon-th-list"></span>
+        </button>
+        <ul class="dropdown-menu">
+          <li ng-click="enableEdit()">Rename</li> 
+          <li ng-click="delete()">Delete</li> 
+        </ul> 
+      </div> 
+      {{topic.Name}} 
+    </div> 
+    <div class="accordion-body" collapse="!isOpen" ng-class="{smallScrollDiv:isOpen}"> 
+      <div ng-hide="noAbstracts" class="accordion-inner"> 
+        <li ng-repeat="paper in scopePapersList track by $index"> <!-- track by $index solves ng-repeat duplicate error: http://stackoverflow.com/questions/16296670/angular-ng-repeat-error-duplicates-in-a-repeater-are-not-allowed-->
+          {{paper}}
+          <button type="button" class="close" aria-hidden="true" alt="delete" title="delete" ng-click="deletePaper(paper, $index)">&times;</button> 
+        </li> 
+      </div> 
+      <div ng-show="noAbstracts" class="accordion-inner"> 
+        {{placeHolder}} 
+      </div> 
+    </div> 
+  </div> 
+  <div ng-show="editorEnabled"> 
+    <div> 
+        <input ng-model="editableValue"> 
+        <button ng-click="save()">save</button> 
+        <button ng-click="disableEdit()">cancel</button> 
+    </div> 
+  </div> 
+</div>

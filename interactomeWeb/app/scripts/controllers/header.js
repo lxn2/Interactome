@@ -49,7 +49,6 @@ angular.module('interactomeApp')
                     scope.userTopics.sort(function(a,b) {
                         return (a['Name'].localeCompare(b['Name'], 'kn', {numeric: true, caseFirst: "lower", usage: "sort"}) >= 0);
                     });
-                    console.log(scope.userTopics);
                 }, 
                 function(reason) {
                     alert(reason);
@@ -111,5 +110,5 @@ angular.module('interactomeApp')
         if (i < curLength) {// delete element if found
             $scope.userTopics.splice(i, 1);
         }
-    }
+    };
 });

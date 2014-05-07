@@ -74,7 +74,6 @@ angular.module('interactomeApp')
                 abText: $scope.s3Data.Abstract});
             }
           };
-
           $scope.$watch('selected', function() {
           if($scope.selected)
             $scope.selectedAbstracts.push($scope.paper.Id);
@@ -84,13 +83,20 @@ angular.module('interactomeApp')
               $scope.selectedAbstracts.splice(index, 1);
           }
         }, true);
-
-          
     	}],
     	templateUrl: 'scripts/directives/abstractlistgroupitem.html',
 
       link: function ($scope, element, attrs) {
         $scope.getNames();
+        element.draggable({
+          revert: true, 
+          appendTo: 'body', 
+          zIndex: 5000, 
+          cursor: "move",
+          helper: function() {
+            return $("<div class='abstractDrag list-group-item'><span class='badge'>dragging</span>" + $scope.paper.Title.substring(0, 40) + "...</div>");
+          }
+        }).data("abId", $scope.paper.Id);
       }
     };
   });
