@@ -1,0 +1,7 @@
+<div ng-click="isCollapsed = !isCollapsed">
+    <h3> {{heading}} </h3>
+    <h4 ng-bind-html="firstPaper.Title"></h4>
+</div>
+<div collapse="isCollapsed"> 
+    <div ng-repeat="paper in papers"> <h4 class="list-group-item-heading" ng-bind-html="paper.Title"></h4> </div> 
+</div>
