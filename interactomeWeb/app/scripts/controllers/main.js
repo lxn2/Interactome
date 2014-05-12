@@ -95,7 +95,7 @@ app.controller('SearchCtrl', function($scope, $location, SearchService) {
     //Setup a request to solr via EC2. I grabbed this code from 
     //http://www.opensourceconnections.com/2013/08/11/creating-a-search-html-element-with-angularjs/
     
-    $.ajax({
+    /*$.ajax({
         url: "http://ec2-54-201-190-162.us-west-2.compute.amazonaws.com:8983/solr/select",
         data: {
             "q": $scope.query,
@@ -118,7 +118,7 @@ app.controller('SearchCtrl', function($scope, $location, SearchService) {
             });
         },
         jsonp: 'json.wrf'
-    });
+    });*/
 
 });
 
