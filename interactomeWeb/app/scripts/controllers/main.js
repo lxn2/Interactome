@@ -36,13 +36,12 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
     };
     $scope.$watch('currentPage', $scope.paginate);
     $scope.$watch('numPerPage', $scope.paginate);
-    $scope.$on('GET_TOPICS_RECS', function(event, message) {
-        console.log('on:', message);
-        $scope.abstractsRecFromTopic(message);
+    $scope.$on('getRecsFromTopic', function(event, topicspaperslist) {
+        $scope.abstractsRecFromTopic(topicspaperslist);
     });
 
     // Determines what happens after one or more abstract is selected
-    $scope.abstractsRec = function(opts) {
+    $scope.abstractsRec = function() {
         if($scope.selectedAbstracts.length > 0) {
             //var abstractsChecked = $scope.selectedAbstracts.join();
             //AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_req', abstractsChecked);
@@ -58,18 +57,17 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
         }
     };
 
-    $scope.abstractsRecFromTopic = function(savedpaperslist) {
-        if (savedpaperslist !== undefined) { // !== "undefined"
-            console.log('opts not null: ', savedpaperslist);
-            RecommendationService.getRecs(savedpaperslist).then(function(paperList) {
-                $scope.papers.length = 0;
-                $scope.papers.push.apply($scope.papers, paperList);
-                //Pagination
-                $scope.currentPage = 0;
-                $scope.paginationTotalItems = $scope.papers.length;
-                $scope.moreThanOnePage = ($scope.numPerPage < $scope.paginationTotalItems);
-            });
-        }
+    // Send in an explicit list of paper id's for recommendations
+    $scope.abstractsRecFromTopic = function(topicspaperslist) {
+        RecommendationService.getRecs(topicspaperslist).then(function(paperList) {
+            $scope.selectedAbstracts.length = 0; // uncheck papers (if checked) anyway
+            $scope.papers.length = 0;
+            $scope.papers.push.apply($scope.papers, paperList);
+            //Pagination
+            $scope.currentPage = 0;
+            $scope.paginationTotalItems = $scope.papers.length;
+            $scope.moreThanOnePage = ($scope.numPerPage < $scope.paginationTotalItems);
+        });
     };
 
     // updates abstract information for modal view

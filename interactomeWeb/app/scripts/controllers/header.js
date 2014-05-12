@@ -113,7 +113,6 @@ angular.module('interactomeApp')
     };
 
     $scope.getRecs = function(paperslist) {
-        console.log("headerctrl getRecs", paperslist);
-        $scope.$broadcast('GET_TOPICS_RECS', paperslist);
+        $scope.$broadcast('getRecsFromTopic', paperslist);
     };
 });

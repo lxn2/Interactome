@@ -17,8 +17,7 @@ angular.module('interactomeApp')
       		topic: '='
       	},
 
-		    controller: ['$scope', 'AwsService', function($scope, AwsService) {          
-          $scope.scopePapersList = [];
+		    controller: ['$scope', 'AwsService', function($scope, AwsService) {    
           $scope.editorEnabled = false;
           $scope.noAbstracts = null;
           $scope.editableValue = $scope.topic.Name;          
@@ -54,9 +53,9 @@ angular.module('interactomeApp')
           $scope.delete = function() {
             var scope = $scope;
             $scope.localDeleteTopic({topicId: scope.topic.Id});
-            if($scope.scopePapersList.length > 1 || $scope.scopePapersList.length == 1 && $scope.scopePapersList[0] != $scope.placeHolder) { // contains saved papers
+            if($scope.topic.PapersList.length > 1 || $scope.topic.PapersList.length == 1 && $scope.topic.PapersList[0] != $scope.placeHolder) { // contains saved papers
 
-              var al = 'There are ' + $scope.scopePapersList.length + ' abstracts in "' + scope.topic.Name +
+              var al = 'There are ' + $scope.topic.PapersList.length + ' abstracts in "' + scope.topic.Name +
               '". Deleting this topic will also delete the abstracts. Confirm deletion.';
 
               var confirmation = confirm(al);
@@ -82,10 +81,10 @@ angular.module('interactomeApp')
             var scope = $scope;
             var exists = false;
 
-            var curLength = scope.scopePapersList.length;
+            var curLength = scope.topic.PapersList.length;
             
             for(var i = 0; i < curLength; i++) { // see if paper already exists
-              if (scope.scopePapersList[i] == paperid) {
+              if (scope.topic.PapersList[i] == paperid) {
                 exists = true;
                 break;
               }
@@ -93,10 +92,10 @@ angular.module('interactomeApp')
             if(!exists) { // found paper
               AwsService.saveTopicPaper($scope.topic.Id, paperid).then(function() { // call to dynamo
                 if(curLength == 0) {
-                  scope.scopePapersList = [paperid];
+                  scope.topic.PapersList = [paperid];
                 }
                 else {
-                  scope.scopePapersList.push(paperid);
+                  scope.topic.PapersList.push(paperid);
                 }
               }, function(reason) {
                 alert(reason);
@@ -111,8 +110,8 @@ angular.module('interactomeApp')
           $scope.deletePaper = function(paperid, index) {
             var scope = $scope;
             AwsService.deleteTopicPaper($scope.topic.Id, paperid).then(function() { // call to dynamo
-              scope.scopePapersList.splice(index, 1);
-              var curLength = scope.scopePapersList.length;
+              scope.topic.PapersList.splice(index, 1);
+              var curLength = scope.topic.PapersList.length;
               if(curLength == 0) { // this was the only saved paper
                 scope.noAbstracts = true;
               }
@@ -122,19 +121,17 @@ angular.module('interactomeApp')
           };
 
           $scope.getRecs = function() {
-            console.log('in topicpanelitem getRecs', $scope.topic.PapersList);
-            $scope.localGetRecs({paperslist: $scope.topic.PapersList});
+            $scope.localGetRecs({paperslist: $scope.topic.PapersList}); // WE'RE NOT PASSING IN THE SAME ARRAY HERE...NOT UPDATING AFTER THE ADD
           };
     	}],
       templateUrl: 'scripts/directives/topicpanelitem.html',
       link: function (scope, element, attrs) {
         if('PapersList' in scope.topic) {
-          scope.scopePapersList = scope.topic.PapersList;
-          scope.scopePapersList.sort();
+          scope.topic.PapersList.sort();
           scope.noAbstracts = false;
         }
         else {
-          scope.scopePapersList = [];
+          scope.topic.PapersList = [];
           scope.noAbstracts = true;
         }
 
