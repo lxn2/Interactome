@@ -5,7 +5,7 @@
 **/
 var app = angular.module('interactomeApp');
 
-app.controller('MainCtrl', function($scope, UserService, AwsService, RecommendationService) {
+app.controller('MainCtrl', function($scope, UserService, AwsService, RecommendationService, SearchService) {
     $scope.papers = [];
 
     $scope.absRecd = null;
@@ -88,8 +88,10 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
 
 app.controller('SearchCtrl', function($scope, $location, SearchService) {
     $scope.query = ($location.search()).search;
-    $scope.results = [];
-
+    //$scope.results = SearchService.getResults($scope.query);
+    console.log($scope.results);
+    $scope.results = {};
+    
     //Setup a request to solr via EC2. I grabbed this code from 
     //http://www.opensourceconnections.com/2013/08/11/creating-a-search-html-element-with-angularjs/
     
@@ -97,7 +99,9 @@ app.controller('SearchCtrl', function($scope, $location, SearchService) {
         url: "http://ec2-54-201-190-162.us-west-2.compute.amazonaws.com:8983/solr/select",
         data: {
             "q": $scope.query,
-            "qf": "title", "text",
+            "qt": "edismax",
+            "qf": "title",
+            "hl": true,
             "wt": "json",
             "rows":100
         },
@@ -110,11 +114,11 @@ app.controller('SearchCtrl', function($scope, $location, SearchService) {
             //stick the results in the scope
             $scope.$apply(function () {
                 $scope.results = data.response.docs;
+                $scope.response = data.response;
             });
         },
         jsonp: 'json.wrf'
-    }); 
-
+    });
 
 });
 
