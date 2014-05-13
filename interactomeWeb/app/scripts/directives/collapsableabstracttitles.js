@@ -11,11 +11,18 @@ angular.module('interactomeApp')
       },
       controller: ['$scope', function($scope) {
         $scope.isCollapsed = true;
-        console.log($scope.papers);
+        $scope.showMsg = "Show More";
+        
+        // Because papers is blank until stuff. may change in final version -- nathan
         $scope.$watch('papers', function() {
-            $scope.firstPaper = $scope.papers.shift();
+            $scope.firstPaper = $scope.papers[0];
         });
         
+        $scope.showClick = function(){
+          $scope.isCollapsed = !$scope.isCollapsed;
+          $scope.showMsg = ($scope.isCollapsed)? "Show More" : "Show Less";
+        }
+
       }],
       link: function($scope, element, attrs) {
         

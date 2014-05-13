@@ -1,13 +1,12 @@
-<div class='well'>
-  <h4> {{heading}} 
-  <span class='badge clickable-pointer' ng-click="isCollapsed = !isCollapsed">. . .</span>
-  </h4>
-  <ul>
-    <li> <h4 ng-bind-html="firstPaper.Title"></h4> </li>
-    <div collapse="isCollapsed">
-      <div ng-repeat="paper in papers"> 
-        <li> <h4 ng-bind-html="paper.Title"></h4> </li>
-      </div> 
+<div class='alert alert-info'>
+    {{heading}}
+    <div class="row">
+        <div ng-bind-html="firstPaper.Title"></div>
+        <span class='badge clickable-pointer' ng-click="showClick()">{{showMsg}}</span>
     </div>
-  </ul>
+    <div collapse="isCollapsed">
+        <div ng-repeat="paper in papers.slice(1)"> <!-- ignores the first item because that is firstPaper -->
+            <li ng-bind-html="paper.Title"></li>
+        </div> 
+    </div>
 </div>
