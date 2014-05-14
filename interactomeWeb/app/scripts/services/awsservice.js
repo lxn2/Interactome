@@ -382,6 +382,45 @@ app.provider('AwsService', function() {
                 return paperDefer.promise;
             },
 
+            // Get papers and all their attributes by Ids
+            getBatchPaper: function(Ids) {
+                var batchPaperDefer = $q.defer();
+                var papers = [];
+                var dynamodb = new AWS.DynamoDB();
+                 
+                var batchParams = {
+                    RequestItems:
+                    {
+                        Paper: {
+                            AttributesToGet: ['Id','Authors','Link', 'Title'],
+                            Keys: []
+                        }
+                    }
+                };
+
+                for(var i = 0; i < Ids.length; i++){
+                    batchParams.RequestItems.Paper.Keys.push({"Id": {"S": Ids[i]}});
+                }
+
+                dynamodb.batchGetItem(batchParams, function(err, data) { 
+                    if (err) { 
+                        console.log(err, err.stack);
+                        topicDefer.reject('Cannot query Paper table');
+                    } else{
+                        for (var i = 0; i < data.Responses.Paper.length; i++) {
+                            papers.push({ 
+                                Id: data.Responses.Paper[i].Id.S,
+                                Authors: (data.Responses.Paper[i].Authors.S).split(','),
+                                Link: data.Responses.Paper[i].Link.S,
+                                Title: data.Responses.Paper[i].Title.S});
+                        }
+                        batchPaperDefer.resolve(papers);
+                    }
+                });
+
+                return batchPaperDefer.promise;
+            },
+
             // Get users by a list of their Ids.
             getBatchUser: function(Ids) {
                 var batchUserDefer = $q.defer();

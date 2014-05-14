@@ -17,7 +17,7 @@ angular.module('interactomeApp')
       		topic: '='
       	},
 
-		    controller: ['$scope', 'AwsService', function($scope, AwsService) {    
+		    controller: ['$scope', '$http', 'AwsService', function($scope, $http, AwsService) {    
           $scope.editorEnabled = false;
           $scope.noAbstracts = null;
           $scope.editableValue = $scope.topic.Name;          
@@ -120,14 +120,73 @@ angular.module('interactomeApp')
             });
           };
 
+          $scope.viewAbstract = function() {
+            // Only grabs from s3 once
+            if ($scope.s3Data === undefined) {
+              $http.get($scope.paper.Link).success(function(data) {
+                $scope.s3Data = data;
+
+                $scope.localOnView({
+                abTitle: $scope.s3Data.AbstractTitle,
+                abAuthor: $scope.authorData,
+                abText: $scope.s3Data.Abstract});
+
+              }).error(function() {
+                $scope.localOnView({ abTitle: "ERROR", abText: "Could not find abstract."});
+              })
+
+            } else {
+              $scope.localOnView({
+                abTitle: $scope.s3Data.AbstractTitle,
+                abAuthor: $scope.authorData,
+                abText: $scope.s3Data.Abstract});
+            }
+          };
+
           $scope.getRecs = function() {
             $scope.localGetRecs({paperslist: $scope.topic.PapersList}); // WE'RE NOT PASSING IN THE SAME ARRAY HERE...NOT UPDATING AFTER THE ADD
+          };
+
+          $scope.getPapers = function() {
+//console.log('getting all paper info for', topics[i]);
+            console.log('called getPapers, getting papers info for', $scope.topic.Id);
+            if('PapersList' in $scope.topic) {
+                //var curTopic = topics[i];
+                var scope = $scope;
+                AwsService.getBatchPaper(scope.topic.PapersList).then(function(papers) { // get the attributes
+                    //curTopic.PapersList.length = 0;
+                    scope.topic.PapersList = papers;
+                    for(var m = 0; m < scope.topic.PapersList.length; m++) {
+                      console.log(scope.topic);
+                      var curPaper = scope.topic.PapersList[m];
+                      AwsService.getBatchUser(scope.topic.PapersList[m].Authors).then(function(names) {
+                        var temp = "";
+                        // Ensure the correct order by adding one at a time to the string to display
+                        // Authors will be in order and we can't trust AWS to give us the correct order.
+                        for(var j = 0; j < curPaper.Authors.length; j++) {
+                          for(var i = 0; i < names.length; i++) {
+                            if (curPaper.Authors[j] == names[i].Id)
+                              temp += (names[i].FirstName + " " + names[i].LastName + ", ");
+                          }
+                        }
+                        curPaper.Authors = temp.slice(0, -2);
+                      });
+                    }
+                    //console.log(scope.topic.PapersList);
+                    //$scope.userTopics.push.apply($scope.userTopics, curTopic);
+                }, function(reason) { // if we can't get them,
+                    //delete topics[i].PapersList; // TEST THIS. Also we don't want this because
+                    //
+                    alert(reason);
+                });   
+            }
           };
     	}],
       templateUrl: 'scripts/directives/topicpanelitem.html',
       link: function (scope, element, attrs) {
         if('PapersList' in scope.topic) {
           scope.topic.PapersList.sort();
+          //scope.papersList = scope.topic.PapersList;
           scope.noAbstracts = false;
         }
         else {
@@ -143,6 +202,9 @@ angular.module('interactomeApp')
           hoverClass: "ui-state-highlight", 
 
         });// http://codepen.io/m-e-conroy/pen/gwbqG shows that all I really had to add was replace!
+
+        scope.getPapers();
+
       }
     };
   }); 

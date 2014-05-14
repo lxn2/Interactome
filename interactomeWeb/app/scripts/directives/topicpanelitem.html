@@ -16,7 +16,7 @@
     <div class="accordion-body" collapse="!isOpen" ng-class="{smallScrollDiv:isOpen}"> 
       <div ng-hide="noAbstracts" class="accordion-inner"> 
         <li ng-repeat="paper in topic.PapersList track by $index"> <!-- track by $index solves ng-repeat duplicate error: http://stackoverflow.com/questions/16296670/angular-ng-repeat-error-duplicates-in-a-repeater-are-not-allowed-->
-          {{paper}}
+          {{paper.Title.substring(0, 30)}}...
           <button type="button" class="close" aria-hidden="true" alt="delete" title="delete" ng-click="deletePaper(paper, $index)">&times;</button> 
         </li> 
       </div> 
