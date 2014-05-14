@@ -139,6 +139,7 @@ body {
 }
 
 .inline-collapse-btn {
+  padding-left: 3px;
+  padding-right: 3px;
   margin-left: 5px;
-  margin-top: 12px;
 }
