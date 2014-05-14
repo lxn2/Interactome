@@ -76,9 +76,9 @@ angular.module('interactomeApp')
           };
           $scope.$watch('selected', function() {
           if($scope.selected)
-            $scope.selectedAbstracts.push($scope.paper.Id);
+            $scope.selectedAbstracts.push($scope.paper);
           else {
-            var index = $scope.selectedAbstracts.indexOf($scope.paper.Id);
+            var index = $scope.selectedAbstracts.indexOf($scope.paper);
             if (index > -1)
               $scope.selectedAbstracts.splice(index, 1);
           }

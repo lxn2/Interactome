@@ -137,3 +137,8 @@ body {
 .abstract-selected {
   background-color: #96EB96;
 }
+
+.inline-collapse-btn {
+  margin-left: 5px;
+  margin-top: 12px;
+}

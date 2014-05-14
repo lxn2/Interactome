@@ -6,7 +6,6 @@ angular.module('interactomeApp')
       templateUrl: 'scripts/directives/collapsableabstracttitles.html',
       restrict: 'E',
       scope: {
-        heading: '@',
         papers: '='
       },
       controller: ['$scope', function($scope) {
@@ -15,13 +14,19 @@ angular.module('interactomeApp')
         
         // Because papers is blank until stuff. may change in final version -- nathan
         $scope.$watch('papers', function() {
-            $scope.firstPaper = $scope.papers[0];
+            var paperCount = $scope.papers.length;
+            if(paperCount > 0) {
+              $scope.heading = (paperCount > 1)? "Recommended abstracts based on the " + paperCount + " abstracts below" : "Recommended Abstracts based on the below abstract";
+              $scope.firstPaper = $scope.papers[0];
+            } else {
+              $scope.heading = "Suggested Abstracts by Us";
+            }
         });
         
         $scope.showClick = function(){
           $scope.isCollapsed = !$scope.isCollapsed;
           $scope.showMsg = ($scope.isCollapsed)? "Show More" : "Show Less";
-        }
+        };
 
       }],
       link: function($scope, element, attrs) {

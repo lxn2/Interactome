@@ -1,9 +1,9 @@
-<div class='alert alert-info'>
-    {{heading}}
+<div class='well'>
     <div class="row">
-        <div ng-bind-html="firstPaper.Title"></div>
-        <span class='badge clickable-pointer' ng-click="showClick()">{{showMsg}}</span>
+        <h4 class="pull-left"> <b> {{heading}} </b></h4>
+        <span class='badge clickable-pointer inline-collapse-btn' ng-click="showClick()" ng-show="papers.length > 1">{{showMsg}}</span>
     </div>
+    <li ng-show="papers.length > 0" ng-bind-html="firstPaper.Title"></li>
     <div collapse="isCollapsed">
         <div ng-repeat="paper in papers.slice(1)"> <!-- ignores the first item because that is firstPaper -->
             <li ng-bind-html="paper.Title"></li>

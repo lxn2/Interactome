@@ -24,7 +24,7 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
     $scope.paperLikeStatus = {};
     $scope.selectedAbstracts = [];
 
-    
+    $scope.recOriginAbstracts = []; // list of abstracts the current recs are seeded from
 
     $scope.paginate = function() {
         // Setting currentPage to 0 is a hack to get the recs working on page 1.
@@ -43,14 +43,17 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
             //var abstractsChecked = $scope.selectedAbstracts.join();
             //AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_req', abstractsChecked);
             RecommendationService.getRecs($scope.selectedAbstracts).then(function(paperList) {
+                $scope.recOriginAbstracts = $scope.selectedAbstracts.slice(0); // copy array for rec heading
                 $scope.selectedAbstracts.length = 0;
                 $scope.papers.length = 0;
                 $scope.papers.push.apply($scope.papers, paperList);
+
                 //Pagination
                 $scope.currentPage = 0;
                 $scope.paginationTotalItems = $scope.papers.length;
                 $scope.moreThanOnePage = ($scope.numPerPage < $scope.paginationTotalItems);
             });
+            $('html, body').animate({scrollTop: 0}, 2000);
         }
     };
 
