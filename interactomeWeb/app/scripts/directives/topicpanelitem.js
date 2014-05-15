@@ -14,6 +14,7 @@ angular.module('interactomeApp')
           localRenameTopic: '&renameTopic',
           localDeleteTopic: '&delete',
           localGetRecs: '&getRecs',
+          localOnView: '&onView',
       		topic: '='
       	},
 
@@ -120,26 +121,29 @@ angular.module('interactomeApp')
             });
           };
 
-          $scope.viewAbstract = function() {
+          $scope.viewAbstract = function(paper, index) {
+            console.log('in viewabstract', paper, index);
             // Only grabs from s3 once
-            if ($scope.s3Data === undefined) {
-              $http.get($scope.paper.Link).success(function(data) {
-                $scope.s3Data = data;
+            if (paper.s3Data === undefined) {
+              console.log('s3data undefined...use link', paper.Link);
+              $http.get(paper.Link).success(function(data) {
+                paper.s3Data = data;
 
                 $scope.localOnView({
-                abTitle: $scope.s3Data.AbstractTitle,
-                abAuthor: $scope.authorData,
-                abText: $scope.s3Data.Abstract});
+                abTitle: paper.Title,
+                abAuthor: paper.Authors,
+                abText: paper.s3Data.Abstract});
 
               }).error(function() {
                 $scope.localOnView({ abTitle: "ERROR", abText: "Could not find abstract."});
               })
 
             } else {
+              console.log('s3 data defined');
               $scope.localOnView({
-                abTitle: $scope.s3Data.AbstractTitle,
-                abAuthor: $scope.authorData,
-                abText: $scope.s3Data.Abstract});
+                abTitle: paper.Title,
+                abAuthor: paper.Authors,
+                abText: paper.s3Data.Abstract});
             }
           };
 
@@ -181,6 +185,7 @@ angular.module('interactomeApp')
                 });   
             }
           };
+
     	}],
       templateUrl: 'scripts/directives/topicpanelitem.html',
       link: function (scope, element, attrs) {

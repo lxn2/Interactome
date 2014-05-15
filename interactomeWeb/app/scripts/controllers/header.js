@@ -29,7 +29,7 @@ angular.module('interactomeApp')
         AwsService.getTopics(UserService.currentUsername()).then(function(topics) {
             $scope.userTopics.length = 0;
             // GET PAPER INFO getbatchpaper
-            for(var i = 0; i < topics.length; i++) {
+            /*for(var i = 0; i < topics.length; i++) {
                 //console.log('getting all paper info for', topics[i]);
                 if('PapersList' in topics[i]) {
                     var curTopic = topics[i];
@@ -44,7 +44,7 @@ angular.module('interactomeApp')
                     });   
                 }
 
-            }
+            } */
             $scope.userTopics.push.apply($scope.userTopics, topics);
         }, function(reason) {
             alert(reason);
@@ -127,6 +127,10 @@ angular.module('interactomeApp')
         if (i < curLength) {// delete element if found
             $scope.userTopics.splice(i, 1);
         }
+    };
+
+    $scope.showAbstract = function(abTitle, abAuthor, abText) {
+        $scope.$broadcast('showAbstractFromTopic', abTitle, abAuthor, abText);
     };
 
     $scope.getRecs = function(paperslist) {
