@@ -293,7 +293,11 @@ def addAbstracts(excelFileName):
                     {
                         'id': dynamoPaperId,
                         'title': abstractTitle,
-                        'text': row[3].internal_value.encode('utf-8')
+                        'text': row[3].internal_value.encode('utf-8'),
+                        'Keyword1': keyword1,
+                        'Keyword2': keyword2,
+                        'Keyword3': keyword3,
+                        'Keyword4': keyword4
                     }])
 
             except:

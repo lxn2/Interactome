@@ -5,24 +5,21 @@ angular.module('interactomeApp.SearchService', [])
     // AngularJS will instantiate a singleton by calling "new" on this function
     var service = {
 	    getResults: function(query) {
-	    	var request = $http({
-	    		method: "GET",
-	    		url: "http://ec2-54-201-190-162.us-west-2.compute.amazonaws.com:8983/solr/select",
-	    		data: {
-	            "q": query,
-	            "qt": "edismax",
-	            "qf": "title",
-	            "hl": true,
-	            "wt": "json",
-	            "rows":100
+    	    var request = $http({
+		        url: "http://ec2-54-201-190-162.us-west-2.compute.amazonaws.com:8983/solr/select",
+		        data: {
+		            "q": "query",
+		            "qt": "edismax",
+		            "qf": "title",
+		            "hl": true,
+		            "wt": "json",
+		            "rows":100
 		        },
-		        headers: {'Content-Type': 'application/json'}
-		        //traditional: true,
-		        //cache: true,
-		        //async: true,
-		        //dataType: 'jsonp',
-			    //jsonp: 'json.wrf'
-			});
+		        traditional: true,
+		        cache: true,
+		        async: true,
+		        dataType: 'jsonp'
+		    });
 
 			return (request.then(service.handleSuccess, service.handleError));
 	    },
