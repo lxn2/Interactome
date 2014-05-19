@@ -21,13 +21,13 @@
 
 <!-- see main.js and abstractlistgroupitem.js -->
 <ul id="abstracts" class="list-group">
-    <div> select this </div>
-    <div class="loader-background" ng-if="test">
-        <div class="wrap">
-          <div class="loader"></div>
-          <div class="loaderbefore"></div>
-          <div class="circular"></div>
-          <div class="circular another"></div>
+    <!-- Loading image/animation for getting recs -->
+    <div class="loader-background loader-fade-animation" ng-if="gettingAbstractRecs">
+        <div class="loader-position-wrap">
+          <div class="loader-inner-blink"></div>
+          <div class="loader-inner-circle"></div>
+          <div class="loader-outer-circular"></div>
+          <div class="loader-outer-circular loader-secondary-circular"></div>
         </div>
     </div>
 

@@ -158,13 +158,19 @@ body {
   opacity:.7;
 }*/
 
-/* fade animation for entering and leaving */
+/* 
+  fade animation for entering and leaving
+  Used for recs entering and leaving, and loading leaving
+*/
+.loader-fade-animation.ng-enter,
+.loader-fade-animation.ng-leave,
 .fade-animation.ng-enter, 
 .fade-animation.ng-leave {
   -webkit-transition: 1s linear all;
   transition: 1s linear all;
 }
 
+.loader-fade-animation,
 .fade-animation.ng-enter {
   opacity:0;
 }
@@ -172,17 +178,21 @@ body {
   opacity:1;
 }
 
+.loader-fade-animation.ng-enter-active {
+  opacity:7;
+}
+
 .fade-animation.ng-leave {
   opacity:1;
+  background-color: #FFFFFF;
 }
+.loader-fade-animation.ng-leave-active,
 .fade-animation.ng-leave.ng-leave-active {
   opacity:0;
 }
 
-
 /* loading animation for recs */
 .loader-background {
-
   background-color:white;
   opacity:.7;
   position: absolute;
@@ -191,7 +201,7 @@ body {
   z-index: 1000;
 }
 
-.wrap {
+.loader-position-wrap {
   position: fixed;
   top: 50%;
   width: 150px;
@@ -199,7 +209,7 @@ body {
   margin: 0 auto;
 }
 
-.loader {
+.loader-inner-blink {
   position: absolute;
   top: 0;
   z-index: 1002;
@@ -211,10 +221,10 @@ body {
   border-right-color: rgba(55,55,55,0);
   border-bottom-color: rgba(66,66,66,0);
   border-left-color: rgba(33,33,33,0);
-  animation: loadEr 3s infinite;
+  animation: circular-blink 3s infinite;
 }
 
-@keyframes loadEr {
+@keyframes circular-blink {
   0% {
     border-top-color: rgba(44,44,44,0);
     border-right-color: rgba(55,55,55,0);
@@ -267,7 +277,7 @@ body {
 }
 }
 
-.loaderbefore {
+.loader-inner-circle {
   width: 50px;
   height:50px;
   border: 15px solid #ddd;
@@ -277,7 +287,7 @@ body {
   z-index: 1001;
 }
 
-.circular {
+.loader-outer-circular {
   position: absolute;
   top: -15px;
   left: -15px;
@@ -290,19 +300,19 @@ body {
   border-bottom-color: #333;
   border-right-color: #fff;
   opacity: 0.4;
-  animation: poof 5s infinite;
+  animation: loader-spin-right-bright 5s infinite;
 }
-@keyframes poof {
+@keyframes loader-spin-right-bright {
   0% {transform: scale(1,1) rotate(0deg); opacity: 0.4;}
   50% {transform: scale(4,4) rotate(360deg); opacity: 0;}
 }
-.another {
+.loader-secondary-circular {
   opacity: 0.3;
   transform: rotate(90deg);
-  animation: poofity 5s infinite;
+  animation: loader-spin-left-dim 5s infinite;
   animation-delay: 1s;
 }
-@keyframes poofity {
+@keyframes loader-spin-left-dim {
   0% {transform: scale(1,1) rotate(90deg); opacity: 0.3;}
   50% {transform: scale(4,4) rotate(-360deg); opacity: 0;}
 }
