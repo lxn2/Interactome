@@ -179,12 +179,11 @@ body {
 }
 
 .loader-fade-animation.ng-enter-active {
-  opacity:7;
+  opacity:.7;
 }
 
 .fade-animation.ng-leave {
   opacity:1;
-  background-color: #FFFFFF;
 }
 .loader-fade-animation.ng-leave-active,
 .fade-animation.ng-leave.ng-leave-active {
@@ -317,20 +316,3 @@ body {
   50% {transform: scale(4,4) rotate(-360deg); opacity: 0;}
 }
 
-.text {
-  position: absolute;
-  top: 95px;
-  left: 8px;
-  font-family: Arial;
-  text-transform: uppercase;
-  color: #888;
-  animation: opaa 10s infinite;
-}
-@keyframes opaa {
-  0% {opacity: 1;}
-  10% {opacity: 0.5}
-  15% {opacity: 1;}
-  30% {opacity: 1;}
-  65% {opacity: 0.3;}
-  90% {opacity: 0.8;}
-}

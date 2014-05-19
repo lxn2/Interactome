@@ -46,15 +46,24 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
                 $scope.recOriginAbstracts = $scope.selectedAbstracts.slice(0); // copy array for rec heading
                 $scope.selectedAbstracts.length = 0;
                 $scope.papers.length = 0;
-                $scope.papers.push.apply($scope.papers, paperList);
 
-                //Pagination
-                $scope.currentPage = 0;
-                $scope.paginationTotalItems = $scope.papers.length;
-                $scope.moreThanOnePage = ($scope.numPerPage < $scope.paginationTotalItems);
+                // Having the logic inside of the animate causes a nice fade in for the new abstracts.
+                // Since we are using jquery, we must wrap it in an $apply for angular to know about it.
+                $('body').animate({scrollTop: 0}, 2000, function() { 
+                    $scope.$apply(function() {
+                        $scope.gettingAbstractRecs=false;
+                        $scope.papers.push.apply($scope.papers, paperList);
+
+                        //Pagination
+                        $scope.currentPage = 0;
+                        $scope.paginationTotalItems = $scope.papers.length;
+                        $scope.moreThanOnePage = ($scope.numPerPage < $scope.paginationTotalItems);
+                    })
+                });
+                
             });
+            // Triggers animation, will happen before .then happens (because of async)
             $scope.gettingAbstractRecs = true;
-            $('body').animate({scrollTop: 0}, 2000, function() { $scope.$apply(function(){$scope.gettingAbstractRecs=false;})});
         }
     };
 
