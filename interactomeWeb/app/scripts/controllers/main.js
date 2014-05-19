@@ -54,7 +54,7 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
                 $scope.moreThanOnePage = ($scope.numPerPage < $scope.paginationTotalItems);
             });
             $scope.test = true;
-            $('html, body').animate({scrollTop: 0}, 2000, function() { $scope.$apply(function(){$scope.test=false;})});
+            $('body').animate({scrollTop: 0}, 2000, function() { $scope.$apply(function(){$scope.test=false;})});
         }
     };
 

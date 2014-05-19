@@ -22,7 +22,7 @@
 <!-- see main.js and abstractlistgroupitem.js -->
 <ul id="abstracts" class="list-group">
     <div> select this </div>
-    <div class="loader-background" ng-show="test">
+    <div class="loader-background" ng-if="test">
         <div class="wrap">
           <div class="loader"></div>
           <div class="loaderbefore"></div>
@@ -31,7 +31,7 @@
         </div>
     </div>
 
-    <div ng-repeat="paper in filteredPapers">
+    <div ng-repeat="paper in filteredPapers" class="fade-animation">
         <abstract-list-group-item paper="paper" like-status="paperLikeStatus[paper.Id]" on-view="showAbstract(abTitle, abAuthor, abText)" selected-abstracts="selectedAbstracts"></abstract-list-group-item>
     </div>
 </ul>
