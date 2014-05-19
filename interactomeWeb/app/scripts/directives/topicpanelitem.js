@@ -81,23 +81,47 @@ angular.module('interactomeApp')
           $scope.addPaper = function(paperid) {
             var scope = $scope;
             var exists = false;
+            var listNewPapers;
 
             var curLength = scope.topic.PapersList.length;
             
             for(var i = 0; i < curLength; i++) { // see if paper already exists
-              if (scope.topic.PapersList[i] == paperid) {
+              if (scope.topic.PapersList[i].Id == paperid) {
                 exists = true;
                 break;
               }
             }
             if(!exists) { // found paper
               AwsService.saveTopicPaper($scope.topic.Id, paperid).then(function() { // call to dynamo
-                if(curLength == 0) {
-                  scope.topic.PapersList = [paperid];
-                }
-                else {
-                  scope.topic.PapersList.push(paperid);
-                }
+                AwsService.getBatchPaper([paperid]).then(function(papers) { // this gets attributes
+                  console.log(papers);
+                  AwsService.getBatchUser(papers[0].Authors).then(function(names) {
+                    var temp = "";
+                    // Ensure the correct order by adding one at a time to the string to display
+                    // Authors will be in order and we can't trust AWS to give us the correct order.
+                    for(var j = 0; j < papers[0].Authors.length; j++) {
+                      for(var i = 0; i < names.length; i++) {
+                        if (papers[0].Authors[j] == names[i].Id)
+                          temp += (names[i].FirstName + " " + names[i].LastName + ", ");
+                      }
+                    }
+                    papers[0].Authors = temp.slice(0, -2);
+
+                    listNewPapers = papers;
+                    if(curLength == 0) {
+                      scope.topic.PapersList = listNewPapers;
+                    }
+                    else {
+                      scope.topic.PapersList.push(listNewPapers[0]);
+                    }
+                  }, function(reason) {
+                    alert(reason);
+                  });
+
+                }, function(reason) {
+                  alert(reason);
+                });
+
               }, function(reason) {
                 alert(reason);
               });
@@ -108,9 +132,9 @@ angular.module('interactomeApp')
           };
 
           // delete a paper from a topic
-          $scope.deletePaper = function(paperid, index) {
+          $scope.deletePaper = function(paper, index) {
             var scope = $scope;
-            AwsService.deleteTopicPaper($scope.topic.Id, paperid).then(function() { // call to dynamo
+            AwsService.deleteTopicPaper($scope.topic.Id, paper.Id).then(function() { // call to dynamo
               scope.topic.PapersList.splice(index, 1);
               var curLength = scope.topic.PapersList.length;
               if(curLength == 0) { // this was the only saved paper
@@ -122,65 +146,57 @@ angular.module('interactomeApp')
           };
 
           $scope.viewAbstract = function(paper, index) {
-            console.log('in viewabstract', paper, index);
             // Only grabs from s3 once
             if (paper.s3Data === undefined) {
-              console.log('s3data undefined...use link', paper.Link);
               $http.get(paper.Link).success(function(data) {
                 paper.s3Data = data;
+                console.log('got s3 paper');
+                AwsService.getBatchUser(paper.Authors).then(function(names) {
+                  var temp = "";
+                  console.log(names);
+                  // Ensure the correct order by adding one at a time to the string to display
+                  // Authors will be in order and we can't trust AWS to give us the correct order.
+                  for(var j = 0; j < paper.Authors.length; j++) {
+                    for(var i = 0; i < names.length; i++) {
+                      if (paper.Authors[j] == names[i].Id)
+                        temp += (names[i].FirstName + " " + names[i].LastName + ", ");
+                    }
+                  }
+                  console.log('temp', temp);
+                  paper.Authors = temp.slice(0, -2);
 
-                $scope.localOnView({
-                abTitle: paper.Title,
-                abAuthor: paper.Authors,
-                abText: paper.s3Data.Abstract});
+                  $scope.localOnView({
+                  abTitle: paper.Title,
+                  abAuthor: paper.Authors,
+                  abText: paper.s3Data.Abstract});
+
+                }, function(reason) {
+                  alert(reason);
+                });
 
               }).error(function() {
                 $scope.localOnView({ abTitle: "ERROR", abText: "Could not find abstract."});
               })
 
             } else {
-              console.log('s3 data defined');
               $scope.localOnView({
-                abTitle: paper.Title,
-                abAuthor: paper.Authors,
-                abText: paper.s3Data.Abstract});
+              abTitle: paper.Title,
+              abAuthor: paper.Authors,
+              abText: paper.s3Data.Abstract});
             }
           };
 
           $scope.getRecs = function() {
-            $scope.localGetRecs({paperslist: $scope.topic.PapersList}); // WE'RE NOT PASSING IN THE SAME ARRAY HERE...NOT UPDATING AFTER THE ADD
+            $scope.localGetRecs({paperslist: $scope.topic.PapersList}); 
           };
 
+          // replaces PapersList with a list of objects that has attributes for each paper
           $scope.getPapers = function() {
-//console.log('getting all paper info for', topics[i]);
-            console.log('called getPapers, getting papers info for', $scope.topic.Id);
             if('PapersList' in $scope.topic) {
-                //var curTopic = topics[i];
                 var scope = $scope;
                 AwsService.getBatchPaper(scope.topic.PapersList).then(function(papers) { // get the attributes
-                    //curTopic.PapersList.length = 0;
                     scope.topic.PapersList = papers;
-                    for(var m = 0; m < scope.topic.PapersList.length; m++) {
-                      console.log(scope.topic);
-                      var curPaper = scope.topic.PapersList[m];
-                      AwsService.getBatchUser(scope.topic.PapersList[m].Authors).then(function(names) {
-                        var temp = "";
-                        // Ensure the correct order by adding one at a time to the string to display
-                        // Authors will be in order and we can't trust AWS to give us the correct order.
-                        for(var j = 0; j < curPaper.Authors.length; j++) {
-                          for(var i = 0; i < names.length; i++) {
-                            if (curPaper.Authors[j] == names[i].Id)
-                              temp += (names[i].FirstName + " " + names[i].LastName + ", ");
-                          }
-                        }
-                        curPaper.Authors = temp.slice(0, -2);
-                      });
-                    }
-                    //console.log(scope.topic.PapersList);
-                    //$scope.userTopics.push.apply($scope.userTopics, curTopic);
-                }, function(reason) { // if we can't get them,
-                    //delete topics[i].PapersList; // TEST THIS. Also we don't want this because
-                    //
+                }, function(reason) {
                     alert(reason);
                 });   
             }
@@ -191,7 +207,7 @@ angular.module('interactomeApp')
       link: function (scope, element, attrs) {
         if('PapersList' in scope.topic) {
           scope.topic.PapersList.sort();
-          //scope.papersList = scope.topic.PapersList;
+          scope.getPapers();
           scope.noAbstracts = false;
         }
         else {
@@ -207,8 +223,6 @@ angular.module('interactomeApp')
           hoverClass: "ui-state-highlight", 
 
         });// http://codepen.io/m-e-conroy/pen/gwbqG shows that all I really had to add was replace!
-
-        scope.getPapers();
 
       }
     };

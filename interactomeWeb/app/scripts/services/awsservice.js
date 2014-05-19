@@ -405,7 +405,7 @@ app.provider('AwsService', function() {
                 dynamodb.batchGetItem(batchParams, function(err, data) { 
                     if (err) { 
                         console.log(err, err.stack);
-                        topicDefer.reject('Cannot query Paper table');
+                        batchPaperDefer.reject('Cannot query Paper table');
                     } else{
                         for (var i = 0; i < data.Responses.Paper.length; i++) {
                             papers.push({ 
@@ -447,6 +447,7 @@ app.provider('AwsService', function() {
                         topicDefer.reject('Cannot query Topic table');
                     } else{
                         for (var i = 0; i < data.Responses.User.length; i++) {
+                           // console.log('aws', names);
                             names.push({ 
                                 Id: data.Responses.User[i].Id.S,
                                 FirstName: data.Responses.User[i].FirstName.S, 
@@ -455,7 +456,6 @@ app.provider('AwsService', function() {
                         batchUserDefer.resolve(names);
                     }
                 });
-
                 return batchUserDefer.promise;
 
             },
