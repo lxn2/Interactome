@@ -49,6 +49,7 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
 
                 // Having the logic inside of the animate causes a nice fade in for the new abstracts.
                 // Since we are using jquery, we must wrap it in an $apply for angular to know about it.
+                // We use  jquery here to scroll because smooth scrolling in angular is messy.
                 $('body').animate({scrollTop: 0}, 2000, function() { 
                     $scope.$apply(function() {
                         $scope.gettingAbstractRecs=false;

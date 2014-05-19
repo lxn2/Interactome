@@ -228,8 +228,7 @@ body {
     border-top-color: rgba(44,44,44,0);
     border-right-color: rgba(55,55,55,0);
     border-bottom-color: rgba(66,66,66,0);
-    border-left-color: rgba(33,33,33,0);
-    
+    border-left-color: rgba(33,33,33,0);  
   }
   10.4% {
     border-top-color: rgba(44,44,44,0.5);
@@ -243,37 +242,37 @@ body {
     border-bottom-color: rgba(66,66,66,0);
     border-left-color: rgba(33,33,33,0);
   }
-31.2% {
-  border-top-color: rgba(44,44,44,0);
+  31.2% {
+    border-top-color: rgba(44,44,44,0);
     border-right-color: rgba(55,55,55,0.5);
     border-bottom-color: rgba(66,66,66,0);
     border-left-color: rgba(33,33,33,0);
-}
-41.6% {
-  border-top-color: rgba(44,44,44,0);
+  }
+  41.6% {
+    border-top-color: rgba(44,44,44,0);
     border-right-color: rgba(55,55,55,0);
     border-bottom-color: rgba(66,66,66,0);
     border-left-color: rgba(33,33,33,0);
-  transform: rotate(40deg);
-}
-52% {
-  border-top-color: rgba(44,44,44,0);
+    transform: rotate(40deg);
+  }
+  52% {
+    border-top-color: rgba(44,44,44,0);
     border-right-color: rgba(55,55,55,0);
     border-bottom-color: rgba(66,66,66,0.5);
     border-left-color: rgba(33,33,33,0);
-}
-62.4% {
-  border-top-color: rgba(44,44,44,0);
+  }
+  62.4% {
+    border-top-color: rgba(44,44,44,0);
     border-right-color: rgba(55,55,55,0);
     border-bottom-color: rgba(66,66,66,0);
     border-left-color: rgba(33,33,33,0);
-}
-72.8% {
-  border-top-color: rgba(44,44,44,0);
+  }
+  72.8% {
+    border-top-color: rgba(44,44,44,0);
     border-right-color: rgba(55,55,55,0);
     border-bottom-color: rgba(66,66,66,0);
     border-left-color: rgba(33,33,33,0.5);
-}
+  }
 }
 
 .loader-inner-circle {
