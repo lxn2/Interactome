@@ -17,9 +17,21 @@
     </div>
 </div>
 
+<collapsable-abstract-titles papers="recOriginAbstracts"></collapsable-abstract-titles>
+
 <!-- see main.js and abstractlistgroupitem.js -->
 <ul id="abstracts" class="list-group">
-    <div ng-repeat="paper in filteredPapers">
+    <!-- Loading image/animation for getting recs -->
+    <div class="loader-background loader-fade-animation" ng-if="gettingAbstractRecs">
+        <div class="loader-position-wrap">
+          <div class="loader-inner-blink"></div>
+          <div class="loader-inner-circle"></div>
+          <div class="loader-outer-circular"></div>
+          <div class="loader-outer-circular loader-secondary-circular"></div>
+        </div>
+    </div>
+
+    <div ng-repeat="paper in filteredPapers" class="fade-animation">
         <abstract-list-group-item paper="paper" like-status="paperLikeStatus[paper.Id]" on-view="showAbstract(abTitle, abAuthor, abText)" selected-abstracts="selectedAbstracts"></abstract-list-group-item>
     </div>
 </ul>

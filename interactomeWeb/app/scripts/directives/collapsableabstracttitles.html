@@ -1,0 +1,12 @@
+<div class='well'>
+    <div class="row">
+        <h4 class="pull-left"> <b> {{heading}} </b></h4>
+        <button class='btn btn-info inline-collapse-btn btn-sm' ng-click="showClick()" ng-show="papers.length > 1">{{showMsg}}</button>
+    </div>
+    <li ng-show="papers.length > 0" ng-bind-html="firstPaper.Title"></li>
+    <div collapse="isCollapsed">
+        <div ng-repeat="paper in papers.slice(1)"> <!-- ignores the first item because that is firstPaper -->
+            <li ng-bind-html="paper.Title"></li>
+        </div> 
+    </div>
+</div>

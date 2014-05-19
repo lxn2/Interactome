@@ -4,6 +4,7 @@ var app = angular.module('interactomeApp', [
     'ngCookies',
     'ngResource',
     'ngSanitize',
+    'ngAnimate',
     'interactomeApp.AwsService',
     'interactomeApp.Userservice',
     'interactomeApp.RecommendationService',

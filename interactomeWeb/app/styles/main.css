@@ -137,3 +137,181 @@ body {
 .abstract-selected {
   background-color: #96EB96;
 }
+
+.inline-collapse-btn {
+  padding-left: 3px;
+  padding-right: 3px;
+  margin-left: 5px;
+}
+
+/*
+#abstracts .loader {
+  position: absolute;
+  z-index: 100000;
+  width: 100%;
+  text-align: -webkit-center;
+  vertical-align: middle;
+  height: 100%;
+  display: table-cell;
+  top: 50%;
+  background-color:white;
+  opacity:.7;
+}*/
+
+/* 
+  fade animation for entering and leaving
+  Used for recs entering and leaving, and loading leaving
+*/
+.loader-fade-animation.ng-enter,
+.loader-fade-animation.ng-leave,
+.fade-animation.ng-enter, 
+.fade-animation.ng-leave {
+  -webkit-transition: 1s linear all;
+  transition: 1s linear all;
+}
+
+.loader-fade-animation,
+.fade-animation.ng-enter {
+  opacity:0;
+}
+.fade-animation.ng-enter.ng-enter-active {
+  opacity:1;
+}
+
+.loader-fade-animation.ng-enter-active {
+  opacity:.7;
+}
+
+.fade-animation.ng-leave {
+  opacity:1;
+}
+.loader-fade-animation.ng-leave-active,
+.fade-animation.ng-leave.ng-leave-active {
+  opacity:0;
+}
+
+/* loading animation for recs */
+.loader-background {
+  background-color:white;
+  opacity:.7;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+}
+
+.loader-position-wrap {
+  position: fixed;
+  top: 50%;
+  width: 150px;
+  left: 33%;
+  margin: 0 auto;
+}
+
+.loader-inner-blink {
+  position: absolute;
+  top: 0;
+  z-index: 1002;
+  width: 50px;
+  height: 50px;
+  border: 15px solid;
+  border-radius: 50%;
+  border-top-color: rgba(44,44,44,0);
+  border-right-color: rgba(55,55,55,0);
+  border-bottom-color: rgba(66,66,66,0);
+  border-left-color: rgba(33,33,33,0);
+  animation: circular-blink 3s infinite;
+}
+
+@keyframes circular-blink {
+  0% {
+    border-top-color: rgba(44,44,44,0);
+    border-right-color: rgba(55,55,55,0);
+    border-bottom-color: rgba(66,66,66,0);
+    border-left-color: rgba(33,33,33,0);  
+  }
+  10.4% {
+    border-top-color: rgba(44,44,44,0.5);
+    border-right-color: rgba(55,55,55,0);
+    border-bottom-color: rgba(66,66,66,0);
+    border-left-color: rgba(33,33,33,0);
+  }
+  20.8% {
+    border-top-color: rgba(44,44,44,0);
+    border-right-color: rgba(55,55,55,0);
+    border-bottom-color: rgba(66,66,66,0);
+    border-left-color: rgba(33,33,33,0);
+  }
+  31.2% {
+    border-top-color: rgba(44,44,44,0);
+    border-right-color: rgba(55,55,55,0.5);
+    border-bottom-color: rgba(66,66,66,0);
+    border-left-color: rgba(33,33,33,0);
+  }
+  41.6% {
+    border-top-color: rgba(44,44,44,0);
+    border-right-color: rgba(55,55,55,0);
+    border-bottom-color: rgba(66,66,66,0);
+    border-left-color: rgba(33,33,33,0);
+    transform: rotate(40deg);
+  }
+  52% {
+    border-top-color: rgba(44,44,44,0);
+    border-right-color: rgba(55,55,55,0);
+    border-bottom-color: rgba(66,66,66,0.5);
+    border-left-color: rgba(33,33,33,0);
+  }
+  62.4% {
+    border-top-color: rgba(44,44,44,0);
+    border-right-color: rgba(55,55,55,0);
+    border-bottom-color: rgba(66,66,66,0);
+    border-left-color: rgba(33,33,33,0);
+  }
+  72.8% {
+    border-top-color: rgba(44,44,44,0);
+    border-right-color: rgba(55,55,55,0);
+    border-bottom-color: rgba(66,66,66,0);
+    border-left-color: rgba(33,33,33,0.5);
+  }
+}
+
+.loader-inner-circle {
+  width: 50px;
+  height:50px;
+  border: 15px solid #ddd;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  z-index: 1001;
+}
+
+.loader-outer-circular {
+  position: absolute;
+  top: -15px;
+  left: -15px;
+  width: 70px;
+  height: 70px;
+  border: 20px solid;
+  border-radius: 50%;
+  border-top-color: #333;
+  border-left-color: #fff;
+  border-bottom-color: #333;
+  border-right-color: #fff;
+  opacity: 0.4;
+  animation: loader-spin-right-bright 5s infinite;
+}
+@keyframes loader-spin-right-bright {
+  0% {transform: scale(1,1) rotate(0deg); opacity: 0.4;}
+  50% {transform: scale(4,4) rotate(360deg); opacity: 0;}
+}
+.loader-secondary-circular {
+  opacity: 0.3;
+  transform: rotate(90deg);
+  animation: loader-spin-left-dim 5s infinite;
+  animation-delay: 1s;
+}
+@keyframes loader-spin-left-dim {
+  0% {transform: scale(1,1) rotate(90deg); opacity: 0.3;}
+  50% {transform: scale(4,4) rotate(-360deg); opacity: 0;}
+}
+
