@@ -16,7 +16,7 @@ angular.module('interactomeApp')
         $scope.$watch('papers', function() {
             var paperCount = $scope.papers.length;
             if(paperCount > 0) {
-              $scope.heading = (paperCount > 1)? "Recommended abstracts based on the " + paperCount + " abstracts below" : "Recommended Abstracts based on the below abstract";
+              $scope.heading = (paperCount > 1)? "Recommended abstracts based on the " + paperCount + " abstracts below" : "Recommended Abstracts based on";
               $scope.firstPaper = $scope.papers[0];
             } else {
               $scope.heading = "Suggested Abstracts by Us";
