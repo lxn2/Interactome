@@ -315,3 +315,11 @@ body {
   50% {transform: scale(4,4) rotate(-360deg); opacity: 0;}
 }
 
+/* Get recs button */
+.sticky-bottom {
+  background-color: rgba(245,245,245,0.8);
+  margin-bottom: 0px;
+  position: fixed;
+  bottom: 0px;
+  z-index: 500;
+}
