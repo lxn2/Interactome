@@ -28,23 +28,6 @@ angular.module('interactomeApp')
     AwsService.credentials().then(function() {
         AwsService.getTopics(UserService.currentUsername()).then(function(topics) {
             $scope.userTopics.length = 0;
-            // GET PAPER INFO getbatchpaper
-            /*for(var i = 0; i < topics.length; i++) {
-                //console.log('getting all paper info for', topics[i]);
-                if('PapersList' in topics[i]) {
-                    var curTopic = topics[i];
-                    AwsService.getBatchPaper(topics[i].PapersList).then(function(papers) { // get the attributes
-                        curTopic.PapersList.length = 0;
-                        curTopic.PapersList = papers;
-                        //$scope.userTopics.push.apply($scope.userTopics, curTopic);
-                    }, function(reason) { // if we can't get them,
-                        //delete topics[i].PapersList; // TEST THIS. Also we don't want this because
-                        //
-                        alert(reason);
-                    });   
-                }
-
-            } */
             $scope.userTopics.push.apply($scope.userTopics, topics);
         }, function(reason) {
             alert(reason);

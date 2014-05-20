@@ -53,8 +53,7 @@ angular.module('interactomeApp')
           // delete a topic
           $scope.delete = function() {
             var scope = $scope;
-            $scope.localDeleteTopic({topicId: scope.topic.Id});
-            if($scope.topic.PapersList.length > 1 || $scope.topic.PapersList.length == 1 && $scope.topic.PapersList[0] != $scope.placeHolder) { // contains saved papers
+            if($scope.topic.PapersList.length > 0) { // contains saved papers
 
               var al = 'There are ' + $scope.topic.PapersList.length + ' abstracts in "' + scope.topic.Name +
               '". Deleting this topic will also delete the abstracts. Confirm deletion.';
@@ -81,43 +80,27 @@ angular.module('interactomeApp')
           $scope.addPaper = function(paperid) {
             var scope = $scope;
             var exists = false;
-            var listNewPapers;
 
             var curLength = scope.topic.PapersList.length;
             
             for(var i = 0; i < curLength; i++) { // see if paper already exists
-              if (scope.topic.PapersList[i].Id == paperid) {
+              if(scope.topic.PapersList[i].Id == paperid) {
                 exists = true;
                 break;
               }
             }
-            if(!exists) { // found paper
+
+            if(!exists) { // paper doesn't exist
               AwsService.saveTopicPaper($scope.topic.Id, paperid).then(function() { // call to dynamo
                 AwsService.getBatchPaper([paperid]).then(function(papers) { // this gets attributes
-                  console.log(papers);
-                  AwsService.getBatchUser(papers[0].Authors).then(function(names) {
-                    var temp = "";
-                    // Ensure the correct order by adding one at a time to the string to display
-                    // Authors will be in order and we can't trust AWS to give us the correct order.
-                    for(var j = 0; j < papers[0].Authors.length; j++) {
-                      for(var i = 0; i < names.length; i++) {
-                        if (papers[0].Authors[j] == names[i].Id)
-                          temp += (names[i].FirstName + " " + names[i].LastName + ", ");
-                      }
-                    }
-                    papers[0].Authors = temp.slice(0, -2);
+                  if(curLength == 0) {
+                    scope.topic.PapersList = papers; 
+                  }
+                  else {
+                    scope.topic.PapersList.push(papers[0]); 
+                  }
 
-                    listNewPapers = papers;
-                    if(curLength == 0) {
-                      scope.topic.PapersList = listNewPapers;
-                    }
-                    else {
-                      scope.topic.PapersList.push(listNewPapers[0]);
-                    }
-                  }, function(reason) {
-                    alert(reason);
-                  });
-
+                  $scope.noAbstracts = false;
                 }, function(reason) {
                   alert(reason);
                 });
@@ -127,8 +110,6 @@ angular.module('interactomeApp')
               });
             }
 
-            $scope.noAbstracts = false;
-            $scope.$apply();
           };
 
           // delete a paper from a topic
@@ -148,12 +129,11 @@ angular.module('interactomeApp')
           $scope.viewAbstract = function(paper, index) {
             // Only grabs from s3 once
             if (paper.s3Data === undefined) {
-              $http.get(paper.Link).success(function(data) {
+              $http.get(paper.Link).success(function(data) { // get s3 abstract and author names once, together
                 paper.s3Data = data;
-                console.log('got s3 paper');
-                AwsService.getBatchUser(paper.Authors).then(function(names) {
+
+                AwsService.getBatchUser(paper.Authors).then(function(names) { // replace User Id's with real author names
                   var temp = "";
-                  console.log(names);
                   // Ensure the correct order by adding one at a time to the string to display
                   // Authors will be in order and we can't trust AWS to give us the correct order.
                   for(var j = 0; j < paper.Authors.length; j++) {
@@ -162,9 +142,8 @@ angular.module('interactomeApp')
                         temp += (names[i].FirstName + " " + names[i].LastName + ", ");
                     }
                   }
-                  console.log('temp', temp);
                   paper.Authors = temp.slice(0, -2);
-
+                  // open modal
                   $scope.localOnView({
                   abTitle: paper.Title,
                   abAuthor: paper.Authors,
@@ -179,6 +158,7 @@ angular.module('interactomeApp')
               })
 
             } else {
+              //open modal
               $scope.localOnView({
               abTitle: paper.Title,
               abAuthor: paper.Authors,
@@ -191,6 +171,7 @@ angular.module('interactomeApp')
           };
 
           // replaces PapersList with a list of objects that has attributes for each paper
+          // should be called once from the link function
           $scope.getPapers = function() {
             if('PapersList' in $scope.topic) {
                 var scope = $scope;
