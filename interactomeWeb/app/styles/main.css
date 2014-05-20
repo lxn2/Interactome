@@ -220,10 +220,10 @@ body {
   border-right-color: rgba(55,55,55,0);
   border-bottom-color: rgba(66,66,66,0);
   border-left-color: rgba(33,33,33,0);
-  animation: circular-blink 3s infinite;
+  -webkit-animation: circular-blink 3s infinite;
 }
 
-@keyframes circular-blink {
+@-webkit-keyframes circular-blink {
   0% {
     border-top-color: rgba(44,44,44,0);
     border-right-color: rgba(55,55,55,0);
@@ -253,7 +253,7 @@ body {
     border-right-color: rgba(55,55,55,0);
     border-bottom-color: rgba(66,66,66,0);
     border-left-color: rgba(33,33,33,0);
-    transform: rotate(40deg);
+    -webkit-transform: rotate(40deg);
   }
   52% {
     border-top-color: rgba(44,44,44,0);
@@ -298,20 +298,20 @@ body {
   border-bottom-color: #333;
   border-right-color: #fff;
   opacity: 0.4;
-  animation: loader-spin-right-bright 5s infinite;
+  -webkit-animation: loader-spin-right-bright 5s infinite;
 }
-@keyframes loader-spin-right-bright {
-  0% {transform: scale(1,1) rotate(0deg); opacity: 0.4;}
-  50% {transform: scale(4,4) rotate(360deg); opacity: 0;}
+@-webkit-keyframes loader-spin-right-bright {
+  0% {-webkit-transform: scale(1,1) rotate(0deg); opacity: 0.4;}
+  50% {-webkit-transform: scale(4,4) rotate(360deg); opacity: 0;}
 }
 .loader-secondary-circular {
   opacity: 0.3;
-  transform: rotate(90deg);
-  animation: loader-spin-left-dim 5s infinite;
-  animation-delay: 1s;
+  -webkit-transform: rotate(90deg);
+  -webkit-animation: loader-spin-left-dim 5s infinite;
+  -webkit-animation-delay: 1s;
 }
-@keyframes loader-spin-left-dim {
-  0% {transform: scale(1,1) rotate(90deg); opacity: 0.3;}
-  50% {transform: scale(4,4) rotate(-360deg); opacity: 0;}
+@-webkit-keyframes loader-spin-left-dim {
+  0% {-webkit-transform: scale(1,1) rotate(90deg); opacity: 0.3;}
+  50% {-webkit-transform: scale(4,4) rotate(-360deg); opacity: 0;}
 }
 

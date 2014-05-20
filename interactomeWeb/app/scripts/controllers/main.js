@@ -43,7 +43,7 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
             //var abstractsChecked = $scope.selectedAbstracts.join();
             //AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_req', abstractsChecked);
             RecommendationService.getRecs($scope.selectedAbstracts).then(function(paperList) {
-                $scope.recOriginAbstracts = $scope.selectedAbstracts.slice(0); // copy array for rec heading
+                var temp = $scope.selectedAbstracts.slice(0); // copy array for rec heading
                 $scope.selectedAbstracts.length = 0;
                 $scope.papers.length = 0;
 
@@ -52,6 +52,7 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
                 // We use  jquery here to scroll because smooth scrolling in angular is messy.
                 $('body').animate({scrollTop: 0}, 2000, function() { 
                     $scope.$apply(function() {
+                        $scope.recOriginAbstracts = temp;//updates the text of the abstracttitles directive
                         $scope.gettingAbstractRecs=false;
                         $scope.papers.push.apply($scope.papers, paperList);
 
