@@ -5,7 +5,7 @@
 **/
 var app = angular.module('interactomeApp');
 
-app.controller('MainCtrl', function($scope, UserService, AwsService, RecommendationService) {
+app.controller('MainCtrl', function($rootScope, $scope, UserService, AwsService, RecommendationService) {
     $scope.papers = [];
 
     $scope.modalTitle = null;
@@ -66,6 +66,14 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
             // Triggers animation, will happen before .then happens (because of async)
             $scope.gettingAbstractRecs = true;
         }
+    };
+
+    // Controls get-recs cancel button behavior. Let's directives know to become unselected.
+    $scope.cancelSelectedAbstracts = function() { 
+        //$emit travels upwards so since we are using rootscope (directives have isolated scope)
+        //it will not bubble to any other scopes.
+        $rootScope.$emit('cancelSelectedAbstracts');
+        $scope.selectedAbstracts.length = 0;
     };
 
     // updates abstract information for modal view

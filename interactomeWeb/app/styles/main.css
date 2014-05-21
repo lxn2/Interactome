@@ -144,19 +144,6 @@ body {
   margin-left: 5px;
 }
 
-/*
-#abstracts .loader {
-  position: absolute;
-  z-index: 100000;
-  width: 100%;
-  text-align: -webkit-center;
-  vertical-align: middle;
-  height: 100%;
-  display: table-cell;
-  top: 50%;
-  background-color:white;
-  opacity:.7;
-}*/
 
 /* 
   fade animation for entering and leaving
@@ -326,29 +313,20 @@ body {
 
 .get-rec-container.ng-enter {
   opacity: 0;
-  -webkit-animation: .5s get-rec-container-slide-in;
+  -webkit-animation: .2s slide-in;
  }
  .get-rec-container.ng-leave {
   -webkit-animation: 1s slide-out;
  }
 
-@-webkit-keyframes get-rec-container-slide-in {
-  0% {
+@-webkit-keyframes slide-in {
+  from {
     opacity: 0;
     -webkit-transform: translateY(2000px);
-    background-color: rgba(245,245,245,0.7);
   }
-  50% {
+  to {
     opacity: 1;
-    background-color: rgba(245,245,245,0.7);
     -webkit-transform: translateY(0);
-  }
-  80% {
-    background-color: rgba(245,245,245,0.7);
-  }
-  100% {
-    opacity: 1;
-    background-color: rgba(255, 255, 0, 1);
   }
 }
 

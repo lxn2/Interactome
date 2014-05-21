@@ -18,7 +18,7 @@ angular.module('interactomeApp')
           likeStatus: '=',
           selectedAbstracts: '='
       	},
-		    controller: ['$scope', '$http', 'AwsService', 'UserService', function($scope, $http, AwsService, UserService) {
+		    controller: ['$rootScope', '$scope', '$http', 'AwsService', 'UserService', function($rootScope, $scope, $http, AwsService, UserService) {
           $scope.selected = false;
 
           $scope.getNames = function() {
@@ -85,6 +85,11 @@ angular.module('interactomeApp')
                 $scope.selectedAbstracts.splice(index, 1);
             }
           };
+
+          var unbind = $rootScope.$on('cancelSelectedAbstracts', function() { $scope.selected = false; });
+          //Cleanup listener
+          $scope.$on('$destroy', unbind);
+
     	}],
     	templateUrl: 'scripts/directives/abstractlistgroupitem.html',
 
