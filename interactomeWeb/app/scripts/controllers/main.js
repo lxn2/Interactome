@@ -24,7 +24,7 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
     $scope.paperLikeStatus = {};
     $scope.selectedAbstracts = [];
 
-    
+    $scope.recOriginAbstracts = []; // list of abstracts the current recs are seeded from
 
     $scope.paginate = function() {
         // Setting currentPage to 0 is a hack to get the recs working on page 1.
@@ -45,15 +45,28 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
         if(paperslist.length > 0) {
             //var abstractsChecked = $scope.selectedAbstracts.join();
             //AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_req', abstractsChecked);
-            RecommendationService.getRecs(paperslist).then(function(recList) {
+            RecommendationService.getRecs(paperslist).then(function(reclist) {
+                $scope.recOriginAbstracts = paperslist.slice(0); // copy array for rec heading
                 $scope.selectedAbstracts.length = 0;
                 $scope.papers.length = 0;
-                $scope.papers.push.apply($scope.papers, recList);
-                //Pagination
-                $scope.currentPage = 0;
-                $scope.paginationTotalItems = $scope.papers.length;
-                $scope.moreThanOnePage = ($scope.numPerPage < $scope.paginationTotalItems);
+
+                // Having the logic inside of the animate causes a nice fade in for the new abstracts.
+                // Since we are using jquery, we must wrap it in an $apply for angular to know about it.
+                // We use  jquery here to scroll because smooth scrolling in angular is messy.
+                $('body').animate({scrollTop: 0}, 2000, function() { 
+                    $scope.$apply(function() {
+                        $scope.gettingAbstractRecs=false;
+                        $scope.papers.push.apply($scope.papers, reclist);
+
+                        //Pagination
+                        $scope.currentPage = 0;
+                        $scope.paginationTotalItems = $scope.papers.length;
+                        $scope.moreThanOnePage = ($scope.numPerPage < $scope.paginationTotalItems);
+                    })
+                });
             });
+            // Triggers animation, will happen before .then happens (because of async)
+            $scope.gettingAbstractRecs = true;
         }
     };
 
