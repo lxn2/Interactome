@@ -14,10 +14,11 @@ angular.module('interactomeApp')
           localRenameTopic: '&renameTopic',
           localDeleteTopic: '&delete',
           localGetRecs: '&getRecs',
+          localOnView: '&onView',
       		topic: '='
       	},
 
-		    controller: ['$scope', 'AwsService', function($scope, AwsService) {    
+		    controller: ['$scope', '$http', 'AwsService', function($scope, $http, AwsService) {    
           $scope.editorEnabled = false;
           $scope.noAbstracts = null;
           $scope.editableValue = $scope.topic.Name;          
@@ -52,8 +53,7 @@ angular.module('interactomeApp')
           // delete a topic
           $scope.delete = function() {
             var scope = $scope;
-            $scope.localDeleteTopic({topicId: scope.topic.Id});
-            if($scope.topic.PapersList.length > 1 || $scope.topic.PapersList.length == 1 && $scope.topic.PapersList[0] != $scope.placeHolder) { // contains saved papers
+            if($scope.topic.PapersList.length > 0) { // contains saved papers
 
               var al = 'There are ' + $scope.topic.PapersList.length + ' abstracts in "' + scope.topic.Name +
               '". Deleting this topic will also delete the abstracts. Confirm deletion.';
@@ -84,32 +84,38 @@ angular.module('interactomeApp')
             var curLength = scope.topic.PapersList.length;
             
             for(var i = 0; i < curLength; i++) { // see if paper already exists
-              if (scope.topic.PapersList[i] == paperid) {
+              if(scope.topic.PapersList[i].Id == paperid) {
                 exists = true;
                 break;
               }
             }
-            if(!exists) { // found paper
+
+            if(!exists) { // paper doesn't exist
               AwsService.saveTopicPaper($scope.topic.Id, paperid).then(function() { // call to dynamo
-                if(curLength == 0) {
-                  scope.topic.PapersList = [paperid];
-                }
-                else {
-                  scope.topic.PapersList.push(paperid);
-                }
+                AwsService.getBatchPaper([paperid]).then(function(papers) { // this gets attributes
+                  if(curLength == 0) {
+                    scope.topic.PapersList = papers; 
+                  }
+                  else {
+                    scope.topic.PapersList.push(papers[0]); 
+                  }
+
+                  $scope.noAbstracts = false;
+                }, function(reason) {
+                  alert(reason);
+                });
+
               }, function(reason) {
                 alert(reason);
               });
             }
 
-            $scope.noAbstracts = false;
-            $scope.$apply();
           };
 
           // delete a paper from a topic
-          $scope.deletePaper = function(paperid, index) {
+          $scope.deletePaper = function(paper, index) {
             var scope = $scope;
-            AwsService.deleteTopicPaper($scope.topic.Id, paperid).then(function() { // call to dynamo
+            AwsService.deleteTopicPaper($scope.topic.Id, paper.Id).then(function() { // call to dynamo
               scope.topic.PapersList.splice(index, 1);
               var curLength = scope.topic.PapersList.length;
               if(curLength == 0) { // this was the only saved paper
@@ -120,14 +126,69 @@ angular.module('interactomeApp')
             });
           };
 
-          $scope.getRecs = function() {
-            $scope.localGetRecs({paperslist: $scope.topic.PapersList});
+          $scope.viewAbstract = function(paper, index) {
+            // Only grabs from s3 once
+            if (paper.s3Data === undefined) {
+              $http.get(paper.Link).success(function(data) { // get s3 abstract and author names once, together
+                paper.s3Data = data;
+
+                AwsService.getBatchUser(paper.Authors).then(function(names) { // replace User Id's with real author names
+                  var temp = "";
+                  // Ensure the correct order by adding one at a time to the string to display
+                  // Authors will be in order and we can't trust AWS to give us the correct order.
+                  for(var j = 0; j < paper.Authors.length; j++) {
+                    for(var i = 0; i < names.length; i++) {
+                      if (paper.Authors[j] == names[i].Id)
+                        temp += (names[i].FirstName + " " + names[i].LastName + ", ");
+                    }
+                  }
+                  paper.Authors = temp.slice(0, -2);
+                  // open modal
+                  $scope.localOnView({
+                  abTitle: paper.Title,
+                  abAuthor: paper.Authors,
+                  abText: paper.s3Data.Abstract});
+
+                }, function(reason) {
+                  alert(reason);
+                });
+
+              }).error(function() {
+                $scope.localOnView({ abTitle: "ERROR", abText: "Could not find abstract."});
+              })
+
+            } else {
+              //open modal
+              $scope.localOnView({
+              abTitle: paper.Title,
+              abAuthor: paper.Authors,
+              abText: paper.s3Data.Abstract});
+            }
           };
+
+          $scope.getRecs = function() {
+            $scope.localGetRecs({paperslist: $scope.topic.PapersList}); 
+          };
+
+          // replaces PapersList with a list of objects that has attributes for each paper
+          // should be called once from the link function
+          $scope.getPapers = function() {
+            if('PapersList' in $scope.topic) {
+                var scope = $scope;
+                AwsService.getBatchPaper(scope.topic.PapersList).then(function(papers) { // get the attributes
+                    scope.topic.PapersList = papers;
+                }, function(reason) {
+                    alert(reason);
+                });   
+            }
+          };
+
     	}],
       templateUrl: 'scripts/directives/topicpanelitem.html',
       link: function (scope, element, attrs) {
         if('PapersList' in scope.topic) {
           scope.topic.PapersList.sort();
+          scope.getPapers();
           scope.noAbstracts = false;
         }
         else {
@@ -143,6 +204,7 @@ angular.module('interactomeApp')
           hoverClass: "ui-state-highlight", 
 
         });// http://codepen.io/m-e-conroy/pen/gwbqG shows that all I really had to add was replace!
+
       }
     };
   }); 

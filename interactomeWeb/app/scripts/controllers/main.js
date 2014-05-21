@@ -39,6 +39,9 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
     $scope.$on('getRecsFromTopic', function(event, topicspaperslist) {
         $scope.abstractsRecFromTopic(topicspaperslist);
     });
+    $scope.$on('showAbstractFromTopic', function(event, abTitle, abAuthor, abText) {
+        $scope.showAbstract(abTitle, abAuthor, abText);
+    });
 
     // Calls RecommendationService for recommendations based off of list of abstracts
     $scope.abstractsRec = function(paperslist) {
