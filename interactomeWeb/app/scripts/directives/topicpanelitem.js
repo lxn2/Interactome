@@ -121,7 +121,7 @@ angular.module('interactomeApp')
           };
 
           $scope.getRecs = function() {
-            $scope.localGetRecs({paperslist: $scope.topic.PapersList}); // WE'RE NOT PASSING IN THE SAME ARRAY HERE...NOT UPDATING AFTER THE ADD
+            $scope.localGetRecs({paperslist: $scope.topic.PapersList});
           };
     	}],
       templateUrl: 'scripts/directives/topicpanelitem.html',
