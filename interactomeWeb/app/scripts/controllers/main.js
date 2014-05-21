@@ -27,6 +27,7 @@ app.controller('MainCtrl', function($rootScope, $scope, UserService, AwsService,
     $scope.recOriginAbstracts = []; // list of abstracts the current recs are seeded from
 
     $scope.paginate = function() {
+        $('body').animate({scrollTop: 0});
         // Setting currentPage to 0 is a hack to get the recs working on page 1.
         if ($scope.currentPage == 0)
             $scope.currentPage = 1;
