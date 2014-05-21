@@ -40,15 +40,15 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
         $scope.abstractsRecFromTopic(topicspaperslist);
     });
 
-    // Determines what happens after one or more abstract is selected
-    $scope.abstractsRec = function() {
-        if($scope.selectedAbstracts.length > 0) {
+    // Calls RecommendationService for recommendations based off of list of abstracts
+    $scope.abstractsRec = function(paperslist) {
+        if(paperslist.length > 0) {
             //var abstractsChecked = $scope.selectedAbstracts.join();
             //AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_req', abstractsChecked);
-            RecommendationService.getRecs($scope.selectedAbstracts).then(function(paperList) {
+            RecommendationService.getRecs(paperslist).then(function(recList) {
                 $scope.selectedAbstracts.length = 0;
                 $scope.papers.length = 0;
-                $scope.papers.push.apply($scope.papers, paperList);
+                $scope.papers.push.apply($scope.papers, recList);
                 //Pagination
                 $scope.currentPage = 0;
                 $scope.paginationTotalItems = $scope.papers.length;
@@ -57,17 +57,14 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
         }
     };
 
-    // Send in an explicit list of paper id's for recommendations
+    // request for recommendations from selected abstracts
+    $scope.abstractsRecFromSelected = function() {
+        $scope.abstractsRec($scope.selectedAbstracts);
+    };
+
+    // request for recommendations from topics
     $scope.abstractsRecFromTopic = function(topicspaperslist) {
-        RecommendationService.getRecs(topicspaperslist).then(function(paperList) {
-            $scope.selectedAbstracts.length = 0; // uncheck papers (if checked) anyway
-            $scope.papers.length = 0;
-            $scope.papers.push.apply($scope.papers, paperList);
-            //Pagination
-            $scope.currentPage = 0;
-            $scope.paginationTotalItems = $scope.papers.length;
-            $scope.moreThanOnePage = ($scope.numPerPage < $scope.paginationTotalItems);
-        });
+        $scope.abstractsRec(topicspaperslist);
     };
 
     // updates abstract information for modal view
