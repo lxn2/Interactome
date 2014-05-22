@@ -5,21 +5,25 @@ angular.module('interactomeApp.SearchService', [])
     // AngularJS will instantiate a singleton by calling "new" on this function
     var service = {
 	    getResults: function(query) {
+
     	    var request = $http({
+    	    	method:"JSONP",
 		        url: "http://ec2-54-201-190-162.us-west-2.compute.amazonaws.com:8983/solr/select",
-		        data: {
+		        crossDomain: true,
+		        params: {
 		            "q": "query",
 		            "qt": "edismax",
-		            "qf": "title",
+		            "qf": "title text",
 		            "hl": true,
 		            "wt": "json",
-		            "rows":100
+		            "rows":1000000
 		        },
 		        traditional: true,
 		        cache: true,
 		        async: true,
-		        dataType: 'jsonp'
-		    });
+		        dataType: 'jsonp',
+                jsonp: 'json.wrf'
+            });
 
 			return (request.then(service.handleSuccess, service.handleError));
 	    },
@@ -49,8 +53,9 @@ angular.module('interactomeApp.SearchService', [])
 	    // I transform the successful response, unwrapping the application data
 	    // from the API response payload.
 	    handleSuccess: function(response) {
+	    	console.log(response.data);
 
-	        return(response.data.docs);
+	        return(response.data.response.docs);
 
 	    }
 	};
