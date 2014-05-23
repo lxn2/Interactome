@@ -37,7 +37,7 @@ angular.module('interactomeApp.RecommendationService', [])
                     returnedPapers.push({
                       Id: paperId, 
                       Link: data.Items[i].Link.S,
-                      Title: data.Items[i].Title.S,
+                      Title: data.Items[i].Title.S.replace(/<[b\sB]+>/g, ''),
                       Authors: (data.Items[i].Authors.S).split(',')
                     })
                 }

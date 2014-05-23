@@ -1,4 +1,4 @@
-<li class="list-group-item clickable-pointer" ng-click="selected = !selected;" ng-class="{'abstract-selected': selected}">
+<li class="list-group-item clickable-pointer" ng-click="selectedClick()" ng-class="{'abstract-selected': selected}">
     <div class="btn-group" data-toggle="buttons">
         <label class="btn btn-primary" ng-class="{active: likeStatus}" ng-click="likeClick(); $event.stopPropagation();">
             <input type="radio" name="likeBtn" > <span class="glyphicon glyphicon-thumbs-up"></span>

@@ -1,7 +1,7 @@
 /* Space out content a bit */
 body {
   padding-top: 20px;
-  padding-bottom: 20px;
+  padding-bottom: 60px;
 }
 
 /* Everything but the jumbotron gets side spacing for mobile first views */
@@ -144,19 +144,6 @@ body {
   margin-left: 5px;
 }
 
-/*
-#abstracts .loader {
-  position: absolute;
-  z-index: 100000;
-  width: 100%;
-  text-align: -webkit-center;
-  vertical-align: middle;
-  height: 100%;
-  display: table-cell;
-  top: 50%;
-  background-color:white;
-  opacity:.7;
-}*/
 
 /* 
   fade animation for entering and leaving
@@ -380,3 +367,41 @@ body {
 }
 
 
+/* Get recs button */
+.get-rec-container {
+  background-color: rgba(245,245,245,0.7);
+  margin-bottom: 2px;
+  position: fixed;
+  bottom: 0px;
+  z-index: 500;
+}
+
+.get-rec-container.ng-enter {
+  opacity: 0;
+  -webkit-animation: .2s slide-in;
+ }
+ .get-rec-container.ng-leave {
+  -webkit-animation: 1s slide-out;
+ }
+
+@-webkit-keyframes slide-in {
+  from {
+    opacity: 0;
+    -webkit-transform: translateY(2000px);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+  }
+}
+
+@-webkit-keyframes slide-out {
+  from {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    -webkit-transform: translateY(2000px);
+  }
+}

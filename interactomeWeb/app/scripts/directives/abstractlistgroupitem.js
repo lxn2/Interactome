@@ -18,7 +18,7 @@ angular.module('interactomeApp')
           likeStatus: '=',
           selectedAbstracts: '='
       	},
-		    controller: ['$scope', '$http', 'AwsService', 'UserService', function($scope, $http, AwsService, UserService) {
+		    controller: ['$rootScope', '$scope', '$http', 'AwsService', 'UserService', function($rootScope, $scope, $http, AwsService, UserService) {
           $scope.selected = false;
 
           $scope.getNames = function() {
@@ -74,20 +74,30 @@ angular.module('interactomeApp')
                 abText: $scope.s3Data.Abstract});
             }
           };
-          $scope.$watch('selected', function() {
-          if($scope.selected)
-            $scope.selectedAbstracts.push($scope.paper);
-          else {
-            var index = $scope.selectedAbstracts.indexOf($scope.paper);
-            if (index > -1)
-              $scope.selectedAbstracts.splice(index, 1);
-          }
-        }, true);
+
+          $scope.selectedClick = function () {
+            $scope.selected = !$scope.selected;
+            if($scope.selected)
+              $scope.selectedAbstracts.push($scope.paper);
+            else {
+              var index = $scope.selectedAbstracts.indexOf($scope.paper);
+              if (index > -1)
+                $scope.selectedAbstracts.splice(index, 1);
+            }
+          };
+
+          var unbind = $rootScope.$on('cancelSelectedAbstracts', function() { $scope.selected = false; });
+          //Cleanup listener
+          $scope.$on('$destroy', unbind);
+
     	}],
     	templateUrl: 'scripts/directives/abstractlistgroupitem.html',
 
       link: function ($scope, element, attrs) {
         $scope.getNames();
+        // Pagination could cause this paper to be reloaded. Check if it's already been clicked.
+        $scope.selected = ($scope.selectedAbstracts.indexOf($scope.paper) > -1);
+
         element.draggable({
           revert: true, 
           appendTo: 'body', 

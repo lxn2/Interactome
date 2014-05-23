@@ -36,9 +36,14 @@
     </div>
 </ul>
 
-<button id="testSelection" type="button" ng-click="abstractsRec()" class="btn btn-primary">Get Recs</button>
-</br>
-
 <!-- Page Pagination -->
 <Pagination class="clickable-pointer" total-items="paginationTotalItems" items-per-page="numPerPage" page="currentPage" max-size="maxSize" boundary-links="true" ng-show="moreThanOnePage">
 </pagination>
+
+<!-- get rec button that appears at bottom of page -->
+<div class="get-rec-container well" ng-if="selectedAbstracts.length > 0 && !gettingAbstractRecs">
+    <button type="button" class="btn btn-danger" ng-click="cancelSelectedAbstracts()">
+        <span class="glyphicon glyphicon-remove"></span> Cancel Selection
+    </button>
+    <button id="testSelection" type="button" ng-click="abstractsRec()" class="btn btn-primary">Get Recommendations</button>
+</div>
