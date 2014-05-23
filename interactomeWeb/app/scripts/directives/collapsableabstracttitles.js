@@ -12,15 +12,15 @@ angular.module('interactomeApp')
         $scope.isCollapsed = true;
         $scope.showMsg = "Show More";
         
-        // Because papers is blank until stuff. may change in final version -- nathan
+        // Watch papers because it will change when the user gets recs.
         $scope.$watch('papers', function() {
             var paperCount = $scope.papers.length;
-            if(paperCount > 0) {
+            $scope.buttonBeingShown = (paperCount > 3);
+            
+            if(paperCount > 0)
               $scope.heading = (paperCount > 1)? "Recommended abstracts based on the " + paperCount + " abstracts below" : "Recommended Abstracts based on";
-              $scope.firstPaper = $scope.papers[0];
-            } else {
+            else
               $scope.heading = "Suggested Abstracts by Us";
-            }
         });
         
         $scope.showClick = function(){
@@ -28,9 +28,6 @@ angular.module('interactomeApp')
           $scope.showMsg = ($scope.isCollapsed)? "Show More" : "Show Less";
         };
 
-      }],
-      link: function($scope, element, attrs) {
-        
-      }
+      }]
     };
   });

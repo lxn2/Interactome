@@ -1,12 +1,12 @@
 <div class='well'>
-    <div class="row">
-        <h4 class="pull-left"> <b> {{heading}} </b></h4>
-        <button class='btn btn-info inline-collapse-btn btn-sm' ng-click="showClick()" ng-show="papers.length > 1">{{showMsg}}</button>
-    </div>
-    <li ng-show="papers.length > 0" ng-bind-html="firstPaper.Title"></li>
+    <h4> <b> {{heading}} </b></h4>
+    <li ng-show="papers.length > 0" ng-bind-html="papers[0].Title"></li>
+    <li ng-show="papers.length > 1" ng-bind-html="papers[1].Title" ng-class="{'rec-heading-dim-text': isCollapsed && buttonBeingShown}"></li>
+    <li ng-show="papers.length > 2" ng-bind-html="papers[2].Title" ng-class="{'rec-heading-very-dim-text': isCollapsed && buttonBeingShown}"></li>
     <div collapse="isCollapsed">
-        <div ng-repeat="paper in papers.slice(1)"> <!-- ignores the first item because that is firstPaper -->
-            <li ng-bind-html="paper.Title"></li>
+        <div ng-repeat="paper in papers"> <!-- ignores the first 3 because those are above -->
+            <li ng-bind-html="paper.Title" ng-show="$index > 2"></li>
         </div> 
     </div>
+    <button class='btn btn-info rec-heading-collapse-btn btn-sm' ng-click="showClick()" ng-show="buttonBeingShown">{{showMsg}}</button>
 </div>
