@@ -40,10 +40,10 @@
 <Pagination class="clickable-pointer" total-items="paginationTotalItems" items-per-page="numPerPage" page="currentPage" max-size="maxSize" boundary-links="true" ng-show="moreThanOnePage">
 </pagination>
 
-<!-- get rec button that appears at bottom of page. col-md-5 is used for width for ease. -->
-<div class="get-rec-container well col-md-5" ng-if="selectedAbstracts.length > 0 && !gettingAbstractRecs">
-    <button type="button" class="btn btn-danger pull-left" ng-click="cancelSelectedAbstracts()">
+<!-- get rec button that appears at bottom of page. col-md-4 is used for width for ease. -->
+<div class="get-rec-container well col-md-4" ng-if="selectedAbstracts.length > 0 && !gettingAbstractRecs">
+    <button type="button" class="btn btn-danger" ng-click="cancelSelectedAbstracts()">
         <span class="glyphicon glyphicon-remove"></span> Cancel Selection
     </button>
-    <button id="testSelection" type="button" ng-click="abstractsRec()" class="btn btn-primary pull-right">Get Recommendations</button>
+    <button id="testSelection" type="button" ng-click="abstractsRec()" class="btn btn-primary">Get Recommendations</button>
 </div>
