@@ -112,10 +112,6 @@ angular.module('interactomeApp')
         }
     };
 
-    $scope.showAbstract = function(abTitle, abAuthor, abText) {
-        $scope.$broadcast('showAbstractFromTopic', abTitle, abAuthor, abText);
-    };
-
     $scope.getRecs = function(paperslist) {
         $scope.$broadcast('getRecsFromTopic', paperslist);
     };

@@ -39,9 +39,6 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
     $scope.$on('getRecsFromTopic', function(event, topicspaperslist) {
         $scope.abstractsRecFromTopic(topicspaperslist);
     });
-    $scope.$on('showAbstractFromTopic', function(event, abTitle, abAuthor, abText) {
-        $scope.showAbstract(abTitle, abAuthor, abText);
-    });
 
     // Calls RecommendationService for recommendations based off of list of abstracts
     $scope.abstractsRec = function(paperslist) {
@@ -82,14 +79,6 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
     $scope.abstractsRecFromTopic = function(topicspaperslist) {
         $scope.abstractsRec(topicspaperslist);
     };
-
-    // updates abstract information for modal view
-    $scope.showAbstract = function(abTitle, abAuthor, abText) {
-        $scope.modalTitle = abTitle;
-        $scope.modalAuthor = abAuthor;
-        $scope.modalText = abText;
-        $('#abstractViewModal').modal('show'); // open modal
-    }
 
     // Setup by using AWS credentials
     AwsService.credentials().then(function() {

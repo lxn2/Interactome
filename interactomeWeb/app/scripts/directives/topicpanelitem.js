@@ -18,7 +18,7 @@ angular.module('interactomeApp')
       		topic: '='
       	},
 
-		    controller: ['$scope', '$http', 'AwsService', function($scope, $http, AwsService) {    
+		    controller: ['$rootScope', '$scope', '$http', 'AwsService', function($rootScope, $scope, $http, AwsService) {    
           $scope.editorEnabled = false;
           $scope.noAbstracts = null;
           $scope.editableValue = $scope.topic.Name;          
@@ -127,43 +127,7 @@ angular.module('interactomeApp')
           };
 
           $scope.viewAbstract = function(paper, index) {
-            // Only grabs from s3 once
-            if (paper.s3Data === undefined) {
-              $http.get(paper.Link).success(function(data) { // get s3 abstract and author names once, together
-                paper.s3Data = data;
-
-                AwsService.getBatchUser(paper.Authors).then(function(names) { // replace User Id's with real author names
-                  var temp = "";
-                  // Ensure the correct order by adding one at a time to the string to display
-                  // Authors will be in order and we can't trust AWS to give us the correct order.
-                  for(var j = 0; j < paper.Authors.length; j++) {
-                    for(var i = 0; i < names.length; i++) {
-                      if (paper.Authors[j] == names[i].Id)
-                        temp += (names[i].FirstName + " " + names[i].LastName + ", ");
-                    }
-                  }
-                  paper.Authors = temp.slice(0, -2);
-                  // open modal
-                  $scope.localOnView({
-                  abTitle: paper.Title,
-                  abAuthor: paper.Authors,
-                  abText: paper.s3Data.Abstract});
-
-                }, function(reason) {
-                  alert(reason);
-                });
-
-              }).error(function() {
-                $scope.localOnView({ abTitle: "ERROR", abText: "Could not find abstract."});
-              })
-
-            } else {
-              //open modal
-              $scope.localOnView({
-              abTitle: paper.Title,
-              abAuthor: paper.Authors,
-              abText: paper.s3Data.Abstract});
-            }
+            $rootScope.$emit('showModal', paper);
           };
 
           $scope.getRecs = function() {
