@@ -14,7 +14,6 @@ angular.module('interactomeApp')
           localRenameTopic: '&renameTopic',
           localDeleteTopic: '&delete',
           localGetRecs: '&getRecs',
-          localOnView: '&onView',
       		topic: '='
       	},
 
