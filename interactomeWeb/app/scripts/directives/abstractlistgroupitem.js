@@ -13,7 +13,6 @@ angular.module('interactomeApp')
     return {	
       	restrict: 'E',
       	scope: {      	
-          localOnView: '&onView',
           paper: '=',
           likeStatus: '=',
           selectedAbstracts: '='

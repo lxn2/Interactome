@@ -125,7 +125,7 @@ angular.module('interactomeApp')
             });
           };
 
-          $scope.viewAbstract = function(paper, index) {
+          $scope.viewAbstract = function(paper) {
             $rootScope.$emit('showModal', paper);
           };
 
