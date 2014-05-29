@@ -47,7 +47,9 @@ ACCESS_KEY_EXCEL_FIELD = 'Access Key Id'
 logging.basicConfig(filename='dataLoader.log', level=logging.INFO, format='%(asctime)s -- %(levelname)s: %(message)s')
 
 # connect to solr
-solr = pysolr.Solr('http://localhost:8983/solr/', timeout=10)
+solr = pysolr.Solr('http://ec2-54-201-190-162.us-west-2.compute.amazonaws.com:8983/solr/', timeout=10)
+
+#solr.delete(q='*:*')
 
 ''' 
     Parses the csv file for ACCESS_KEY_EXCEL_FIELD and SECRET_KEY_EXCEL_FIELD.
@@ -146,6 +148,15 @@ def addUsers(excelFileName):
                     break
             dynamoPaperId = abstractToPaperDict[hashKey] if (hashKey in abstractToPaperDict) else ""
             try:
+
+                solr.add([
+                    {
+                    'id': userId,
+                    'lastName': lastname,
+                    'firstName': firstname,
+                    'institution': institution
+                    }])
+
                 # If new user (email not in dynamo already)
                 if(userId == ''):
                     sequenceNumber = getSequence()
@@ -294,10 +305,10 @@ def addAbstracts(excelFileName):
                         'id': dynamoPaperId,
                         'title': abstractTitle,
                         'text': row[3].internal_value.encode('utf-8'),
-                        'Keyword1': keyword1,
-                        'Keyword2': keyword2,
-                        'Keyword3': keyword3,
-                        'Keyword4': keyword4
+                        'keyword1': keyword1,
+                        'keyword2': keyword2,
+                        'keyword3': keyword3,
+                        'keyword4': keyword4
                     }])
 
             except:
@@ -325,10 +336,7 @@ def main(argv=sys.argv):
 
     # Abstracts MUST come before users.
     addAbstracts(options.abstractsPath)
-    #addUsers(options.usersPath)
-
-    results = solr.search('cancer')
-    print results
+    addUsers(options.usersPath)
 
 if __name__ == "__main__":
     sys.exit(main())
