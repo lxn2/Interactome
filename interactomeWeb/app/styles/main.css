@@ -138,10 +138,56 @@ body {
   background-color: #96EB96;
 }
 
-.inline-collapse-btn {
-  padding-left: 3px;
-  padding-right: 3px;
-  margin-left: 5px;
+.rec-heading-dim-text {
+  opacity: .5;
+}
+.rec-heading-dim-text-remove {
+  -webkit-animation:0.5s dim-reveal;
+  animation:0.5s dim-reveal;
+}
+@keyframes dim-reveal {
+  from {
+    opacity: .5;
+  }
+  to {
+    opacity: 1.0;
+  }
+}
+@-webkit-keyframes dim-reveal {
+  from {
+    opacity: .5;
+  }
+  to {
+    opacity: 1.0;
+  }
+}
+
+.rec-heading-very-dim-text {
+  opacity: .2;
+}
+.rec-heading-very-dim-text-remove {
+  -webkit-animation:0.5s very-dim-reveal;
+  animation:0.5s very-dim-reveal;
+}
+@keyframes very-dim-reveal {
+  from {
+    opacity: .2;
+  }
+  to {
+    opacity: 1.0;
+  }
+}
+@-webkit-keyframes very-dim-reveal {
+  from {
+    opacity: .2;
+  }
+  to {
+    opacity: 1.0;
+  }
+}
+
+.rec-heading-collapse-btn {
+  margin-top: 7px;
 }
 
 
