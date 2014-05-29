@@ -18,9 +18,9 @@ angular.module('interactomeApp')
     };
 
     $scope.searchSubmit = function() {
-        if ($scope.searchByInstitution && $scope.searchByInstitution.length > 0) {
+        if ($scope.searchByText && $scope.searchByText.length > 0) {
             var url = "/searchView";
-            $location.search('search', $scope.searchByInstitution).path(url);
+            $location.search('search', $scope.searchByText).path(url);
         }
     };
 
