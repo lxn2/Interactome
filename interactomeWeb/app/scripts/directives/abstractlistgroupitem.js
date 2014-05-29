@@ -31,7 +31,7 @@ angular.module('interactomeApp')
                     temp += (names[i].FirstName + " " + names[i].LastName + ", ");
                 }
               }
-              $scope.authorData = temp.slice(0, -2);
+              $scope.paper.authorData = temp.slice(0, -2);
             });
           };
 
