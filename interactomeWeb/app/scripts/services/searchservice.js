@@ -6,23 +6,21 @@ angular.module('interactomeApp.SearchService', [])
     var service = {
 	    getResults: function(query) {
 
-    	    var request = $http({
-    	    	method:"JSONP",
-		        url: "http://ec2-54-201-190-162.us-west-2.compute.amazonaws.com:8983/solr/select",
-		        crossDomain: true,
-		        params: {
-		            "q": "query",
+    	    var request = $.ajax({
+    	    	url: "http://ec2-54-201-190-162.us-west-2.compute.amazonaws.com:8983/solr/select",
+		        data: {
+		            "q": query,
 		            "qt": "edismax",
 		            "qf": "title text",
 		            "hl": true,
 		            "wt": "json",
-		            "rows":1000000
+		            "rows":1000
 		        },
 		        traditional: true,
 		        cache: true,
 		        async: true,
 		        dataType: 'jsonp',
-                jsonp: 'json.wrf'
+		        jsonp: 'json.wrf',
             });
 
 			return (request.then(service.handleSuccess, service.handleError));
@@ -53,9 +51,7 @@ angular.module('interactomeApp.SearchService', [])
 	    // I transform the successful response, unwrapping the application data
 	    // from the API response payload.
 	    handleSuccess: function(response) {
-	    	console.log(response.data);
-
-	        return(response.data.response.docs);
+	        return(response.response.docs);
 
 	    }
 	};
