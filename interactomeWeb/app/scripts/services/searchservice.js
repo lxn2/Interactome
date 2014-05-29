@@ -11,8 +11,9 @@ angular.module('interactomeApp.SearchService', [])
 		        data: {
 		            "q": query,
 		            "defType": "edismax",
-		            "qf": "title text firstName lastName institution",
+		            "qf": "title text lastName firstName institution",
 		            "hl": true,
+		            "hl.fl": "title,text",
 		            "wt": "json",
 		            "rows":1000
 		        },
@@ -22,10 +23,8 @@ angular.module('interactomeApp.SearchService', [])
 		        dataType: 'jsonp',
 		        jsonp: 'json.wrf'
             });
-            console.log("thenning");
             request.done(function(response) {
-            	console.log(response);
-            	deferred.resolve(response.response.docs);
+            	deferred.resolve(response);
             });
             request.fail(function(response) {
             	if (!angular.isObject( response.data ) || ! response.data.message)
