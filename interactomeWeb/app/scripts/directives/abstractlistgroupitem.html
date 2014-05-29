@@ -1,0 +1,16 @@
+<li class="list-group-item clickable-pointer" ng-click="selectedClick()" ng-class="{'abstract-selected': selected}">
+    <div class="btn-group" data-toggle="buttons">
+        <label class="btn btn-primary" ng-class="{active: likeStatus}" ng-click="likeClick(); $event.stopPropagation();">
+            <input type="radio" name="likeBtn" > <span class="glyphicon glyphicon-thumbs-up"></span>
+        </label>
+        <label class="btn btn-primary" ng-class="{active: likeStatus == false}"  ng-click="dislikeClick(); $event.stopPropagation();">
+            <input type="radio" name="dislikeBtn" > <span class="glyphicon glyphicon-thumbs-down"></span>
+        </label>
+    </div>
+    <button type="button" class="btn btn-primary" name="viewBtn" ng-click="viewAbstract(); $event.stopPropagation();">
+        <span class="glyphicon glyphicon-search"></span>
+    </button>
+    <h4 class="list-group-item-heading" ng-bind-html="paper.Title"></h4>
+    <span class="glyphicon glyphicon-ok pull-right" ng-show="selected"></span>
+    <p class="list-group-item-text"> {{authorData}} </p>
+</li>

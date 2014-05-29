@@ -11,13 +11,19 @@ angular.module('interactomeApp.RecommendationService', [])
       // getRecs:
       //   @abstractList: should be a list of the dynamo Id's
       //   Returns: a promise which will resolve to an array of hashes that have paper data from dynamo.
-      getRecs: function(abstractList) {
+      getRecs: function(papers) {
           var defered = $q.defer();
-
-          var limit = 100 + abstractList.length; // min of abstracts needed to make sure no duplicates returned
-
+          var paperLength = papers.length;
           // Scan table for limit number of papers
-          if(abstractList.length > 0) {
+          if(paperLength > 0) {
+
+            var abstractList = [];
+            for(var i = 0; i < paperLength; i++) {
+              abstractList[i] = papers[i].Id;
+            }
+            
+            var limit = 100 + paperLength; // min of abstracts needed to make sure no duplicates returned
+
             var paperTable = new AWS.DynamoDB({params: {TableName: "Paper"}});
             var returnedPapers  = [];
             paperTable.scan({Limit: limit}, function(err, data) {
@@ -31,7 +37,7 @@ angular.module('interactomeApp.RecommendationService', [])
                     returnedPapers.push({
                       Id: paperId, 
                       Link: data.Items[i].Link.S,
-                      Title: data.Items[i].Title.S,
+                      Title: data.Items[i].Title.S.replace(/<[b\sB]+>/g, ''),
                       Authors: (data.Items[i].Authors.S).split(',')
                     })
                 }

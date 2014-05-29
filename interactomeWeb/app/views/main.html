@@ -17,21 +17,33 @@
     </div>
 </div>
 
+<collapsable-abstract-titles papers="recOriginAbstracts"></collapsable-abstract-titles>
+
 <!-- see main.js and abstractlistgroupitem.js -->
 <ul id="abstracts" class="list-group">
-    <div ng-repeat="paper in filteredPapers">
-        <abstract-list-group-item paper="paper" likes="likes" dislikes="dislikes" on-view="showAbstract(abTitle, abAuthor, abText)"></abstract-list-group-item>
+    <!-- Loading image/animation for getting recs -->
+    <div class="loader-background loader-fade-animation" ng-if="gettingAbstractRecs">
+        <div class="loader-position-wrap">
+          <div class="loader-inner-blink"></div>
+          <div class="loader-inner-circle"></div>
+          <div class="loader-outer-circular"></div>
+          <div class="loader-outer-circular loader-secondary-circular"></div>
+        </div>
+    </div>
+
+    <div ng-repeat="paper in filteredPapers" class="fade-animation">
+        <abstract-list-group-item paper="paper" like-status="paperLikeStatus[paper.Id]" on-view="showAbstract(abTitle, abAuthor, abText)" selected-abstracts="selectedAbstracts"></abstract-list-group-item>
     </div>
 </ul>
 
-<button id="testSelection" type="button" ng-click="abstractsRec()" class="btn btn-primary">Get Recs</button>
-{{absRecd}}
-<br></br>
-
 <!-- Page Pagination -->
-<div> 
-<tfoot>
-<Pagination total-items="paginationTotalItems" items-per-page="numPerPage" page="currentPage" max-size="maxSize" boundary-links="true">
-    </pagination>
-</tfoot>
-</div> 
+<Pagination class="clickable-pointer" total-items="paginationTotalItems" items-per-page="numPerPage" page="currentPage" max-size="maxSize" boundary-links="true" ng-show="moreThanOnePage">
+</pagination>
+
+<!-- get rec button that appears at bottom of page -->
+<div class="get-rec-container well" ng-if="selectedAbstracts.length > 0 && !gettingAbstractRecs">
+    <button type="button" class="btn btn-danger" ng-click="cancelSelectedAbstracts()">
+        <span class="glyphicon glyphicon-remove"></span> Cancel Selection
+    </button>
+    <button id="testSelection" type="button" ng-click="abstractsRec()" class="btn btn-primary">Get Recommendations</button>
+</div>
