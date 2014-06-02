@@ -6,8 +6,9 @@ var app = angular.module('interactomeApp', [
     'ngSanitize',
     'ngAnimate',
     'interactomeApp.AwsService',
-    'interactomeApp.Userservice',
+    'interactomeApp.UserService',
     'interactomeApp.RecommendationService',
+    'interactomeApp.SearchService',
     'ui.bootstrap'
 ])
 
@@ -18,6 +19,11 @@ app.config(function(AwsServiceProvider) {
             'arn:aws:iam::005837367462:role/interactomeRole');
 });
 
+// This should allow CORS requests
+app.config(function($httpProvider){
+    $httpProvider.defaults.useXDomain = true;
+    delete $httpProvider.defaults.headers.common['X-Requested-With'];
+});
 
 
 // Sets up main route to main.html when page is first loaded. 

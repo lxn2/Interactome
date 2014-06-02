@@ -2,12 +2,15 @@
 
 angular.module('interactomeApp')
   .controller('SearchCtrl', function($scope, $location, SearchService) {
-    var institution = ($location.search()).search;
-    $scope.institutions = [];
-    // once promise is made, then set the scope 
-    SearchService.showResults(institution).then(function(userData) {
-        $scope.institutions.push.apply($scope.institutions, userData);
+    $scope.query = ($location.search()).search;
+    SearchService.getResults($scope.query).then(function(data){
+        $scope.response = data;
+        $scope.results = $scope.response.response.docs;
+
     });
+
+    console.log($scope.query);
+
 
 });
   
