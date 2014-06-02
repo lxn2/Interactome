@@ -34,9 +34,9 @@ from boto import dynamodb2
 from openpyxl import load_workbook
 
 SEQUENCER_TABLE_NAME = 'Sequencer'
-USER_TABLE_NAME = 'User_Test'
-PAPER_TABLE_NAME = 'Paper_Test'
-ABSTRACT_BUCKET_NAME = 'sageinteractome-test-bucket'
+USER_TABLE_NAME = 'User'
+PAPER_TABLE_NAME = 'Paper'
+ABSTRACT_BUCKET_NAME = 'sagebionetworks-interactome-abstracts'
 PRESENTATION_NUM_EXCEL_FIELD = 'PresentationNumber'
 LASTNAME_EXCEL_FIELD = 'LastName'
 FIRSTNAME_EXCEL_FIELD = 'FirstName'
