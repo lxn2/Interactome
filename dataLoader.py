@@ -297,7 +297,7 @@ def addAbstracts(excelFileName):
             dynamoPaperId = 'Paper'+ sequenceNumber
             newItem = {'Id': dynamoPaperId, 'Link': abstractUrlLink, 'Title': abstractTitle}
             try:
-                #papersTable.put_item(data=newItem)
+                papersTable.put_item(data=newItem)
 
                 #Add the solr document into the solr index
                 solr.add([
