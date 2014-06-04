@@ -24,15 +24,15 @@ angular.module('interactomeApp')
           if(paper.s3Data === undefined) {
             $http.get(paper.Link).success(function(data) { 
               paper.s3Data = data;
-              getAbstractDefer.resolve();
+              getAbstractDefer.resolve(paper);
             }).error(function() {
               paper.s3Data = {};
               paper.s3Data.Abstract = 'ERROR: Could not find abstract';
-              getAbstractDefer.resolve();
+              getAbstractDefer.resolve(paper);
             })
           }
           else {
-            getAbstractDefer.resolve();
+            getAbstractDefer.resolve(paper);
           }
 
           return getAbstractDefer.promise;
@@ -54,14 +54,14 @@ angular.module('interactomeApp')
                 }
               }
               paper.authorData = temp.slice(0, -2);
-              getNamesDefer.resolve();
+              getNamesDefer.resolve(paper);
             }, function(reason) {
               paper.authorData = 'ERROR: ' + reason;
-              getNamesDefer.resolve();
+              getNamesDefer.resolve(paper);
             });
           }
           else {
-            getNamesDefer.resolve();
+            getNamesDefer.resolve(paper);
           }
 
           return getNamesDefer.promise;
@@ -70,12 +70,13 @@ angular.module('interactomeApp')
         $scope.showModal = function(paper) {
 
           var promise = $scope.getS3Abstract(paper);
-          promise.then($scope.getNames(paper))
-          .then(function() {
-            $scope.modalTitle = paper.Title;
-            $scope.modalAuthor = paper.authorData;
-            $scope.modalText = paper.s3Data.Abstract;
-            $scope.modalObj.modal('show')
+          promise.then( function(paper) {
+            $scope.getNames(paper).then(function(paper) {
+              $scope.modalTitle = paper.Title;
+              $scope.modalAuthor = paper.authorData;
+              $scope.modalText = paper.s3Data.Abstract;
+              $scope.modalObj.modal('show');
+            });
           });
         };
 

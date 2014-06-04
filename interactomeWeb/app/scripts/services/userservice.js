@@ -4,7 +4,7 @@
 // handle to bulk of AWS interactions from the perspective of "user interacting with AWS". 
 // This perspective could also allow us to keep track of user "likes" for future rec system. 
 
-angular.module('interactomeApp.Userservice', [])
+angular.module('interactomeApp.UserService', [])
 
 
 // Used a service type: factory instead of a pure service, because how I understand it

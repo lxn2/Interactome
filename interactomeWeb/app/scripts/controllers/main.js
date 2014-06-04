@@ -5,7 +5,7 @@
 **/
 var app = angular.module('interactomeApp');
 
-app.controller('MainCtrl', function($scope, UserService, AwsService, RecommendationService) {
+app.controller('MainCtrl', function($rootScope, $scope, UserService, AwsService, RecommendationService) {
     $scope.papers = [];
 
     $scope.modalTitle = null;
@@ -27,6 +27,7 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
     $scope.recOriginAbstracts = []; // list of abstracts the current recs are seeded from
 
     $scope.paginate = function() {
+        $('body').animate({scrollTop: 0});
         // Setting currentPage to 0 is a hack to get the recs working on page 1.
         if ($scope.currentPage == 0)
             $scope.currentPage = 1;
@@ -46,7 +47,7 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
             //var abstractsChecked = $scope.selectedAbstracts.join();
             //AwsService.postMessageToSNS('arn:aws:sns:us-west-2:005837367462:abstracts_req', abstractsChecked);
             RecommendationService.getRecs(paperslist).then(function(reclist) {
-                $scope.recOriginAbstracts = paperslist.slice(0); // copy array for rec heading
+                var temp = paperslist.slice(0); // copy array for rec heading
                 $scope.selectedAbstracts.length = 0;
                 $scope.papers.length = 0;
 
@@ -55,6 +56,7 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
                 // We use  jquery here to scroll because smooth scrolling in angular is messy.
                 $('body').animate({scrollTop: 0}, 2000, function() { 
                     $scope.$apply(function() {
+                        $scope.recOriginAbstracts = temp;//updates the text of the abstracttitles directive
                         $scope.gettingAbstractRecs=false;
                         $scope.papers.push.apply($scope.papers, reclist);
 
@@ -78,6 +80,14 @@ app.controller('MainCtrl', function($scope, UserService, AwsService, Recommendat
     // request for recommendations from topics
     $scope.abstractsRecFromTopic = function(topicspaperslist) {
         $scope.abstractsRec(topicspaperslist);
+    };
+
+    // Controls get-recs cancel button behavior. Let's directives know to become unselected.
+    $scope.cancelSelectedAbstracts = function() { 
+        //$emit travels upwards so since we are using rootscope (directives have isolated scope)
+        //it will not bubble to any other scopes.
+        $rootScope.$emit('cancelSelectedAbstracts');
+        $scope.selectedAbstracts.length = 0;
     };
 
     // Setup by using AWS credentials

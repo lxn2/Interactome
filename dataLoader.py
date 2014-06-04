@@ -26,6 +26,7 @@ import csv
 import json 
 import argparse
 import time
+import pysolr
 from boto.s3.key import Key
 from boto.dynamodb2.table import Table
 from boto import s3
@@ -44,6 +45,11 @@ SECRET_KEY_EXCEL_FIELD = 'Secret Access Key'
 ACCESS_KEY_EXCEL_FIELD = 'Access Key Id'
 # Tells how to format the logging and what file to store it in
 logging.basicConfig(filename='dataLoader.log', level=logging.INFO, format='%(asctime)s -- %(levelname)s: %(message)s')
+
+# connect to solr
+solr = pysolr.Solr('http://ec2-54-201-190-162.us-west-2.compute.amazonaws.com:8983/solr/', timeout=10)
+
+#solr.delete(q='*:*')
 
 ''' 
     Parses the csv file for ACCESS_KEY_EXCEL_FIELD and SECRET_KEY_EXCEL_FIELD.
@@ -142,6 +148,15 @@ def addUsers(excelFileName):
                     break
             dynamoPaperId = abstractToPaperDict[hashKey] if (hashKey in abstractToPaperDict) else ""
             try:
+
+                solr.add([
+                    {
+                    'id': userId,
+                    'lastName': lastname,
+                    'firstName': firstname,
+                    'institution': institution
+                    }])
+
                 # If new user (email not in dynamo already)
                 if(userId == ''):
                     sequenceNumber = getSequence()
@@ -283,6 +298,19 @@ def addAbstracts(excelFileName):
             newItem = {'Id': dynamoPaperId, 'Link': abstractUrlLink, 'Title': abstractTitle}
             try:
                 papersTable.put_item(data=newItem)
+
+                #Add the solr document into the solr index
+                solr.add([
+                    {
+                        'id': dynamoPaperId,
+                        'title': abstractTitle,
+                        'text': row[3].internal_value.encode('utf-8'),
+                        'keyword1': keyword1,
+                        'keyword2': keyword2,
+                        'keyword3': keyword3,
+                        'keyword4': keyword4
+                    }])
+
             except:
                 logging.error("Unabled to add to papers table. Index not added: " + str(rowIndex))
             else:
@@ -294,6 +322,7 @@ def addAbstracts(excelFileName):
 
 
 def main(argv=sys.argv):
+
     parser = argparse.ArgumentParser(description='Process optional download flags')
 
     AUTH_HELP_TEXT = "path to credential csv file from Amazon. This will not be stored. CSV fieldnames must be \"" \
@@ -308,6 +337,6 @@ def main(argv=sys.argv):
     # Abstracts MUST come before users.
     addAbstracts(options.abstractsPath)
     addUsers(options.usersPath)
-        
+
 if __name__ == "__main__":
     sys.exit(main())
