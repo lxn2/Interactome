@@ -444,10 +444,9 @@ app.provider('AwsService', function() {
                 dynamodb.batchGetItem(batchParams, function(err, data) {
                     if (err) { // query error
                         console.log(err, err.stack);
-                        batchUserDefer.reject('Cannot query Topic table');
+                        batchUserDefer.reject('Cannot query User table');
                     } else{
                         for (var i = 0; i < data.Responses.User.length; i++) {
-                           // console.log('aws', names);
                             names.push({ 
                                 Id: data.Responses.User[i].Id.S,
                                 FirstName: data.Responses.User[i].FirstName.S, 
